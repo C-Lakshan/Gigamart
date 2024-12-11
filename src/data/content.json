@@ -1,0 +1,254 @@
+{
+    "pages":{
+        "shop":{
+            "sections":[
+                {
+                    "title":"Laptop & Desktop",
+                    "data":[
+                        {
+                            "title":"HP",
+                            "description":"Explore Now!",
+                            "image":"./images/Hp-Logo.png"   
+                        },
+                        {
+                            "title":"Asus",
+                            "description":"Explore Now!",
+                            "image":"./images/Asus-Logo.png"   
+                        },
+                        {
+                            "title":"Lenovo",
+                            "description":"Explore Now!",
+                            "image":"./images/Lenovo-Logo.jpg"   
+                        },
+                        {
+                            "title":"Dell",
+                            "description":"Explore Now!",
+                            "image":"./images/Dell-Logo.png"   
+                        },
+                        {
+                            "title":"MSI",
+                            "description":"Explore Now!",
+                            "image":"./images/MSI-Logo.png"   
+                        },
+                        {
+                            "title":"Apple",
+                            "description":"Explore Now!",
+                            "image":"./images/Apple-Logo.jpg"   
+                        }
+                    ]
+                },
+                {
+                    "title":" Accessories",
+                    "data":[
+                        {
+                            "title":"Monitors",
+                            "description":"Explore Now!",
+                            "image":"./images/category-monitor.jpg"   
+                        },
+                        {
+                            "title":"Printers and Scanners",
+                            "description":"Explore Now!",
+                            "image":"./images/category-printer.jpg"   
+                        },
+                        {
+                            "title":"Toners & Cartridges",
+                            "description":"Explore Now!",
+                            "image":"./images/category-cartridge.jpg"   
+                        },
+                        {
+                            "title":"Gaming Accessories",
+                            "description":"Explore Now!",
+                            "image":"./images/category-gaming.jpg"   
+                        },
+                        {
+                            "title":"Projectors",
+                            "description":"Explore Now!",
+                            "image":"./images/category-projector.jpg"   
+                        }
+                    ]
+                }
+           ]
+        }
+    },
+   "footer":{
+        "items":[
+            {
+                "title":"Need Help",
+                "list":[
+                    {
+                        "label":"Contact Us",
+                        "path":"/contact-us"
+                    },
+                    {
+                        "label":"Track Order",
+                        "path":"/track-order"
+                    },
+                    {
+                        "label":"Returns & Refunds",
+                        "path":"/refunds"
+                    },
+                    {
+                        "label":"FAQ's",
+                        "path":"/faq"
+                    },
+                    {
+                        "label":"Career",
+                        "path":"/career"
+                    }
+                ]
+            },
+            {
+                "title":"Company",
+                "list":[
+                    {
+                        "label":"About Us",
+                        "path":"/about"
+                    },
+                    {
+                        "label":"Media",
+                        "path":"/media"
+                    }
+                ]
+            },
+            {
+                "title":"More Info",
+                "list":[
+                    {
+                        "label":"Term and Conditions",
+                        "path":"/terms-conditions"
+                    },
+                    {
+                        "label":"Privacy Policy",
+                        "path":"/policies"
+                    },
+                    {
+                        "label":"Shipping Policy",
+                        "path":"/policies"
+                    }
+                ]
+            },
+            {
+                "title":"Location",
+                "description":"Location Country"
+            }
+        ],
+        "copyright":"Copyright © 2024 GigaMart"
+    },
+    "categories": [
+        {
+          "id": 1,
+          "name": "Laptop",
+          "code": "Laptop",
+          "description":"Laptop Computers",
+          "types": [
+            {
+              "id": 1,
+              "name": "Asus",
+              "description": "Asus Laptop"
+            },
+            {
+              "id": 2,
+              "name": "Hp",
+              "description": "Hp Laptops"
+            },
+            {
+              "id": 3,
+              "name": "Dell",
+              "description": "Dell Laptops"
+            },
+            {
+              "id": 4,
+              "name": "MSI",
+              "description": "MSI Laptops"
+            },
+            {
+              "id": 14,
+              "name": "Apple",
+              "description": "Mac Laptops"
+            }
+          ]
+        },
+        {
+          "id": 2,
+          "name": "Desktop",
+          "code": "DESKTOP",
+          "description":"Desktop Computers",
+          "types": [
+            {
+              "type_id": 5,
+              "code":"Asus",
+              "name": "Dresses"
+            },
+            {
+              "type_id": 6,
+              "code":"CROPTOP",
+              "name": "Crop Top"
+            },
+            {
+              "type_id": 7,
+              "code":"SHORTS",
+              "name": "Shorts"
+            },
+            {
+              "type_id": 8,
+              "code":"JEANS",
+              "name": "Jeans"
+            },
+            {
+              "type_id": 9,
+              "code":"TSHIRTS",
+              "name": "T-shirt"
+            },
+            {
+              "type_id": 10,
+              "code":"SWEATSHIRT",
+              "name": "Hoodie/Sweatshirt"
+            },
+            {
+              "type_id": 11,
+              "code":"TOPS",
+              "name": "Tops"
+            },
+            {
+              "type_id": 12,
+              "code":"BOXERS",
+              "name": "Boxers"
+            },
+            {
+              "type_id": 13,
+              "code":"KURTIS",
+              "name": "Kurtis"
+            }
+          ]
+        },
+        {
+          "id": 3,
+          "name": "Kids",
+          "code": "KIDS",
+          "description":"Kids Clothing",
+          "types": [
+            {
+              "id": 15,
+              "name": "T-shirts",
+              "description": "Kids' t-shirts"
+            },
+            {
+              "id": 16,
+              "name": "Shorts",
+              "description": "Kids' shorts"
+            },
+            {
+              "id": 17,
+              "name": "Dresses",
+              "description": "Kids' dresses"
+            },
+            {
+              "id": 18,
+              "name": "Jeans",
+              "description": "Kids' jeans"
+            }
+          ]
+        }
+    ]
+    
+}            
