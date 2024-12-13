@@ -1,7 +1,8 @@
 package com.comrepublic.shopx.auth.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.nimbusds.openid.connect.sdk.claims.Address;
+
+
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -50,9 +51,9 @@ public class User implements UserDetails {
     @JoinTable(name = "AUTH_USER_AUTHORITY",joinColumns = @JoinColumn(referencedColumnName = "id"),inverseJoinColumns = @JoinColumn(referencedColumnName = "id"))
     private List<Authority> authorities;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    @ToString.Exclude
-    private List<Address> addressList;
+//    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+//    @ToString.Exclude
+//    private List<Address> addressList;
 
 
     @Override
