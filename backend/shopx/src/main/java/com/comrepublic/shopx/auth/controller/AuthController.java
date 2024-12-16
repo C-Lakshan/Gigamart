@@ -1,5 +1,6 @@
 package com.comrepublic.shopx.auth.controller;
 
+import com.comrepublic.shopx.auth.config.JWTTokenHelper;
 import com.comrepublic.shopx.auth.dto.LoginRequest;
 import com.comrepublic.shopx.auth.dto.RegistrationRequest;
 import com.comrepublic.shopx.auth.dto.RegistrationResponse;
@@ -32,8 +33,8 @@ public class AuthController {
     @Autowired
     UserDetailsService userDetailsService;
 
-//    @Autowired
-//    JWTTokenHelper jwtTokenHelper;
+    @Autowired
+    JWTTokenHelper jwtTokenHelper;
 
 
     @PostMapping("/login")
@@ -52,7 +53,7 @@ public class AuthController {
                     return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
                 }
 
-                String token =null;//jwtTokenHelper.generateToken(user.getEmail());
+                String token =jwtTokenHelper.generateToken(user.getEmail());
                 UserToken userToken= UserToken.builder().token(token).build();
                 return new ResponseEntity<>(userToken,HttpStatus.OK);
             }
