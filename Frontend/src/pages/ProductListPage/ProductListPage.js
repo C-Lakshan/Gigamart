@@ -1,6 +1,9 @@
 import React, { useMemo } from 'react'
 import FilterIcon from '../../components/common/FilterIcon'
 import content from '../../data/content.json';
+import Categories from '../../components/Filters/Categories';
+import PriceFilter from '../../components/Filters/PriceFilter';
+import ProductCard from './ProductCard';
 
 
 const categories = content?.categories;
@@ -8,8 +11,12 @@ const categories = content?.categories;
 const ProductListPage = ({categoryType})=>{
 
   const categoryContent = useMemo(()=>{
-    return categories?.find((category)=> category.code === "Laptop");
+    return categories?.find((category)=> category.code === categoryType);
   },[categoryType]);
+
+  const productListItems = useMemo(()=>{
+    return content?.products?.filter((product)=> product?.category_id === categoryContent?.id );
+  },[categoryContent]);
 
   return (
     <div>
@@ -23,13 +30,21 @@ const ProductListPage = ({categoryType})=>{
           </div>
           <div>
           <p className='text-[16px] text-black mt-5'> Categories</p>  
+          <Categories types={categoryContent?.types}/>
+          <hr></hr>
           </div>
-        </div>
+            {/* Price */}
+            <PriceFilter />
+          </div>
         
-        <div className='p-[40px]'>
-        <p>{categoryContent?.description || "No description available for this category"}</p> 
+        <div className='p-[15px]'>
+        <p className='text-black text-lg'>{categoryContent?.description || "No description available for this category"}</p> 
           {/* Products */}
-          
+          <div className='pt-4 grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2 gap-8 px-2'>
+              {productListItems?.map((item,index)=>(
+                  <ProductCard key={index} {...item}/>
+              ))}
+          </div>
         </div>
 
       </div>
