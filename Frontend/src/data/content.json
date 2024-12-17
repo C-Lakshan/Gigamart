@@ -139,116 +139,364 @@
           "id": 1,
           "name": "Laptop",
           "code": "Laptop",
+          "path": "/Laptop",
           "description":"Laptop Computers",
           "types": [
             {
-              "id": 1,
-              "name": "Asus",
-              "description": "Asus Laptop"
+              "type_id": 1,
+              "code": "ASUS",
+              "name": "Asus"
             },
             {
-              "id": 2,
-              "name": "Hp",
-              "description": "Hp Laptops"
+              "type_id": 2,
+              "code": "HP",
+              "name": "Hp"
             },
             {
-              "id": 3,
-              "name": "Dell",
-              "description": "Dell Laptops"
+              "type_id": 3,
+              "code": "DELL",
+              "name": "Dell"
             },
             {
-              "id": 4,
-              "name": "MSI",
-              "description": "MSI Laptops"
+              "type_id": 4,
+              "code": "MSI",
+              "name": "MSI"
             },
             {
-              "id": 14,
-              "name": "Apple",
-              "description": "Mac Laptops"
+              "type_id": 14,
+              "code": "APPLE",
+              "name": "Mac"
             }
           ]
         },
         {
           "id": 2,
           "name": "Desktop",
-          "code": "DESKTOP",
+          "code": "Desktop",
+          "path": "/Desktop",
           "description":"Desktop Computers",
           "types": [
             {
               "type_id": 5,
               "code":"Asus",
-              "name": "Dresses"
+              "name": "Asus"
             },
             {
               "type_id": 6,
-              "code":"CROPTOP",
-              "name": "Crop Top"
+              "code":"Hp",
+              "name": "Hp"
             },
             {
               "type_id": 7,
-              "code":"SHORTS",
-              "name": "Shorts"
+              "code":"Dell",
+              "name": "Dell"
             },
             {
               "type_id": 8,
-              "code":"JEANS",
-              "name": "Jeans"
+              "code":"MSI",
+              "name": "MSI"
             },
             {
               "type_id": 9,
-              "code":"TSHIRTS",
-              "name": "T-shirt"
+              "code":"Lenovo",
+              "name": "Lenovo"
             },
             {
               "type_id": 10,
-              "code":"SWEATSHIRT",
-              "name": "Hoodie/Sweatshirt"
-            },
-            {
-              "type_id": 11,
-              "code":"TOPS",
-              "name": "Tops"
-            },
-            {
-              "type_id": 12,
-              "code":"BOXERS",
-              "name": "Boxers"
-            },
-            {
-              "type_id": 13,
-              "code":"KURTIS",
-              "name": "Kurtis"
+              "code":"e-wis",
+              "name": "e-wis"
             }
+            
           ]
         },
         {
           "id": 3,
-          "name": "Kids",
-          "code": "KIDS",
-          "description":"Kids Clothing",
+          "name": "Accessories",
+          "code": "Accessories",
+          "path": "/Accessories",
+          "description":"Computer and Gaming Accessories",
           "types": [
             {
-              "id": 15,
-              "name": "T-shirts",
+              "id": 15,     
+              "name": "KeyBoards",
               "description": "Kids' t-shirts"
             },
             {
               "id": 16,
-              "name": "Shorts",
+              "name": "Mouse",
               "description": "Kids' shorts"
             },
             {
               "id": 17,
-              "name": "Dresses",
+              "name": "Printers and Scanners",
               "description": "Kids' dresses"
             },
             {
               "id": 18,
-              "name": "Jeans",
+              "name": "Mother Boards",
               "description": "Kids' jeans"
             }
           ]
         }
+    ],
+    "products":[
+      {
+        "id": 1,
+        "title": "Lenovo i5",
+        "description": "12 Gen, Win 11",
+        "category_id": 2,
+        "type_id": 10,
+        "brand": "Nike",
+        "price": 49.99,
+        "size": ["S", "M", "L"],
+        "color": ["Black","Blue"],
+        "discount": 20,
+        "thumbnail":"https://res.cloudinary.com/dx9xebywj/image/upload/v1734268368/sweatshirt-black_1_zxo3ta.jpg",
+        "images": ["https://res.cloudinary.com/dx9xebywj/image/upload/v1734268368/sweatshirt-black_1_zxo3ta.jpg", "https://res.cloudinary.com/dx9xebywj/image/upload/v1734268456/sweatshirt-black_3_u5vqwp.jpg","https://res.cloudinary.com/dx9xebywj/image/upload/v1734268525/sweatshirt-black_2_dlog9w.jpg"],
+        "rating": 4.5
+      },
+      {
+        "id": 2,
+        "title": "White T-shirt",
+        "description": "A stylish white t-shirt for women",
+        "category_id": 2,
+        "type_id": 9,
+        "brand": "TrendyWear",
+        "price": 29.99,
+        "size": ["S", "M", "L"],
+        "color": ["White"],
+        "discount": 15,
+        "images": ["https://codedev.b-cdn.net/products/tshirt-white.jpg", "https://codedev.b-cdn.net/products/tshirt-white.jpg"],
+        "thumbnail": "https://codedev.b-cdn.net/products/tshirt-white.jpg",
+        "rating": 4.5
+      },
+      {
+        "id": 3,
+        "title": "Purple Hoodie",
+        "description": "A cozy purple hoodie for women",
+        "category_id": 2,
+        "type_id": 10,
+        "brand": "Nike",
+        "price": 69.99,
+        "size": ["S", "M", "L"],
+        "color": ["Purple"],
+        "discount": 10,
+        "images": ["hoodie-purple1.jpg", "hoodie-purple2.jpg"],
+        "thumbnail": "https://codedev.b-cdn.net/products/hoodie-purple.jpg",
+        "rating": 4.6
+      },
+      {
+        "id": 4,
+        "title": "Leaves Pattern White Dress",
+        "description": "A beautiful leaves pattern white dress for women",
+        "category_id": 2,
+        "type_id": 5,
+        "brand": "SummerVibes",
+        "price": 79.99,
+        "size": ["S", "M", "L"],
+        "color": ["White"],
+        "discount": 5,
+        "images": ["dress-white-leaves1.jpg", "dress-white-leaves2.jpg"],
+        "thumbnail": "https://codedev.b-cdn.net/products/dress-white-leaves.jpg",
+        "rating": 4.7
+      },
+      {
+        "id": 5,
+        "title": "White Graphic Crop Top",
+        "description": "A trendy white graphic crop top for women",
+        "category_id": 2,
+        "type_id": 9,
+        "brand": "TrendyWear",
+        "price": 39.99,
+        "size": ["S", "M", "L"],
+        "color": ["White"],
+        "discount": 10,
+        "images": ["crop-top-white1.jpg", "crop-top-white2.jpg"],
+        "thumbnail": "https://codedev.b-cdn.net/products/crop-top-white.jpeg",
+        "rating": 4.3
+      },
+      {
+        "id": 6,
+        "title": "Black Shorts",
+        "description": "Stylish black shorts for women",
+        "category_id": 2,
+        "type_id": 7,
+        "brand": "Nike",
+        "price": 34.99,
+        "size": ["S", "M", "L"],
+        "color": ["Black"],
+        "discount": 15,
+        "images": ["shorts-black1.jpg", "shorts-black2.jpg"],
+        "thumbnail": "https://codedev.b-cdn.net/products/shorts-black.jpeg",
+        "rating": 4.5
+      },
+      {
+        "id": 7,
+        "title": "Women's Skinny Jeans",
+        "description": "Trendy women's skinny jeans for a stylish look",
+        "category_id": 2,
+        "type_id": 8,
+        "brand": "ChicStyle",
+        "price": 59.99,
+        "size": ["S", "M", "L"],
+        "color": ["Blue"],
+        "discount": 10,
+        "images": ["jeans-blue1.jpg", "jeans-blue2.jpg"],
+        "thumbnail": "https://codedev.b-cdn.net/products/jeans-blue.jpeg",
+        "rating": 4.8
+      },
+      {
+        "id": 8,
+        "title": "Crewneck Sweatshirt",
+        "description": "Comfortable crewneck sweatshirt for women",
+        "category_id": 2,
+        "type_id": 10,
+        "brand": "TrendyWear",
+        "price": 44.99,
+        "size": ["S", "M", "L"],
+        "color": ["Gray"],
+        "discount": 10,
+        "images": ["sweatshirt-gray1.jpg", "sweatshirt-gray2.jpg"],
+        "thumbnail": "https://codedev.b-cdn.net/products/sweatshirt-crewneck.jpeg",
+        "rating": 4.6
+      },
+      {
+        "id": 9,
+        "title": "Denim Shorts",
+        "description": "Stylish denim shorts for women",
+        "category_id": 2,
+        "type_id": 7,
+        "brand": "SummerVibes",
+        "price": 39.99,
+        "size": ["S", "M", "L"],
+        "color": ["Blue"],
+        "discount": 15,
+        "images": ["shorts-denim1.jpg", "shorts-denim2.jpg"],
+        "thumbnail": "https://codedev.b-cdn.net/products/shorts-denim.jpeg",
+        "rating": 4.7
+      },
+      {
+        "id": 10,
+        "title": "Black Plain T-shirt",
+        "description": "Classic black plain t-shirt for women",
+        "category_id": 2,
+        "type_id": 9,
+        "brand": "Nike",
+        "price": 24.99,
+        "size": ["S", "M", "L"],
+        "color": ["Black"],
+        "discount": 10,
+        "images": ["tshirt-black1.jpg", "tshirt-black2.jpg"],
+        "thumbnail": "https://codedev.b-cdn.net/products/tshirt-black.jpg",
+        "rating": 4.5
+      },
+      {
+        "id": 11,
+        "title": "Blue Flower Print Crop Top",
+        "description": "Stylish blue flower print crop top for women",
+        "category_id": 2,
+        "type_id": 9,
+        "brand": "TrendyWear",
+        "price": 34.99,
+        "size": ["S", "M", "L"],
+        "color": ["Blue"],
+        "discount": 15,
+        "images": ["crop-top-blue-flower1.jpg", "crop-top-blue-flower2.jpg"],
+        "thumbnail": "https://codedev.b-cdn.net/products/crop-top-blue-flower.jpeg",
+        "rating": 4.3
+      },
+      {
+        "id": 12,
+        "title": "Black Crop Top",
+        "description": "Stylish black crop top for women",
+        "category_id": 2,
+        "type_id": 9,
+        "brand": "TrendyWear",
+        "price": 29.99,
+        "size": ["S", "M", "L"],
+        "color": ["Black"],
+        "discount": 10,
+        "images": ["crop-top-black1.jpg", "crop-top-black2.jpg"],
+        "thumbnail": "https://codedev.b-cdn.net/products/crop-top-black.jpeg",
+        "rating": 4.2
+      },
+      {
+        
+        "id": 13,
+        "title": "Asus ROG",
+        "description": "Power through any game or project with an Intel Core i9 Processor 14900HX",
+        "category_id": 1,
+        "type_id": 4,
+        "brand": "Nike",
+        "price": 24.99,
+        "size": ["M", "L", "XL"],
+        "color": ["Black"],
+        "discount": 10,
+        "thumbnail":"https://res.cloudinary.com/dx9xebywj/image/upload/v1734268368/sweatshirt-black_1_zxo3ta.jpg",
+        "images": ["https://res.cloudinary.com/dx9xebywj/image/upload/v1734268368/sweatshirt-black_1_zxo3ta.jpg", "https://res.cloudinary.com/dx9xebywj/image/upload/v1734268456/sweatshirt-black_3_u5vqwp.jpg","https://res.cloudinary.com/dx9xebywj/image/upload/v1734268525/sweatshirt-black_2_dlog9w.jpg"],
+        "rating": 4.5
+      },
+      {
+        "id": 14,
+        "title": "HP 15 fd0333TU – i5",
+        "description": "Comfortable white hoodie for men",
+        "category_id": 1,
+        "type_id": 14,
+        "brand": "Adidas",
+        "price": 59.99,
+        "size": ["M", "L", "XL"],
+        "color": ["White"],
+        "discount": 15,
+        "images": ["https://res.cloudinary.com/dx9xebywj/image/upload/v1734356212/HP-15-fd0333TU-i5-2_auoshc.webp", "https://res.cloudinary.com/dx9xebywj/image/upload/v1734356211/HP-15-fd0333TU-i5-3_yje6at.webp","https://res.cloudinary.com/dx9xebywj/image/upload/v1734356097/HP-15-fd0333TU-_-i5_xtajgm.jpg"],
+        "thumbnail": "https://res.cloudinary.com/dx9xebywj/image/upload/v1734356097/HP-15-fd0333TU-_-i5_xtajgm.jpg",
+        "rating": 4.7
+      },
+      {
+        "id": 15,
+        "title": "HP Pavilion x360",
+        "description": "Stylish blue jeans for men",
+        "category_id": 1,
+        "type_id": 1,
+        "brand": "Levis",
+        "price": 49.99,
+        "size": ["M", "L", "XL"],
+        "color": ["Blue"],
+        "discount": 20,
+        "images": ["https://res.cloudinary.com/dx9xebywj/image/upload/v1734356705/HP-Pavilion-x360-2-in-1-ek1115TU-_-i7_ogs9gg.jpg", "https://res.cloudinary.com/dx9xebywj/image/upload/v1734356791/HP-Pavilion-x360-2-in-1-i5-04_zrnp6r.webp","https://res.cloudinary.com/dx9xebywj/image/upload/v1734356799/HP-Pavilion-x360-2-in-1-i5-03_cgw1nz.webp"],
+        "thumbnail": "https://res.cloudinary.com/dx9xebywj/image/upload/v1734356705/HP-Pavilion-x360-2-in-1-ek1115TU-_-i7_ogs9gg.jpg",
+        "rating": 4.6
+      },
+      {
+        "id": 16,
+        "title": "Asus ExpertBook",
+        "description": "Comfortable gray shorts for men",
+        "category_id": 1,
+        "type_id": 3,
+        "brand": "Puma",
+        "price": 29.99,
+        "size": ["M", "L", "XL"],
+        "color": ["Gray"],
+        "discount": 10,
+        "images": ["gray-shorts1.jpg", "gray-shorts2.jpg"],
+        "thumbnail": "https://res.cloudinary.com/dx9xebywj/image/upload/v1734357056/Asus-ExpertBook-P1503CVA-_-i5_nyrn93.jpg",
+        "rating": 4.4
+      },
+      {
+        "id": 17,
+        "title": "Asus Vivobook",
+        "description": "Comfortable black hoodie for men",
+        "category_id": 1,
+        "type_id": 14,
+        "brand": "Adidas",
+        "price": 59.99,
+        "size": ["M", "L", "XL"],
+        "color": ["Black"],
+        "discount": 15,
+        "images": ["black-hoodie1.jpg", "black-hoodie2.jpg"],
+        "thumbnail": "https://res.cloudinary.com/dx9xebywj/image/upload/v1734357172/Asus-Vivobook-S-14-M5406-Ryzen-9-2_injjuv.webp",
+        "rating": 4.8
+      }
+
     ]
     
 }            
