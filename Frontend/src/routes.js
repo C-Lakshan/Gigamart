@@ -19,11 +19,11 @@ export const router = createBrowserRouter([
             element:<ProductListPage categoryType={'Laptop'} />
         },
         {
-          path:"/Desktop",
+          path:"",
           element:<ProductListPage categoryType={'Desktop'}/>,
         },
         {
-          path:"/Accessories",
+          path:"",
           element:<ProductListPage categoryType={'Accessories'}/>,
         },
         {
