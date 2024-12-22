@@ -1,7 +1,7 @@
 import React from 'react'
 import Wishlist from '../common/Wishlist'
 import AccountIcon from '../common/AccountIcon'
-import CartIcon from '../common/CartIcon'
+import {CartIcon} from '../common/CartIcon'
 import './Navigation.css';
 import { Link, NavLink} from 'react-router-dom'
 

@@ -430,7 +430,7 @@
         "brand": "Nike",
         "price": 24.99,
         "size": ["M", "L", "XL"],
-        "color": ["Black"],
+        "color": ["Black","Blue"],
         "discount": 10,
         "thumbnail":"https://res.cloudinary.com/dx9xebywj/image/upload/v1734268368/sweatshirt-black_1_zxo3ta.jpg",
         "images": ["https://res.cloudinary.com/dx9xebywj/image/upload/v1734268368/sweatshirt-black_1_zxo3ta.jpg", "https://res.cloudinary.com/dx9xebywj/image/upload/v1734268456/sweatshirt-black_3_u5vqwp.jpg","https://res.cloudinary.com/dx9xebywj/image/upload/v1734268525/sweatshirt-black_2_dlog9w.jpg"],
