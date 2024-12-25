@@ -22,32 +22,39 @@ public class Product {
     @GeneratedValue
     private UUID id;
 
-    @Column(nullable = false)
+    // @Column(nullable = false)
+    @Column
     private String name;
 
     @Column
     private String description;
 
-    @Column(nullable = false)
+    // @Column(nullable = false)
+    @Column
     private BigDecimal price;
 
-    @Column(nullable = false)
+    // @Column(nullable = false)
+    @Column
     private String brand;
 
     @Column
     private Float rating;
 
-    @Column(nullable = false)
+    // @Column(nullable = false)
+    @Column
     private Boolean newArrival;
 
-    @Column(nullable = false,unique = true)
+    // @Column(nullable = false,unique = true)
+    @Column(unique = true)
     private String slug;
 
-    @Column(nullable = false, updatable = false)
+    // @Column(nullable = false, updatable = false)
+    @Column(updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private java.util.Date createdAt;
 
-    @Column(nullable = false)
+    // @Column(nullable = false)
+    @Column
     @Temporal(TemporalType.TIMESTAMP)
     private java.util.Date updatedAt;
 

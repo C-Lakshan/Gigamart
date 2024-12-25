@@ -21,17 +21,20 @@ public class CategoryType {
     @GeneratedValue
     private UUID id;
 
-    @Column(nullable = false)
+    // @Column(nullable = false)
+    @Column
     private String name;
 
-    @Column(nullable = false)
+    // @Column(nullable = false)
+    @Column
     private String code;
-
-    @Column(nullable = false)
+// 
+    // @Column(nullable = false)
+    @Column
     private String description;
 
     @ManyToOne
-    @JoinColumn(name = "category_id",nullable = false)
+    @JoinColumn(name = "category_id"/* ,nullable = false*/)
     @JsonIgnore
     private Category category;
 }

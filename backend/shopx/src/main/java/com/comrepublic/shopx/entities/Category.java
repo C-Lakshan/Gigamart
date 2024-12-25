@@ -20,13 +20,16 @@ public class Category {
     @GeneratedValue
     private UUID id;
 
-    @Column(nullable = false)
+    // @Column(nullable = false)
+    @Column
     private String name;
 
-    @Column(nullable = false)
+    // @Column(nullable = false)
+    @Column
     private String code;
 
-    @Column(nullable = false)
+    // @Column(nullable = false)
+    @Column
     private String description;
 
     @OneToMany(mappedBy = "category",cascade = CascadeType.ALL)
