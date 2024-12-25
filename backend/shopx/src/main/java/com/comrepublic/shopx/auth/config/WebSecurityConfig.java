@@ -38,7 +38,11 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests((authorize)-> authorize
                 .requestMatchers("/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**").permitAll()
                 .requestMatchers(HttpMethod.GET,"/api/products","/api/category").permitAll()
-                .anyRequest().authenticated())
+                .requestMatchers(HttpMethod.POST,"/api/products").permitAll()
+                .requestMatchers(HttpMethod.PUT,"/api/products").permitAll()
+                // .anyRequest().authenticated())
+                .anyRequest().permitAll())
+
                 .addFilterBefore(new JWTAuthenticationFilter(jwtTokenHelper,userDetailsService), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }

@@ -22,17 +22,20 @@ public class ProductVariant {
     @GeneratedValue
     private UUID id;
 
-    @Column(nullable = false)
+    // @Column(nullable = false)
+    @Column
     private String color;
 
-    @Column(nullable = false)
+    // @Column(nullable = false)
+    @Column
     private String size;
 
-    @Column(nullable = false)
+    // @Column(nullable = false)
+    @Column
     private Integer stockQuantity;
 
     @ManyToOne
-    @JoinColumn(name = "product_id",nullable = false)
+    @JoinColumn(name = "product_id"/*,nullable = false*/)
     @JsonIgnore
     private Product product;
 }
