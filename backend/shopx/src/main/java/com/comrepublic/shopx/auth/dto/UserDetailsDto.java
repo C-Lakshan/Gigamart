@@ -1,14 +1,14 @@
 package com.comrepublic.shopx.auth.dto;
 
-import java.util.List;
-import java.util.UUID;
-
-import com.comrepublic.shopx.entities.Address;
-
+//import com.thecodereveal.shopease.entities.Address;
+import jakarta.mail.Address;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
+import java.util.UUID;
 
 @Data
 @Builder
