@@ -1,15 +1,16 @@
 package com.comrepublic.shopx.services;
 
-import com.comrepublic.shopx.auth.entities.User;
-import com.comrepublic.shopx.dto.AddressRequest;
-import com.comrepublic.shopx.entities.Address;
-import com.comrepublic.shopx.repositories.AddressRepository;
+import java.security.Principal;
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
-import java.security.Principal;
-import java.util.List;
+import com.comrepublic.shopx.auth.entities.User;
+import com.comrepublic.shopx.dto.AddressRequest;
+import com.comrepublic.shopx.entities.Address;
+import com.comrepublic.shopx.repositories.AddressRepository;
 
 @Service
 public class AddressService {
@@ -33,4 +34,9 @@ public class AddressService {
                 .build();
         return addressRepository.save(address);
     }
+
+    public void deleteAddress(UUID id) {
+        addressRepository.deleteById(id);
+    }
+    
 }
