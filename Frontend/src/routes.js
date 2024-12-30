@@ -3,7 +3,7 @@ import Shop from "./Shop";
 import ProductListPage from "./pages/ProductListPage/ProductListPage";
 import ShopApplicationWrapper from "./pages/ShopApplicationWrapper";
 import ProductDetails from "./pages/ProductDetailPage/ProductDetails";
-import { loadProductById } from "./routes/products";
+import { loadProductBySlug } from "./routes/products";
 
 export const router = createBrowserRouter([
     {
@@ -27,8 +27,8 @@ export const router = createBrowserRouter([
           element:<ProductListPage categoryType={'Accessories'}/>,
         },
         {
-          path:"/product/:productId",
-          loader: loadProductById,
+          path:"/product/:slug",
+          loader: loadProductBySlug,
           element:<ProductDetails />,
         }
       ]
