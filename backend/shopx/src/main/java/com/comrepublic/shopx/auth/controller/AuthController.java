@@ -42,7 +42,8 @@ public class AuthController {
         try{
             Authentication authentication= UsernamePasswordAuthenticationToken.unauthenticated(
                     loginRequest.getUserName(),
-                    loginRequest.getPassword());
+                    loginRequest.getPassword()
+            );
 
             Authentication authenticationResponse = this.authenticationManager.authenticate(authentication);
 
@@ -52,7 +53,7 @@ public class AuthController {
                     return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
                 }
 
-                String token = jwtTokenHelper.generateToken(user.getEmail());
+                String token =jwtTokenHelper.generateToken(user.getEmail());
                 UserToken userToken= UserToken.builder().token(token).build();
                 return new ResponseEntity<>(userToken,HttpStatus.OK);
             }
