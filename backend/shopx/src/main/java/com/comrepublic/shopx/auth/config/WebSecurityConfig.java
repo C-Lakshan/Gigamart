@@ -12,7 +12,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -39,12 +38,11 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests((authorize)-> authorize
                 .requestMatchers("/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**").permitAll()
                 .requestMatchers(HttpMethod.GET,"/api/products","/api/category").permitAll()
-                        .requestMatchers("/oauth2/success").permitAll()
-                .anyRequest().authenticated())
-                .oauth2Login((oauth2login)-> oauth2login.defaultSuccessUrl("/oauth2/success").loginPage("/oauth2/authorization/google"))
-                .sessionManagement((session)->session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
+                .requestMatchers(HttpMethod.POST,"/api/products").permitAll()
+                .requestMatchers(HttpMethod.PUT,"/api/products").permitAll()
+                // .anyRequest().authenticated())
+                .anyRequest().permitAll())
 
-                //.exceptionHandling((exception)-> exception.authenticationEntryPoint(new RESTAuthenticationEntryPoint()))
                 .addFilterBefore(new JWTAuthenticationFilter(jwtTokenHelper,userDetailsService), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
