@@ -1,12 +1,11 @@
 package com.comrepublic.shopx.auth.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
-
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import com.comrepublic.shopx.entities.Address;
 
 import java.util.Collection;
 import java.util.Date;
