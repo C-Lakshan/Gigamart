@@ -45,6 +45,7 @@ public class WebSecurityConfig {
                 .requestMatchers(WHITE_LIST_URL).permitAll()
                 .requestMatchers(HttpMethod.GET,"/api/products","/api/category").permitAll()
                         .requestMatchers("/oauth2/success").permitAll()
+                // .anyRequest().authenticated())
                 .anyRequest().permitAll())
                 .oauth2Login((oauth2login)-> oauth2login.defaultSuccessUrl("/oauth2/success").loginPage("/oauth2/authorization/google"))
                 .sessionManagement((session)->session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
