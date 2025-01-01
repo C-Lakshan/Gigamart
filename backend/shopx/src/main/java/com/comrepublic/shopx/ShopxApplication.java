@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.cors.CorsConfiguration;
 import org.apache.catalina.filters.CorsFilter;
+import com.stripe.Stripe;
 
 import java.util.Collections;
 import java.util.Arrays;

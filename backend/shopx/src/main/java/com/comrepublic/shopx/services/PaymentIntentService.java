@@ -19,8 +19,8 @@ public class PaymentIntentService {
         Map<String, String> metaData = new HashMap<>();
         metaData.put("orderId",order.getId().toString());
         PaymentIntentCreateParams paymentIntentCreateParams= PaymentIntentCreateParams.builder()
-                .setAmount((long) (order.getTotalAmount() * 100 * 80)) // USD to INR
-                .setCurrency("inr")//INR currency
+                .setAmount((long) (order.getTotalAmount() * 100)) 
+                .setCurrency("USD")
                 .putAllMetadata(metaData)
                 .setDescription("Test Payment Project -1")
                 .setAutomaticPaymentMethods(

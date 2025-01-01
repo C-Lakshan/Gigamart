@@ -1,7 +1,7 @@
 package com.comrepublic.shopx.auth.dto;
 
-//import com.thecodereveal.shopease.entities.Address;
-import jakarta.mail.Address;
+import com.comrepublic.shopx.entities.Address;
+// import jakarta.mail.Address;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
