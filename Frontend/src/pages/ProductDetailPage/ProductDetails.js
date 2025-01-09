@@ -15,6 +15,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { addToCart } from '../../store/features/cart';
 import _ from 'lodash';
 import { getAllProducts } from '../../api/fetchProducts';
+import { addItemToCartAction } from '../../store/actions/cartAction';
 
 
   
@@ -44,7 +45,7 @@ const ProductDetails = () => {
   const cartItems = useSelector((state) => state.cartState?.cart);
   const [similarProduct,setSimilarProducts] = useState([]);
   const categories = useSelector((state)=> state?.categoryState?.categories);
-  
+  const [error,setError] = useState('');
 
   const productCategory = useMemo(() => {
     return categories?.find((category) => category?.id === product?.categoryId);
@@ -75,7 +76,20 @@ const ProductDetails = () => {
   }, [productCategory, product]);
 
   const addItemToCart = useCallback(()=>{
+    
     //dispatch(addToCart({id:product?.id,quantity:1}));
+    const selectedVariant = product?.variants?.[0];
+      
+    dispatch(addItemToCartAction({
+      productId:product?.id,
+      thumbnail:product?.thumbnail,
+      name: product?.name,
+      variant:selectedVariant,
+      quantity:1,
+      subTotal: product?.price,
+      price:product?.price,
+    }))
+
   },[dispatch, product?.id]);
     
   return (  
