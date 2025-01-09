@@ -14,6 +14,9 @@ const Checkout = () => {
   const navigate = useNavigate();
   const [paymentMethod,setPaymentMethod] = useState('');
 
+  const date = new Date();
+  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
   const subTotal = useMemo(()=>{
     let value = 0;
     cartItems?.forEach(element => {
@@ -54,10 +57,10 @@ const Checkout = () => {
             <p>Select a day</p>
             <div className='flex gap-4 mt-4'>
                   <div className='w-[80px] h-[48px] flex flex-col justify-center border text-center mb-4 rounded-lg mr-4 cursor-pointer
-                   hover:scale-110 bg-gray-200 border-gray-500 text-gray-500'><p className='text-center'>{'Oct 5'}</p></div>
+                   hover:scale-110 bg-gray-200 border-gray-500 text-gray-500'><p className='text-center'>{months[date.getMonth()]} {date.getDate()}</p></div>
 
             <div className='w-[80px] h-[48px] flex flex-col justify-center border text-center mb-4 rounded-lg mr-4 cursor-pointer
-                   hover:scale-110 bg-white border-gray-500 text-gray-500'><p className='text-center'>{'Oct 8'}</p></div>
+                   hover:scale-110 bg-white border-gray-500 text-gray-500'><p className='text-center'>{months[date.getMonth()]} {date.getDate()+3}</p></div>
                   
                   </div>
           </div>
