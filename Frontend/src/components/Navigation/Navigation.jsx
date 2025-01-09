@@ -47,7 +47,7 @@ const Navigation = ({variant="default"}) => {
           <ul className='flex items-center gap-8'>
               <li><button><Wishlist /></button></li>
               <li><Link to='/v1/register' className={({isActive})=> isActive ? 'active-link':''}><button><AccountIcon /></button></Link></li>
-              <li><Link to='/cart-irems' className='flex flex-wrap'><CartIcon />
+              <li><Link to='/cart-items' className='flex flex-wrap'><CartIcon />
               {cartLength > 0 &&<div className='absolute ml-6 inline-flex items-center justify-center h-6 w-6 bg-black text-white rounded-full border-2 text-xs border-white'>{cartLength}</div>}
               </Link></li>
           </ul>}
