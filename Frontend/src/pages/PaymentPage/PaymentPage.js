@@ -9,6 +9,7 @@ import { selectCartItems } from '../../store/features/cart';
 
 const stripePublishableKey = process.env.STRIPE_KEY || '';
 //Publishable Key
+
 const stripePromise = loadStripe(stripePublishableKey);
 
 const PaymentPage = (props) => {
