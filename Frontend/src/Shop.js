@@ -16,7 +16,7 @@
   
   
     useEffect(()=>{
-      dispatch(setLoading(true));
+      //dispatch(setLoading(true));
       fetchCategories().then(res=>{
         dispatch(loadCategories(res));
       }).catch(err=>{
