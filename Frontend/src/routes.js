@@ -1,7 +1,7 @@
 import { createBrowserRouter } from "react-router-dom";
 import Shop from "./Shop";
-import ProductListPage from "./pages/ProductListPage/ProductListPage";
 import ShopApplicationWrapper from "./pages/ShopApplicationWrapper";
+import ProductListPage from "./pages/ProductListPage/ProductListPage";
 import ProductDetails from "./pages/ProductDetailPage/ProductDetails";
 import { loadProductBySlug } from "./routes/products";
 import AuthenticationWrapper from "./pages/AuthenticationWrapper";
@@ -10,10 +10,15 @@ import Register from "./pages/Register/Register";
 import OAuth2LoginCallback from "./pages/OAuth2LoginCallback";
 import Cart from "./pages/Cart/Cart";
 import Account from "./pages/Account/Account";
-import Checkout from "./pages/Checkout/Checkout";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
-import OrderConfirmed from "./pages/OrderConfirmed/OrderConfirmed";
+import Checkout from "./pages/Checkout/Checkout";
 import ConfirmPayment from "./pages/ConfirmPayment/ConfirmPayment";
+import OrderConfirmed from "./pages/OrderConfirmed/OrderConfirmed";
+import Profile from "./pages/Account/Profile";
+import Orders from "./pages/Account/Orders";
+import Settings from "./pages/Account/Settings";
+// import { AdminPanel } from "./pages/AdminPanel/AdminPanel";
+
 
 export const router = createBrowserRouter([
     {
@@ -46,8 +51,22 @@ export const router = createBrowserRouter([
          element: <Cart />
         },
         {
-          path:'/account-details',
-          element: <ProtectedRoute><Account /></ProtectedRoute>
+          path:'/account-details/',
+          element: <ProtectedRoute><Account /></ProtectedRoute>,
+          children:[
+            {
+              path:'profile',
+              element:<ProtectedRoute><Profile/></ProtectedRoute>
+            },
+            {
+              path:'orders',
+              element:<ProtectedRoute><Orders/></ProtectedRoute>
+            },
+            {
+              path:'settings',
+              element:<ProtectedRoute><Settings /></ProtectedRoute>
+            }
+          ]
          },
          {
           path:'/checkout',
