@@ -9,7 +9,6 @@ import { selectCartItems } from '../../store/features/cart';
 
 const stripePublishableKey = process.env.STRIPE_KEY || '';
 //Publishable Key
-
 const stripePromise = loadStripe(stripePublishableKey);
 
 const PaymentPage = (props) => {
@@ -17,7 +16,7 @@ const PaymentPage = (props) => {
     const options = {
         mode: 'payment',
         amount: 100,
-        currency: 'inr',
+        currency: 'usd',
         // Fully customizable with appearance API.
         appearance: {
             theme: 'flat'
