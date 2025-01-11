@@ -18,7 +18,7 @@ const Navigation = ({variant="default"}) => {
           <a className='text-3xl text-black gap-8' href='/'>GigaMart</a>
         </div>
       
-      
+      { variant ==="default" &&
       <div className='flex flex-wrap items-center gap-10'>
           {/* Nav items */}
           <ul className='flex gap-12 text-gray-600 hover:text-black'>
@@ -28,8 +28,8 @@ const Navigation = ({variant="default"}) => {
               <li><NavLink to='/Accessories' className={({isActive})=> isActive ? 'active-link':''}>Accessories</NavLink></li>
           </ul>
       </div>
-      
-      
+      }
+      { variant ==="default" &&
       <div className='flex justify-center'>
         {/* Search bar */}
         <div className='border rounded flex overflow-hidden'>
@@ -40,14 +40,14 @@ const Navigation = ({variant="default"}) => {
 
         </div>
       </div>
-      
+      }
   
       <div className='flex flex-wrap items-center gap-4'>
           {/* Action Items - icons */}
           { variant ==="default" &&
           <ul className='flex items-center gap-8'>
               <li><button><Wishlist /></button></li>
-              <li><Link to='/v1/register' className={()=> navigate('/account-details')}><button><AccountIcon /></button></Link></li>
+              <li><button onClick={()=> navigate('/account-details/profile')}><AccountIcon/></button></li>
               <li><Link to='/cart-items' className='flex flex-wrap'><CartIcon />
               {cartLength > 0 &&<div className='absolute ml-6 inline-flex items-center justify-center h-6 w-6 bg-black text-white rounded-full border-2 text-xs border-white'>{cartLength}</div>}
               </Link></li>
@@ -60,8 +60,8 @@ const Navigation = ({variant="default"}) => {
               </ul>
           }
       </div>
-     </nav>
-    )
-  }
+    </nav>
+  )
+}
   
-  export default Navigation
+export default Navigation
