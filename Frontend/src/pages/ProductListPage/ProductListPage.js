@@ -7,6 +7,7 @@ import ProductCard from './ProductCard';
 import { getAllProducts } from '../../api/fetchProducts';
 import { useDispatch, useSelector } from 'react-redux';
 import { setLoading } from '../../store/features/common'
+import Footer from '../../components/Footer/Footer'
 
 
 const categories = content?.categories;
@@ -72,7 +73,9 @@ const ProductListPage = ({categoryType})=>{
           </div>
 
       </div>
+      <Footer content={content?.footer}/>
     </div>
+    
   )   
 }
 
