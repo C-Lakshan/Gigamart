@@ -126,13 +126,10 @@
                         "path":"/policies"
                     }
                 ]
-            },
-            {
-                "title":"Location",
-                "description":"Location Country"
             }
+            
         ],
-        "copyright":"Copyright © 2024 GigaMart"
+        "copyright":"Copyright © 2025 GigaMart"
     },
     "categories": [
         {
