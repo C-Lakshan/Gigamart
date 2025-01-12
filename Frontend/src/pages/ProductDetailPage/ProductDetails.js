@@ -16,7 +16,7 @@ import { addToCart } from '../../store/features/cart';
 import _ from 'lodash';
 import { getAllProducts } from '../../api/fetchProducts';
 import { addItemToCartAction } from '../../store/actions/cartAction';
-
+import Footer from '../../components/Footer/Footer'
 
   
 
@@ -164,8 +164,9 @@ const ProductDetails = () => {
                   <ProductCard key={index} {...item}/>
                 ))}
                 {!similarProduct?.length && <p>No Products Found!</p>}
-                </div>
+                </div>    
     </div>
+    <Footer content={content?.footer}/>  
     </>
   )
 }
