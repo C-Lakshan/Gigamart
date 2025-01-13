@@ -7,7 +7,7 @@ import { setLoading } from '../../store/features/common';
 import { fetchUserDetails } from '../../api/userInfo';
 import { selectCartItems } from '../../store/features/cart';
 
-const stripePublishableKey = process.env.STRIPE_KEY || '';
+const stripePublishableKey = process.env.STRIPE_KEY || 'pk_test_51QflfpCKd3VewsuBKs7F4T5MqQllggkGeJxG7TG2Til4TbCSlICAc8UBGih6wwFaBrMzqRJj3jt4NKNe5UIXExMD00ejfRj9jq';
 //Publishable Key
 const stripePromise = loadStripe(stripePublishableKey);
 

@@ -16,6 +16,7 @@ import java.util.UUID;
 @RequestMapping("/api/category")
 @CrossOrigin
 public class CategoryController {
+    
     @Autowired
     private CategoryService categoryService;
 
