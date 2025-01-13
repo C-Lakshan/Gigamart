@@ -97,7 +97,7 @@ public class OrderService {
                payment.setPaymentStatus(PaymentStatus.COMPLETED);
                 payment.setPaymentMethod(paymentIntent.getPaymentMethod());
                 order.setPaymentMethod(paymentIntent.getPaymentMethod());
-                order.setOrderStatus(OrderStatus.IN_PROGRESS);
+                // order.setOrderStatus(OrderStatus.IN_PROGRESS);
                 order.setPayment(payment);
                 Order savedOrder = orderRepository.save(order);
                 Map<String,String> map = new HashMap<>();
