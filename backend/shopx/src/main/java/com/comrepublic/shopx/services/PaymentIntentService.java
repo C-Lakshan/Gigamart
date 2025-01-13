@@ -20,7 +20,7 @@ public class PaymentIntentService {
         metaData.put("orderId",order.getId().toString());
         PaymentIntentCreateParams paymentIntentCreateParams= PaymentIntentCreateParams.builder()
                 .setAmount((long) (order.getTotalAmount() * 100)) 
-                .setCurrency("USD")
+                .setCurrency("usd")
                 .putAllMetadata(metaData)
                 .setDescription("Test Payment Project -1")
                 .setAutomaticPaymentMethods(
