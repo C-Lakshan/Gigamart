@@ -8,11 +8,17 @@ import com.comrepublic.shopx.dto.OrderItemDetail;
 import com.comrepublic.shopx.dto.OrderRequest;
 import com.comrepublic.shopx.entities.*;
 import com.comrepublic.shopx.repositories.OrderRepository;
+
+import jakarta.mail.internet.MimeMessage;
 import jakarta.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Value;
 import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 
 import java.security.Principal;
 import java.util.*;
@@ -32,13 +38,20 @@ public class OrderService {
     @Autowired
     PaymentIntentService paymentIntentService;
 
+    @Autowired
+    private JavaMailSender mailSender; // Inject JavaMailSender
+
+    @Value("${spring.mail.username}")
+    private String sender;
 
     @Transactional
     public OrderResponse createOrder(OrderRequest orderRequest, Principal principal) throws Exception {
         User user = (User) userDetailsService.loadUserByUsername(principal.getName());
-        Address address = user.getAddressList().stream().filter(address1 -> orderRequest.getAddressId().equals(address1.getId())).findFirst().orElseThrow(BadRequestException::new);
+        Address address = user.getAddressList().stream()
+                .filter(address1 -> orderRequest.getAddressId().equals(address1.getId())).findFirst()
+                .orElseThrow(BadRequestException::new);
 
-        Order order= Order.builder()
+        Order order = Order.builder()
                 .user(user)
                 .address(address)
                 .totalAmount(orderRequest.getTotalAmount())
@@ -50,8 +63,8 @@ public class OrderService {
                 .build();
         List<OrderItem> orderItems = orderRequest.getOrderItemRequests().stream().map(orderItemRequest -> {
             try {
-                Product product= productService.fetchProductById(orderItemRequest.getProductId());
-                OrderItem orderItem= OrderItem.builder()
+                Product product = productService.fetchProductById(orderItemRequest.getProductId());
+                OrderItem orderItem = OrderItem.builder()
                         .product(product)
                         .productVariantId(orderItemRequest.getProductVariantId())
                         .quantity(orderItemRequest.getQuantity())
@@ -64,7 +77,7 @@ public class OrderService {
         }).toList();
 
         order.setOrderItemList(orderItems);
-        Payment payment=new Payment();
+        Payment payment = new Payment();
         payment.setPaymentStatus(PaymentStatus.PENDING);
         payment.setPaymentDate(new Date());
         payment.setOrder(order);
@@ -72,13 +85,14 @@ public class OrderService {
         payment.setPaymentMethod(order.getPaymentMethod());
         order.setPayment(payment);
         Order savedOrder = orderRepository.save(order);
-
+        System.out.println("Saved order");
+        sendOrderConfirmationEmail(user, savedOrder);
 
         OrderResponse orderResponse = OrderResponse.builder()
                 .paymentMethod(orderRequest.getPaymentMethod())
                 .orderId(savedOrder.getId())
                 .build();
-        if(Objects.equals(orderRequest.getPaymentMethod(), "CARD")){
+        if (Objects.equals(orderRequest.getPaymentMethod(), "CARD")) {
             orderResponse.setCredentials(paymentIntentService.createPaymentIntent(order));
         }
 
@@ -86,29 +100,116 @@ public class OrderService {
 
     }
 
-    public Map<String,String> updateStatus(String paymentIntentId, String status) {
+    private void sendOrderConfirmationEmail(User user, Order order) {
+        String subject = "Order Confirmation - Order #" + order.getId();
+        // HTML email content
+        String message = "<!DOCTYPE html>" +
+                "<html>" +
+                "<head>" +
+                "    <style>" +
+                "        .email-container {" +
+                "            font-family: Arial, sans-serif;" +
+                "            max-width: 600px;" +
+                "            margin: 0 auto;" +
+                "            border: 1px solid #ddd;" +
+                "            border-radius: 10px;" +
+                "            padding: 20px;" +
+                "            background-color: #f9f9f9;" +
+                "        }" +
+                "        .header {" +
+                "            text-align: center;" +
+                "            color: #333;" +
+                "        }" +
+                "        .order-details {" +
+                "            margin-top: 20px;" +
+                "            padding: 10px;" +
+                "            background-color: #fff;" +
+                "            border: 1px solid #ddd;" +
+                "            border-radius: 5px;" +
+                "        }" +
+                "        .button {" +
+                "            display: inline-block;" +
+                "            margin-top: 20px;" +
+                "            padding: 10px 20px;" +
+                "            color: #fff;" +
+                "            background-color:rgb(68, 71, 68);" +
+                "            text-decoration: none;" +
+                "            border-radius: 5px;" +
+                "            text-align: center;" +
+                "        }" +
+                "        .footer {" +
+                "            margin-top: 30px;" +
+                "            text-align: center;" +
+                "            font-size: 12px;" +
+                "            color: #888;" +
+                "        }" +
+                "    </style>" +
+                "</head>" +
+                "<body>" +
+                "    <div class='email-container'>" +
+                "        <h2 class='header'>Thank you for shopping with us!</h2>" +
+                "        <p>Dear " + user.getFirstName() + ",</p>" +
+                "        <p>Thank you for your order. Here are the details:</p>" +
+                "        <div class='order-details'>" +
+                "            <p><strong>Order ID:</strong> " + order.getId() + "</p>" +
+                "            <p><strong>Total Amount:</strong> $" + order.getTotalAmount() + "</p>" +
+                "            <p><strong>Payment Method:</strong> " + order.getPaymentMethod() + "</p>" +
+                "            <p><strong>Expected Delivery Date:</strong> " + order.getExpectedDeliveryDate() + "</p>" +
+                "            <p><strong>Delivery Address:</strong><br>" +
+                "                " + order.getAddress().getName() + ",<br>" +
+                "                " + order.getAddress().getStreet() + ",<br>" +
+                "                " + order.getAddress().getCity() + ", " + order.getAddress().getState() + ",<br>" +
+                "                " + order.getAddress().getZipCode() + "<br>" +
+                "                Phone: " + order.getAddress().getPhoneNumber() +
+                "            </p>" +
+                "        </div>" +
+                "        <a class='button' href='#'>Continue Shopping</a>" +
+                "        <div class='footer'>" +
+                "            <p>Best regards,</p>" +
+                "            <p>ShopX Team</p>" +
+                "        </div>" +
+                "    </div>" +
+                "</body>" +
+                "</html>";
 
-        try{
-            PaymentIntent paymentIntent= PaymentIntent.retrieve(paymentIntentId);
+        try {
+            // Create MIME message
+            MimeMessage mimeMessage = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
+
+            helper.setFrom(sender);
+            helper.setTo(user.getEmail());
+            helper.setSubject(subject);
+            helper.setText(message, true); // Set 'true' to indicate HTML content
+
+            mailSender.send(mimeMessage);
+            System.out.println("HTML Email Sent Successfully!");
+        } catch (Exception e) {
+            System.out.println("Error while Sending HTML Email: " + e.getMessage());
+        }
+    }
+
+    public Map<String, String> updateStatus(String paymentIntentId, String status) {
+
+        try {
+            PaymentIntent paymentIntent = PaymentIntent.retrieve(paymentIntentId);
             if (paymentIntent != null && paymentIntent.getStatus().equals("succeeded")) {
-               String orderId = paymentIntent.getMetadata().get("orderId") ;
-               Order order= orderRepository.findById(UUID.fromString(orderId)).orElseThrow(BadRequestException::new);
-               Payment payment = order.getPayment();
-               payment.setPaymentStatus(PaymentStatus.COMPLETED);
+                String orderId = paymentIntent.getMetadata().get("orderId");
+                Order order = orderRepository.findById(UUID.fromString(orderId)).orElseThrow(BadRequestException::new);
+                Payment payment = order.getPayment();
+                payment.setPaymentStatus(PaymentStatus.COMPLETED);
                 payment.setPaymentMethod(paymentIntent.getPaymentMethod());
                 order.setPaymentMethod(paymentIntent.getPaymentMethod());
                 // order.setOrderStatus(OrderStatus.IN_PROGRESS);
                 order.setPayment(payment);
                 Order savedOrder = orderRepository.save(order);
-                Map<String,String> map = new HashMap<>();
+                Map<String, String> map = new HashMap<>();
                 map.put("orderId", String.valueOf(savedOrder.getId()));
                 return map;
-            }
-            else{
+            } else {
                 throw new IllegalArgumentException("PaymentIntent not found or missing metadata");
             }
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             throw new IllegalArgumentException("PaymentIntent not found or missing metadata");
         }
     }
@@ -147,12 +248,11 @@ public class OrderService {
     public void cancelOrder(UUID id, Principal principal) {
         User user = (User) userDetailsService.loadUserByUsername(principal.getName());
         Order order = orderRepository.findById(id).get();
-        if(null != order && order.getUser().getId().equals(user.getId())){
+        if (null != order && order.getUser().getId().equals(user.getId())) {
             order.setOrderStatus(OrderStatus.CANCELLED);
-            //logic to refund amount
+            // logic to refund amount
             orderRepository.save(order);
-        }
-        else{
+        } else {
             new RuntimeException("Invalid request");
         }
 
