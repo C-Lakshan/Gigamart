@@ -1,7 +1,5 @@
 package com.comrepublic.shopx.dto;
 
-
-
 import com.comrepublic.shopx.entities.Address;
 import com.comrepublic.shopx.entities.OrderStatus;
 import lombok.AllArgsConstructor;

@@ -131,8 +131,8 @@ public class OrderService {
                 "            display: inline-block;" +
                 "            margin-top: 20px;" +
                 "            padding: 10px 20px;" +
-                "            color: #fff;" +
-                "            background-color:rgb(68, 71, 68);" +
+                "            color: #000;" +  // Change color to black
+                "            background-color: rgb(192, 188, 188);" +
                 "            text-decoration: none;" +
                 "            border-radius: 5px;" +
                 "            text-align: center;" +
@@ -148,7 +148,7 @@ public class OrderService {
                 "<body>" +
                 "    <div class='email-container'>" +
                 "        <h2 class='header'>Thank you for shopping with us!</h2>" +
-                "        <p>Dear " + user.getFirstName() + ",</p>" +
+                "        <p><strong>Dear " + user.getFirstName() + ",</strong></p>" +
                 "        <p>Thank you for your order. Here are the details:</p>" +
                 "        <div class='order-details'>" +
                 "            <p><strong>Order ID:</strong> " + order.getId() + "</p>" +
