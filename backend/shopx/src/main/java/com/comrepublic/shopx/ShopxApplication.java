@@ -8,6 +8,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import com.stripe.Stripe;
+
 import org.springframework.web.cors.CorsConfiguration;
 import org.apache.catalina.filters.CorsFilter;
 
