@@ -101,7 +101,12 @@ public class OrderService {
     }
 
     private void sendOrderConfirmationEmail(User user, Order order) {
-        String subject = "Order Confirmation - Order #" + order.getId();
+        String orderId = order.getId().toString();
+    
+        String lastSixDigits = orderId.length() > 6 
+            ? orderId.substring(orderId.length() - 6) 
+            : orderId;
+        String subject = "Order Confirmation - Order #GM"+lastSixDigits;
         // HTML email content
         String message = "<!DOCTYPE html>" +
                 "<html>" +
@@ -131,7 +136,7 @@ public class OrderService {
                 "            display: inline-block;" +
                 "            margin-top: 20px;" +
                 "            padding: 10px 20px;" +
-                "            color: #000;" +  // Change color to black
+                "            color: #000;" +  
                 "            background-color: rgb(192, 188, 188);" +
                 "            text-decoration: none;" +
                 "            border-radius: 5px;" +
@@ -151,7 +156,7 @@ public class OrderService {
                 "        <p><strong>Dear " + user.getFirstName() + ",</strong></p>" +
                 "        <p>Thank you for your order. Here are the details:</p>" +
                 "        <div class='order-details'>" +
-                "            <p><strong>Order ID:</strong> " + order.getId() + "</p>" +
+                "            <p><strong>Order ID:</strong> " + "GM"+lastSixDigits + "</p>" +
                 "            <p><strong>Total Amount:</strong> $" + order.getTotalAmount() + "</p>" +
                 "            <p><strong>Payment Method:</strong> " + order.getPaymentMethod() + "</p>" +
                 "            <p><strong>Expected Delivery Date:</strong> " + order.getExpectedDeliveryDate() + "</p>" +
