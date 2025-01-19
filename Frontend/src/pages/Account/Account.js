@@ -27,7 +27,7 @@ const Account = () => {
  
   return (
     <div className="p-8">
-        {isUserAdmin && <div className="text-right"><Link to={"/admin"} className="text-lg text-blue-900 underline">Manage Admin</Link></div>}
+        {/*isUserAdmin && */<div className="text-right"><Link to={"/admin"} className="text-lg text-blue-900 underline">Manage Admin</Link></div>}
       {userInfo?.email && (
         <>
           <p className="text-xl font-bold">Hello {userInfo?.firstName}</p>

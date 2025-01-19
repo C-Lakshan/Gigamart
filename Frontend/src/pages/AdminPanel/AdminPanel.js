@@ -10,13 +10,16 @@ import CategoryEdit from './Category/CategoryEdit';
 
 // const CDN_URL = 'https://codedev.b-cdn.net';
 
-// const httpClient = (url,options={})=>{
+const httpClient = (url,options={})=>{
 
-//   const token = localStorage.getItem('authToken');
-//   if(!options.headers) options.headers = new Headers();
-//   options.headers.set('Authorization',`Bearer ${token}`);
-//   return fetchUtils.fetchJson(url,options);
-// }
+  const token = localStorage.getItem('authToken');
+  if(!options.headers) options.headers = new Headers();
+  options.headers.set('Authorization',`Bearer ${token}`);
+  return fetchUtils.fetchJson(url,options);
+}
+
+
+const dataProvider = simpleRestProvider('http://localhost:8080/api',httpClient);
 
 // const dataProvider = withLifecycleCallbacks(simpleRestProvider('http://localhost:8080/api',httpClient),[
 //   {
@@ -60,9 +63,11 @@ import CategoryEdit from './Category/CategoryEdit';
 
 export const AdminPanel = () => {
   return (
-    <Admin /*dataProvider={dataProvider}*/ basename='/admin'>
-      <Resource name='products' list={ProductList} edit={EditProduct} create={CreateProduct}/>
-      <Resource name='category' list={CategoryList} edit={CategoryEdit}/>
+    <Admin dataProvider={dataProvider}> 
     </Admin>
+    // <Admin /*dataProvider={dataProvider}*/ basename='/admin'>
+    //   <Resource name='products' list={ProductList} edit={EditProduct} create={CreateProduct}/>
+    //   <Resource name='category' list={CategoryList} edit={CategoryEdit}/>
+    // </Admin>
   )
 }
