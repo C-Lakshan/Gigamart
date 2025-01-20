@@ -8,6 +8,7 @@ const Settings = () => {
     const onLogOut = useCallback(() => {
         logOut();
         navigate("/");
+        window.location.reload();
       }, [navigate]);
   return (
     <div>
