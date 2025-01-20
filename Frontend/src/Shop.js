@@ -8,6 +8,7 @@
   import { useDispatch } from 'react-redux';
   import { loadCategories } from './store/features/category';
   import { setLoading } from './store/features/common';
+  import DriftWidget from './components/DriftWidget';
 
   const Shop = () => {
 
@@ -28,6 +29,7 @@
   
     return (
       <>
+        <DriftWidget />
         <HeroSection />
         <NewArrivals />
         {content?.pages?.shop?.sections && content?.pages?.shop?.sections?.map((item, index) => <Category key={item?.title+index} {...item} />)}
