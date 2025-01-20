@@ -121,6 +121,14 @@ public class OrderService {
                 "            padding: 20px;" +
                 "            background-color: #f9f9f9;" +
                 "        }" +
+                "        .logo {" +
+                "            text-align: left;" +
+                "            margin-bottom: 20px;" +
+                "        }" +
+                "        .logo img {" +
+                "            max-width: 100px;" +  // Adjust size as needed
+                "            height: auto;" +
+                "        }" +
                 "        .header {" +
                 "            text-align: center;" +
                 "            color: #333;" +
@@ -153,6 +161,9 @@ public class OrderService {
                 "</head>" +
                 "<body>" +
                 "    <div class='email-container'>" +
+                "       <div class='logo'>" +
+                "            <img src='https://i.ibb.co/5LYCT1j/Screenshot-2025-01-18-181720.png' alt='ShopX Logo'>" +
+                "        </div>" +
                 "        <h2 class='header'>Thank you for shopping with us!</h2>" +
                 "        <p><strong>Dear " + user.getFirstName() + ",</strong></p>" +
                 "        <p>Thank you for your order. Here are the details:</p>" +
