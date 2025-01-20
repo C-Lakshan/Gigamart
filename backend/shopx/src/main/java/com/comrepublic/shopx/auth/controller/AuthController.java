@@ -59,6 +59,7 @@ public class AuthController {
 
                 String token = jwtTokenHelper.generateToken(user.getEmail());
                 UserToken userToken= UserToken.builder().token(token).build();
+                System.out.println("JWT Token has been created successfully: " + token);
                 return new ResponseEntity<>(userToken,HttpStatus.OK);
             }
 
