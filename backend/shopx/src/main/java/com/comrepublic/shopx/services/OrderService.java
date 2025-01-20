@@ -132,13 +132,14 @@ public class OrderService {
                 "            border: 1px solid #ddd;" +
                 "            border-radius: 5px;" +
                 "        }" +
-                "        .button {" +
+                "        .btn {" +
                 "            display: inline-block;" +
                 "            margin-top: 20px;" +
                 "            padding: 10px 20px;" +
-                "            color: #000;" +  
-                "            background-color: rgb(192, 188, 188);" +
+                "            color: #000 !important;" +  /* Black text */
+                "            background-color: #fff;" +  /* White background */
                 "            text-decoration: none;" +
+                "            border: 2px solid #000;" +  /* Black border */
                 "            border-radius: 5px;" +
                 "            text-align: center;" +
                 "        }" +
@@ -168,10 +169,10 @@ public class OrderService {
                 "                Phone: " + order.getAddress().getPhoneNumber() +
                 "            </p>" +
                 "        </div>" +
-                "        <a class='button' href='#'>Continue Shopping</a>" +
+                "        <a class='btn' href='http://localhost:3000/'>Continue Shopping</a>" +
                 "        <div class='footer'>" +
                 "            <p>Best regards,</p>" +
-                "            <p>ShopX Team</p>" +
+                "            <p>GigaMart Team</p>" +
                 "        </div>" +
                 "    </div>" +
                 "</body>" +
