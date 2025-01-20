@@ -39,7 +39,7 @@ public class OrderService {
     PaymentIntentService paymentIntentService;
 
     @Autowired
-    private JavaMailSender mailSender; // Inject JavaMailSender
+    private JavaMailSender mailSender; // JavaMailSender
 
     @Value("${spring.mail.username}")
     private String sender;
@@ -107,6 +107,7 @@ public class OrderService {
             ? orderId.substring(orderId.length() - 6) 
             : orderId;
         String subject = "Order Confirmation - Order #GM"+lastSixDigits;
+        
         // HTML email content
         String message = "<!DOCTYPE html>" +
                 "<html>" +
@@ -120,6 +121,14 @@ public class OrderService {
                 "            border-radius: 10px;" +
                 "            padding: 20px;" +
                 "            background-color: #f9f9f9;" +
+                "        }" +
+                "        .logo {" +
+                "            text-align: left;" +
+                "            margin-bottom: 20px;" +
+                "        }" +
+                "        .logo img {" +
+                "            max-width: 100px;" + 
+                "            height: auto;" +
                 "        }" +
                 "        .header {" +
                 "            text-align: center;" +
@@ -136,10 +145,10 @@ public class OrderService {
                 "            display: inline-block;" +
                 "            margin-top: 20px;" +
                 "            padding: 10px 20px;" +
-                "            color: #000 !important;" +  /* Black text */
-                "            background-color: #fff;" +  /* White background */
+                "            color: #000 !important;" + 
+                "            background-color: #fff;" +  
                 "            text-decoration: none;" +
-                "            border: 2px solid #000;" +  /* Black border */
+                "            border: 2px solid #000;" +  
                 "            border-radius: 5px;" +
                 "            text-align: center;" +
                 "        }" +
@@ -153,6 +162,9 @@ public class OrderService {
                 "</head>" +
                 "<body>" +
                 "    <div class='email-container'>" +
+                "       <div class='logo'>" +
+                "            <img src='https://i.ibb.co/5LYCT1j/Screenshot-2025-01-18-181720.png' alt='ShopX Logo'>" +
+                "        </div>" +
                 "        <h2 class='header'>Thank you for shopping with us!</h2>" +
                 "        <p><strong>Dear " + user.getFirstName() + ",</strong></p>" +
                 "        <p>Thank you for your order. Here are the details:</p>" +
@@ -179,14 +191,14 @@ public class OrderService {
                 "</html>";
 
         try {
-            // Create MIME message
+            // MIME message
             MimeMessage mimeMessage = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
 
             helper.setFrom(sender);
             helper.setTo(user.getEmail());
             helper.setSubject(subject);
-            helper.setText(message, true); // Set 'true' to indicate HTML content
+            helper.setText(message, true); // 'true' to indicate HTML content
 
             mailSender.send(mimeMessage);
             System.out.println("HTML Email Sent Successfully!");
