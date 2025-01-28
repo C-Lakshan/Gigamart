@@ -9,6 +9,8 @@
   import { loadCategories } from './store/features/category';
   import { setLoading } from './store/features/common';
   import DriftWidget from './components/DriftWidget';
+  import VedioSection from './components/VedioSection/VideoSection'; // Import the VideoSection
+
 
   const Shop = () => {
 
@@ -31,6 +33,7 @@
       <>
         <DriftWidget />
         <HeroSection />
+        <VedioSection /> {/* Add VideoSection here */}
         <NewArrivals />
         {content?.pages?.shop?.sections && content?.pages?.shop?.sections?.map((item, index) => <Category key={item?.title+index} {...item} />)}
         <Footer content={content?.footer}/>
