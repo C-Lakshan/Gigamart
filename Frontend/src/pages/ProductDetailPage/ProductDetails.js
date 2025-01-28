@@ -153,7 +153,12 @@ const ProductDetails = () => {
     <SectionHeading title={'Product Description'} />
     <div className='md:w-[50%] w-full p-2'>
   
-    <p className='p-8'>{product?.description}</p>
+    {product?.description
+    ?.replace(/\\n/g, '\n') // Replace literal "\n" with actual newline
+    .split('\n') // Split into lines
+    .map((line, index) => (
+      <p className='p-2 px-10' key={index}>{line}</p>
+    ))}
     </div>
 
     <SectionHeading title={'Similar Products'} />
