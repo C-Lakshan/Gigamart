@@ -16,6 +16,7 @@ const AdminPanel = () => {
   });
   const [reportsData, setReportsData] = useState({ salesReport: "Q1 Report" });
   const [showModal, setShowModal] = useState(false);
+  const [searchSlug, setSearchSlug] = useState("");
 
   // State for handling product form and edit mode
   const [newProduct, setNewProduct] = useState({
@@ -66,6 +67,31 @@ const AdminPanel = () => {
       console.error("Error fetching products:", error);
     }
   };
+
+  const handleSearch = async () => {
+    try {
+      const response = await fetch(`http://localhost:8080/api/products?slug=${searchSlug}`);
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const data = await response.json();
+      
+      const filteredData = data.map((product) => ({
+        id: product.id,
+        slug: product.slug,
+        brand: product.brand,
+        price: product.price,
+        rating: product.rating,
+        description: product.description,
+      }));
+      
+      setProducts(filteredData);
+    } catch (error) {
+      console.error("Error searching products:", error);
+      alert("Error searching products");
+    }
+  };
+
 
   const fetchCategories = async () => {
     const data = [
@@ -877,7 +903,27 @@ const AdminPanel = () => {
       <div className="flex-1 p-6 ml-6 bg-gray-900 text-white rounded-lg ">
         {/* Only show "Add Product" button if the "products" tab is active */}
         {activeTab === "products" && (
-          <div className="flex items-center mb-6 w-full">
+          <div className="flex items-center mb-6 w-full gap-4">
+            <div className="flex-1 flex items-center gap-2">
+              <input
+                type="text"
+                placeholder="Search by slug..."
+                value={searchSlug}
+                onChange={(e) => setSearchSlug(e.target.value)}
+                className="px-4 py-2 bg-gray-800 text-white rounded border border-gray-700 focus:outline-none focus:border-gray-500 flex-1"
+                onKeyPress={(e) => {
+                  if (e.key === 'Enter') {
+                    handleSearch();
+                  }
+                }}
+              />
+              <button
+                onClick={handleSearch}
+                className="px-4 py-2 text-white bg-gray-600 rounded hover:bg-gray-500"
+              >
+                Search
+              </button>
+            </div>
             <button
               onClick={() => setShowModal(true)}
               className="px-4 py-2 text-white bg-gray-600 rounded hover:bg-gray-400 ml-auto"
