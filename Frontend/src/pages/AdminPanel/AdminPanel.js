@@ -126,6 +126,81 @@ const AdminPanel = () => {
 
   const handleAddProduct = (e) => {
     e.preventDefault();
+  
+    const product = {
+      name: newProduct.name,
+      description: newProduct.description,
+      price: newProduct.price,
+      brand: newProduct.brand,
+      newArrival: true,
+      rating: newProduct.rating,
+      categoryId: "edb0c4b4-6e85-404e-a8d0-72857b1c4395",
+      thumbnail: "https://example.com/images/mac_pro_8core.jpg",
+      slug: newProduct.slug,
+      categoryName: "Desktop",
+      categoryTypeId: "49cc3d90-606d-4851-8cd7-934a1434f756",
+      categoryTypeName: "Apple",
+      variants: [
+        {
+          "color": "Silver",
+          "size": "Standard",
+          "stockQuantity": 25
+        }
+      ],
+      "productResources": [
+        {
+          "name": "User Manual",
+          "url": "https://www.dpsb.co.uk/app/uploads/2022/01/Apple_Mac_Pro_2019_1000_0001.jpeg",
+          "type": "PDF",
+          "isPrimary": true
+        }
+      ]
+    };
+  
+    // Retrieve the JWT token from localStorage
+    const authToken = localStorage.getItem("authToken");
+    console.log(authToken);
+    // POST request to the API
+    fetch("http://localhost:8080/api/products", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        // Include the Authorization header with the Bearer token
+        "Authorization": `Bearer ${authToken}`,
+      },
+      body: JSON.stringify(product), // Send the product object as a JSON string
+    })
+      .then((response) => {
+        if (response.ok) {
+          return response.json(); // Parse the response as JSON
+        }
+        throw new Error("Failed to add product");
+      })
+      .then((data) => {
+        console.log("Product added:", data); // Handle successful response
+        // Optionally, update the local state if you want to add it to the UI immediately
+        setProducts([...products, data]); // Assuming the response includes the added product
+        setNewProduct({
+          name: "",
+          description: "",
+          price: "",
+          brand: "",
+          newArrival: false,
+          rating: "",
+          categoryId: "",
+          thumbnail: "",
+          slug: "",
+          categoryName: "",
+          categoryTypeId: "",
+          categoryTypeName: ""
+          
+        });
+        alert("Product added successfully");
+      })
+      .catch((error) => {
+        console.error("Error adding product:", error);
+        alert("Error adding product");
+      });
   };
   
 
