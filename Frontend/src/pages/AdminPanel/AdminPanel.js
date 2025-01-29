@@ -68,31 +68,6 @@ const AdminPanel = () => {
     }
   };
 
-  const handleSearch = async () => {
-    try {
-      const response = await fetch(`http://localhost:8080/api/products?slug=${searchSlug}`);
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-      const data = await response.json();
-      
-      const filteredData = data.map((product) => ({
-        id: product.id,
-        slug: product.slug,
-        brand: product.brand,
-        price: product.price,
-        rating: product.rating,
-        description: product.description,
-      }));
-      
-      setProducts(filteredData);
-    } catch (error) {
-      console.error("Error searching products:", error);
-      alert("Error searching products");
-    }
-  };
-
-
   const fetchCategories = async () => {
     const data = [
       { id: 1, name: "Electronics", description: "Electronic goods" },
@@ -149,19 +124,70 @@ const AdminPanel = () => {
     if (activeTab === "transactions") fetchTransactions();
   }, [activeTab]);
 
-  const handleDelete = (id, type) => {
-    if (type === "products")
-      setProducts(products.filter((product) => product.id !== id));
-    if (type === "categories")
-      setCategories(categories.filter((category) => category.id !== id));
-    if (type === "orders") setOrders(orders.filter((order) => order.id !== id));
-    if (type === "transactions")
-      setTransactions(
-        transactions.filter((transaction) => transaction.id !== id)
-      );
-    alert(`Item with ID ${id} deleted from ${type}`);
+
+  const handleSearch = async () => {
+    try {
+      const response = await fetch(`http://localhost:8080/api/products?slug=${searchSlug}`);
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const data = await response.json();
+      
+      const filteredData = data.map((product) => ({
+        id: product.id,
+        slug: product.slug,
+        brand: product.brand,
+        price: product.price,
+        rating: product.rating,
+        description: product.description,
+      }));
+      
+      setProducts(filteredData);
+    } catch (error) {
+      console.error("Error searching products:", error);
+      alert("Error searching products");
+    }
   };
 
+  const handleDelete = async (id, type) => {
+    try {
+      let url = "";
+      if (type === "products") {
+        url = `http://localhost:8080/api/products/${id}`;
+      } else if (type === "categories") {
+        url = `http://localhost:8080/api/categories/${id}`;  // Adjust if needed for categories
+      } else if (type === "orders") {
+        url = `http://localhost:8080/api/orders/${id}`;  // Adjust if needed for orders
+      } else if (type === "transactions") {
+        url = `http://localhost:8080/api/orders/${id}`;  // Adjust if needed for transactions
+      }
+  
+      // Make the DELETE request
+      const response = await fetch(url, {
+        method: "DELETE",
+      });
+  
+      if (response.ok) {
+        // If the response is successful, filter out the item from the state
+        if (type === "products") {
+          setProducts(products.filter((product) => product.id !== id));
+        } else if (type === "categories") {
+          setCategories(categories.filter((category) => category.id !== id));
+        } else if (type === "orders") {
+          setOrders(orders.filter((order) => order.id !== id));
+        } else if (type === "transactions") {
+          setTransactions(transactions.filter((transaction) => transaction.id !== id));
+        }
+        alert(`Item with ID ${id} deleted from ${type}`);
+      } else {
+        alert("Error deleting the item. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("An error occurred while deleting the item.");
+    }
+  };
+  
   // const handleUpdate = (id, type) => {
   //   alert(`Update clicked for ID ${id} in ${type}`);
   // };
