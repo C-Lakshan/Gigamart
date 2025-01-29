@@ -11,7 +11,12 @@ import com.comrepublic.shopx.specification.ProductSpecification;
 
 import com.comrepublic.shopx.dto.ProductDto;
 import com.comrepublic.shopx.entities.Product;
+import com.comrepublic.shopx.entities.ProductVariant;
+import com.comrepublic.shopx.entities.Resources;
 import com.comrepublic.shopx.repositories.ProductRepository;
+
+import com.comrepublic.shopx.repositories.ProductVariantRepository;
+import com.comrepublic.shopx.repositories.ResourcesRepository;
 
 import java.util.UUID;
 import java.util.List;
@@ -26,6 +31,12 @@ public class ProductServiceImpl implements ProductService{
 
     @Autowired
     private ProductMapper productMapper;
+
+    @Autowired
+    private ProductVariantRepository productVariantRepository;
+
+    @Autowired
+    private ResourcesRepository resourcesRepository;
 
     @Override
     public Product addProduct(ProductDto productDto) {
@@ -85,4 +96,32 @@ public class ProductServiceImpl implements ProductService{
     public Product fetchProductById(UUID id) throws Exception {
         return productRepository.findById(id).orElseThrow(BadRequestException::new);
     }
+
+    @Override
+    public boolean deleteProductById(UUID id) {
+        // Find the product by ID
+        Product product = productRepository.findById(id).orElse(null);
+
+        if (product != null) {
+            // Delete associated ProductVariants
+            List<ProductVariant> productVariants = product.getProductVariants();
+            if (productVariants != null) {
+                productVariantRepository.deleteAll(productVariants);  // Delete all related product variants
+            }
+
+            // Delete associated Resources
+            List<Resources> resources = product.getResources();
+            if (resources != null) {
+                resourcesRepository.deleteAll(resources);  // Delete all related resources
+            }
+
+            // Now, delete the product itself
+            productRepository.delete(product);
+
+            return true;  // Return true if the product was successfully deleted
+        }
+
+        return false;  // Return false if the product was not found
+    }
+    
 }
