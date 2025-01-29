@@ -25,6 +25,7 @@ const AdminPanel = () => {
     // category: "",
     // stock: "",
   });
+
   const [showEditModal, setShowEditModal] = useState(false);
   const [editProduct, setEditProduct] = useState(null);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
@@ -97,6 +98,57 @@ const AdminPanel = () => {
     variants: [{ color: "", size: "", stockQuantity: 0 }],
     productResources: [{ name: "", url: "", type: "" }],
     newArrival: false,
+  };
+
+  const [sortConfig, setSortConfig] = useState({
+    key: null,
+    direction: 'asc'
+  });
+
+  const handleSort = (key) => {
+    let direction = 'asc';
+    if (sortConfig.key === key && sortConfig.direction === 'asc') {
+      direction = 'desc';
+    }
+    setSortConfig({ key, direction });
+  };
+
+  const getSortedData = (data, type) => {
+    if (!sortConfig.key) return data;
+
+    return [...data].sort((a, b) => {
+      let aValue = a[sortConfig.key];
+      let bValue = b[sortConfig.key];
+
+      // Handle numeric values
+      if (!isNaN(aValue) && !isNaN(bValue)) {
+        aValue = Number(aValue);
+        bValue = Number(bValue);
+      } else {
+        // Convert to strings for alphabetical sorting
+        aValue = String(aValue).toLowerCase();
+        bValue = String(bValue).toLowerCase();
+      }
+
+      if (aValue < bValue) {
+        return sortConfig.direction === 'asc' ? -1 : 1;
+      }
+      if (aValue > bValue) {
+        return sortConfig.direction === 'asc' ? 1 : -1;
+      }
+      return 0;
+    });
+  };
+
+  const SortIndicator = ({ column }) => {
+    if (sortConfig.key !== column) {
+      return <span className="ml-1 text-gray-400">↕</span>;
+    }
+    return (
+      <span className="ml-1">
+        {sortConfig.direction === 'asc' ? '↑' : '↓'}
+      </span>
+    );
   };
 
   // Simulated API calls
@@ -879,119 +931,134 @@ const columns = {
 
 // Update the renderTable function to use the new column structure
 const renderTable = (data, type) => {
-  const getDisplayValue = (item, column) => {
-    if (column.key === "actions") return null;
-    
-    const value = item[column.key];
-    if (typeof value === "object" && value !== null) {
-      if (Array.isArray(value)) {
-        return value.map((obj) => obj.name || obj.value || "").join(", ");
+    const getDisplayValue = (item, column) => {
+      if (column.key === "actions") return null;
+      
+      const value = item[column.key];
+      if (typeof value === "object" && value !== null) {
+        if (Array.isArray(value)) {
+          return value.map((obj) => obj.name || obj.value || "").join(", ");
+        }
+        return value.name || value.value || JSON.stringify(value);
       }
-      return value.name || value.value || JSON.stringify(value);
-    }
-    return value;
-  };
+      return value;
+    };
 
-  const tableColumns = columns[type];
-  const isNewFormat = tableColumns[0]?.hasOwnProperty('header'); // Check if using new column format
+    const tableColumns = columns[type];
+    const isNewFormat = tableColumns[0]?.hasOwnProperty('header');
+    const sortedData = getSortedData(data, type);
 
-  return (
-    <>
-      <table className="w-full table-auto border-separate border-spacing-0">
-        <thead>
-          <tr className="bg-gray-800 text-white">
-            {isNewFormat 
-              ? tableColumns.map((col) => (
-                  <th key={col.header} className="px-6 py-3 text-left font-semibold">
-                    {col.header}
-                  </th>
-                ))
-              : tableColumns.map((col) => (
-                  <th key={col} className="px-6 py-3 text-left font-semibold">
-                    {col}
-                  </th>
-                ))
-            }
-          </tr>
-        </thead>
-        <tbody>
-          {data.map((item) => (
-            <tr key={item.id} className="bg-gray-700 hover:bg-gray-600">
-              {isNewFormat
-                ? tableColumns.map((col) => {
-                    if (col.key === "actions") {
-                      return (
-                        <td key={col.header} className="px-6 py-4 text-white text-sm">
-                          <div className="flex gap-2">
-                            <button
-                              className="flex-1 px-4 py-2 text-white bg-gray-600 rounded hover:bg-gray-500"
-                              onClick={() => {
-                                setEditProduct(item);
-                                setShowEditModal(true);
-                              }}
-                            >
-                              Edit
-                            </button>
-                            <button
-                              className="flex-1 px-4 py-2 text-white bg-red-600 rounded hover:bg-red-500"
-                              onClick={() => handleDelete(item.id, type)}
-                            >
-                              Delete
-                            </button>
-                          </div>
-                        </td>
-                      );
-                    }
-                    return (
-                      <td key={col.header} className="px-6 py-4 text-white text-sm">
-                        {getDisplayValue(item, col)}
-                      </td>
-                    );
-                  })
-                : tableColumns.map((col) => {
-                    if (col === "Actions") {
-                      return (
-                        <td key={col} className="px-6 py-4 text-white text-sm">
-                          <div className="flex gap-2">
-                            <button
-                              className="flex-1 px-4 py-2 text-white bg-gray-600 rounded hover:bg-gray-500"
-                              onClick={() => {
-                                setEditProduct(item);
-                                setShowEditModal(true);
-                              }}
-                            >
-                              Edit
-                            </button>
-                            <button
-                              className="flex-1 px-4 py-2 text-white bg-red-600 rounded hover:bg-red-500"
-                              onClick={() => handleDelete(item.id, type)}
-                            >
-                              Delete
-                            </button>
-                          </div>
-                        </td>
-                      );
-                    }
-                    const key = col.toLowerCase();
-                    return (
-                      <td key={col} className="px-6 py-4 text-white text-sm">
-                        {getDisplayValue(item, { key })}
-                      </td>
-                    );
-                  })
+    return (
+      <>
+        <table className="w-full table-auto border-separate border-spacing-0">
+          <thead>
+            <tr className="bg-gray-800 text-white">
+              {isNewFormat 
+                ? tableColumns.map((col) => (
+                    <th 
+                      key={col.header} 
+                      className="px-6 py-3 text-left font-semibold cursor-pointer hover:bg-gray-700"
+                      onClick={() => col.key !== 'actions' && handleSort(col.key)}
+                    >
+                      <div className="flex items-center">
+                        {col.header}
+                        {col.key !== 'actions' && <SortIndicator column={col.key} />}
+                      </div>
+                    </th>
+                  ))
+                : tableColumns.map((col) => (
+                    <th 
+                      key={col} 
+                      className="px-6 py-3 text-left font-semibold cursor-pointer hover:bg-gray-700"
+                      onClick={() => col !== 'Actions' && handleSort(col.toLowerCase())}
+                    >
+                      <div className="flex items-center">
+                        {col}
+                        {col !== 'Actions' && <SortIndicator column={col.toLowerCase()} />}
+                      </div>
+                    </th>
+                  ))
               }
             </tr>
-          ))}
-        </tbody>
-      </table>
-      <ConfirmationModal
-        isOpen={showConfirmModal}
-        onClose={() => setShowConfirmModal(false)}
-        onConfirm={handleDeleteConfirmed}
-      />
-    </>
-  );
-};
+          </thead>
+          <tbody>
+            {sortedData.map((item) => (
+              <tr key={item.id} className="bg-gray-700 hover:bg-gray-600">
+                {isNewFormat
+                  ? tableColumns.map((col) => {
+                      if (col.key === "actions") {
+                        return (
+                          <td key={col.header} className="px-6 py-4 text-white text-sm">
+                            <div className="flex gap-2">
+                              <button
+                                className="flex-1 px-4 py-2 text-white bg-gray-600 rounded hover:bg-gray-500"
+                                onClick={() => {
+                                  setEditProduct(item);
+                                  setShowEditModal(true);
+                                }}
+                              >
+                                Edit
+                              </button>
+                              <button
+                                className="flex-1 px-4 py-2 text-white bg-red-600 rounded hover:bg-red-500"
+                                onClick={() => handleDelete(item.id, type)}
+                              >
+                                Delete
+                              </button>
+                            </div>
+                          </td>
+                        );
+                      }
+                      return (
+                        <td key={col.header} className="px-6 py-4 text-white text-sm">
+                          {getDisplayValue(item, col)}
+                        </td>
+                      );
+                    })
+                  : tableColumns.map((col) => {
+                      if (col === "Actions") {
+                        return (
+                          <td key={col} className="px-6 py-4 text-white text-sm">
+                            <div className="flex gap-2">
+                              <button
+                                className="flex-1 px-4 py-2 text-white bg-gray-600 rounded hover:bg-gray-500"
+                                onClick={() => {
+                                  setEditProduct(item);
+                                  setShowEditModal(true);
+                                }}
+                              >
+                                Edit
+                              </button>
+                              <button
+                                className="flex-1 px-4 py-2 text-white bg-red-600 rounded hover:bg-red-500"
+                                onClick={() => handleDelete(item.id, type)}
+                              >
+                                Delete
+                              </button>
+                            </div>
+                          </td>
+                        );
+                      }
+                      const key = col.toLowerCase();
+                      return (
+                        <td key={col} className="px-6 py-4 text-white text-sm">
+                          {getDisplayValue(item, { key })}
+                        </td>
+                      );
+                    })
+                }
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <ConfirmationModal
+          isOpen={showConfirmModal}
+          onClose={() => setShowConfirmModal(false)}
+          onConfirm={handleDeleteConfirmed}
+        />
+      </>
+    );
+  };
 
   const renderCard = (title, value) => {
     return (
