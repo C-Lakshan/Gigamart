@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from "react";
+import { Line } from "react-chartjs-2";
+import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from "chart.js";
+
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
 const AdminPanel = () => {
-  const [activeTab, setActiveTab] = useState("products");
+  const [activeTab, setActiveTab] = useState("dashboard");
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [orders, setOrders] = useState([]);
@@ -9,7 +13,12 @@ const AdminPanel = () => {
   const [dashboardData, setDashboardData] = useState({
     users: 100,
     sales: 5000,
+    totalCustomers: 50, // Add total customers count
+    totalOrders: 120, // Add total orders count
+    totalTransactions: 200, // Add total transactions count
+    transactionsPerMonth: [30, 50, 80, 60, 100, 120, 140, 160, 180, 200, 220, 250], // Sample transaction data for the graph
   });
+  
   const [marketingData, setMarketingData] = useState({
     campaigns: 3,
     leads: 250,
@@ -200,8 +209,8 @@ const AdminPanel = () => {
         // createdDate: order.createdAt,
         totalAmount: order.totalAmount,
         orderStatus: order.orderStatus,
-        userId: order.userId,
-        addressId: order.addressId,
+        userId: order.user?.id,
+        addressId: order.address?.id,
       }));
   
       // console.log('Fetched orders:', filteredData);
@@ -908,7 +917,7 @@ const AdminPanel = () => {
 
   // Replace the columns object in the code with this updated version
 const columns = {
-  products: ["Id", "Slug", "Brand", "Price", "Rating", "Description", "Actions"],
+  products: ["ID", "Slug", "Brand", "Price", "Rating", "Description", "Actions"],
   categories: ["ID", "Name", "Description", "Actions"],
   orders: [
     { header: "ID", key: "id" },
@@ -1070,13 +1079,40 @@ const renderTable = (data, type) => {
   };
 
   const renderDashboard = () => {
+    // Define the data for the transactions graph
+    const chartData = {
+      labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+      datasets: [
+        {
+          label: "Transactions",
+          data: dashboardData.transactionsPerMonth || [30, 50, 80, 60, 100, 120, 140, 160, 180, 200, 220, 250],
+          borderColor: "#4CAF50",
+          backgroundColor: "rgba(76, 175, 80, 0.2)",
+          tension: 0.4,
+        },
+      ],
+    };
+  
     return (
-      <div className="flex space-x-6 mb-6">
-        {renderCard("Users", dashboardData.users)}
-        {renderCard("Sales", `$${dashboardData.sales}`)}
+      <div>
+        {/* Cards Section */}
+        <div className="flex space-x-6 mb-6">
+          {renderCard("Total Users", dashboardData.users)}
+          {renderCard("Total Sales", `$${dashboardData.sales}`)}
+          {renderCard("Total Customers", dashboardData.totalCustomers)}
+          {renderCard("Total Orders", dashboardData.totalOrders)}
+          {renderCard("Total Transactions", dashboardData.totalTransactions)}
+        </div>
+  
+        {/* Chart Section */}
+        <div className="p-6 bg-gray-800 rounded shadow-lg">
+          <h3 className="text-lg font-semibold mb-4">Monthly Transactions</h3>
+          <Line data={chartData} />
+        </div>
       </div>
     );
   };
+  
 
   const renderMarketing = () => {
     return (
@@ -1104,11 +1140,11 @@ const renderTable = (data, type) => {
         <h2 className="mb-6 text-xl font-bold">Admin Panel</h2>
         <ul className="space-y-4">
           {[
+            "dashboard",
             "products",
-            "categories",
+            // "categories",
             "orders",
             "transactions",
-            "dashboard",
             "marketing",
             "reports",
           ].map((tab) => (
