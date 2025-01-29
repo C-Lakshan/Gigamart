@@ -17,6 +17,7 @@ const AdminPanel = () => {
   const [reportsData, setReportsData] = useState({ salesReport: "Q1 Report" });
   const [showModal, setShowModal] = useState(false);
 
+  // State for handling product form and edit mode
   const [newProduct, setNewProduct] = useState({
     name: "",
     price: "",
@@ -27,6 +28,7 @@ const AdminPanel = () => {
   const [editProduct, setEditProduct] = useState(null);
 
 
+  // Simulated API calls
   const fetchProducts = async () => {
     try {
       const response = await fetch("http://localhost:8080/api/products"); 
@@ -46,6 +48,7 @@ const AdminPanel = () => {
         description: product.description,
       }));
       // console.log('Fetched products:', filteredData);
+      // Update the state with the fetched products
       setProducts(filteredData); 
     } catch (error) {
       console.error("Error fetching products:", error);
@@ -100,6 +103,7 @@ const AdminPanel = () => {
     setTransactions(data);
   };
 
+  // Fetch data when tab changes
   useEffect(() => {
     if (activeTab === "products") fetchProducts();
     if (activeTab === "categories") fetchCategories();
@@ -120,9 +124,9 @@ const AdminPanel = () => {
     alert(`Item with ID ${id} deleted from ${type}`);
   };
 
-  const handleUpdate = (id, type) => {
-    alert(`Update clicked for ID ${id} in ${type}`);
-  };
+  // const handleUpdate = (id, type) => {
+  //   alert(`Update clicked for ID ${id} in ${type}`);
+  // };
 
   const handleAddProduct = (e) => {
     e.preventDefault();
@@ -150,7 +154,7 @@ const AdminPanel = () => {
       "productResources": [
         {
           "name": "User Manual",
-          "url": "https://www.dpsb.co.uk/app/uploads/2022/01/Apple_Mac_Pro_2019_1000_0001.jpeg",
+          "url": "https://example.com/images/mac_pro_8core.jpg",
           "type": "PDF",
           "isPrimary": true
         }
@@ -168,18 +172,18 @@ const AdminPanel = () => {
         // Include the Authorization header with the Bearer token
         "Authorization": `Bearer ${authToken}`,
       },
-      body: JSON.stringify(product), // Send the product object as a JSON string
+      body: JSON.stringify(product), 
     })
       .then((response) => {
         if (response.ok) {
-          return response.json(); // Parse the response as JSON
+          // Parse the response as JSON
+          return response.json(); 
         }
         throw new Error("Failed to add product");
       })
       .then((data) => {
-        console.log("Product added:", data); // Handle successful response
-        // Optionally, update the local state if you want to add it to the UI immediately
-        setProducts([...products, data]); // Assuming the response includes the added product
+        console.log("Product added:", data); 
+        setProducts([...products, data]); 
         setNewProduct({
           name: "",
           description: "",
@@ -206,6 +210,7 @@ const AdminPanel = () => {
 
   const handleUpdateProduct = (e) => {
     e.preventDefault();
+    // Update the products state with the edited product
     setProducts(products.map((product) =>
       product.id === editProduct.id ? { ...editProduct } : product
     ));
@@ -213,10 +218,13 @@ const AdminPanel = () => {
     alert('Product updated successfully');
   };
 
-  const handleEdit = (product) => {
-    setEditProduct(product); 
-    setNewProduct({ ...product }); 
-  };
+  // // Set the product being edited
+  // const handleEdit = (product) => {
+  //   // Set the product being edited
+  //   setEditProduct(product); 
+  //   // Populate the form with the product details
+  //   setNewProduct({ ...product }); 
+  // };
 
   const renderModal = () => {
     return (
@@ -291,8 +299,6 @@ const AdminPanel = () => {
                 }
                 className="w-full p-3 mb-4 border border-gray-700 rounded bg-gray-900 text-white"
               />
-            
-
 
 
 
@@ -387,7 +393,7 @@ const AdminPanel = () => {
         className={`fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75 ${
           !showEditModal && "hidden"
         }`}
-        onClick={() => setShowEditModal(false)} 
+        onClick={() => setShowEditModal(false)}
       >
         <div
           className="bg-gray-900 text-white p-6 rounded-lg w-1/2"
@@ -459,12 +465,16 @@ const AdminPanel = () => {
 
   const renderTable = (data, type) => {
     const getDisplayValue = (item, key) => {
+      // If the value is an object, handle it appropriately
       if (typeof item[key] === 'object' && item[key] !== null) {
+        // If it's an array, join the values
         if (Array.isArray(item[key])) {
           return item[key].map(obj => obj.name || obj.value || '').join(', ');
         }
+        // For other objects, return a placeholder or relevant property
         return item[key].name || item[key].value || JSON.stringify(item[key]);
       }
+      // For non-object values, return as is
       return item[key];
     };
   
@@ -490,13 +500,15 @@ const AdminPanel = () => {
           {data.map((item) => (
             <tr key={item.id} className="bg-gray-700 hover:bg-gray-600">
               {columns[type].map((col) => {
+                // Skip rendering for "Actions" column
                 if (col === "Actions") {
                   return (
                     <td key={col} className="px-6 py-4 text-white text-sm">
                       <button
                         className="px-4 py-2 mr-2 text-white bg-gray-600 rounded hover:bg-gray-500"
                         onClick={() => {
-                          
+                          setEditProduct(item);
+                          setShowEditModal(true);
                         }}
                       >
                         Edit
@@ -511,6 +523,7 @@ const AdminPanel = () => {
                   );
                 }
                 
+                // For other columns, render the value
                 const key = col.toLowerCase();
                 return (
                   <td key={col} className="px-6 py-4 text-white text-sm">
@@ -612,6 +625,11 @@ const AdminPanel = () => {
         {activeTab === "marketing" && renderMarketing()}
         {activeTab === "reports" && renderReports()}
 
+        {/* Render the modal */}
+        {renderModal()}
+        {/* Render the edit modal */}
+        {renderEditModal()}
+        
       </div>
     </div>
   );
