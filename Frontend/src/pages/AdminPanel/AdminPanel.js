@@ -27,15 +27,14 @@ const AdminPanel = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [editProduct, setEditProduct] = useState(null);
 
-
   // Simulated API calls
   const fetchProducts = async () => {
     try {
-      const response = await fetch("http://localhost:8080/api/products"); 
+      const response = await fetch("http://localhost:8080/api/products");
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
-      const data = await response.json(); 
+      const data = await response.json();
       console.log("Fetched products:", data);
 
       const filteredData = data.map((product) => ({
@@ -49,7 +48,7 @@ const AdminPanel = () => {
       }));
       // console.log('Fetched products:', filteredData);
       // Update the state with the fetched products
-      setProducts(filteredData); 
+      setProducts(filteredData);
     } catch (error) {
       console.error("Error fetching products:", error);
     }
@@ -130,7 +129,7 @@ const AdminPanel = () => {
 
   const handleAddProduct = (e) => {
     e.preventDefault();
-  
+
     const product = {
       name: newProduct.name,
       description: newProduct.description,
@@ -146,21 +145,21 @@ const AdminPanel = () => {
       categoryTypeName: "Apple",
       variants: [
         {
-          "color": "Silver",
-          "size": "Standard",
-          "stockQuantity": 25
-        }
+          color: "Silver",
+          size: "Standard",
+          stockQuantity: 25,
+        },
       ],
-      "productResources": [
+      productResources: [
         {
-          "name": "User Manual",
-          "url": newProduct.thumbnail,
-          "type": "PDF",
-          "isPrimary": true
-        }
-      ]
+          name: "User Manual",
+          url: newProduct.thumbnail,
+          type: "PDF",
+          isPrimary: true,
+        },
+      ],
     };
-  
+
     // Retrieve the JWT token from localStorage
     const authToken = localStorage.getItem("authToken");
     console.log(authToken);
@@ -170,20 +169,20 @@ const AdminPanel = () => {
       headers: {
         "Content-Type": "application/json",
         // Include the Authorization header with the Bearer token
-        "Authorization": `Bearer ${authToken}`,
+        Authorization: `Bearer ${authToken}`,
       },
-      body: JSON.stringify(product), 
+      body: JSON.stringify(product),
     })
       .then((response) => {
         if (response.ok) {
           // Parse the response as JSON
-          return response.json(); 
+          return response.json();
         }
         throw new Error("Failed to add product");
       })
       .then((data) => {
-        console.log("Product added:", data); 
-        setProducts([...products, data]); 
+        console.log("Product added:", data);
+        setProducts([...products, data]);
         setNewProduct({
           name: "",
           description: "",
@@ -196,8 +195,7 @@ const AdminPanel = () => {
           slug: "",
           categoryName: "",
           categoryTypeId: "",
-          categoryTypeName: ""
-          
+          categoryTypeName: "",
         });
         alert("Product added successfully");
       })
@@ -206,24 +204,24 @@ const AdminPanel = () => {
         alert("Error adding product");
       });
   };
-  
 
   const handleUpdateProduct = (e) => {
     e.preventDefault();
     // Update the products state with the edited product
     setProducts(products.map((product) =>
-      product.id === editProduct.id ? { ...editProduct } : product
-    ));
-    setShowEditModal(false); 
-    alert('Product updated successfully');
+        product.id === editProduct.id ? { ...editProduct } : product
+      )
+    );
+    setShowEditModal(false);
+    alert("Product updated successfully");
   };
 
   // // Set the product being edited
   // const handleEdit = (product) => {
   //   // Set the product being edited
-  //   setEditProduct(product); 
+  //   setEditProduct(product);
   //   // Populate the form with the product details
-  //   setNewProduct({ ...product }); 
+  //   setNewProduct({ ...product });
   // };
 
   const renderModal = () => {
@@ -234,13 +232,12 @@ const AdminPanel = () => {
       >
         <div
           className="bg-gray-900 text-white p-6 rounded-lg w-2/3 md:w-1/2"
-          onClick={(e) => e.stopPropagation()} 
+          onClick={(e) => e.stopPropagation()}
         >
           <h2 className="text-xl font-semibold mb-4">
             {editProduct ? "Edit Product" : "Add Product"}
           </h2>
           <form onSubmit={editProduct ? handleUpdateProduct : handleAddProduct} className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            
             {/* Left Column */}
             <div>
               <input
@@ -257,7 +254,7 @@ const AdminPanel = () => {
                 className="w-full p-3 mb-4 border border-gray-700 rounded bg-gray-900 text-white"
                 required
               />
-              
+
               <input
                 type="number"
                 name="price"
@@ -300,8 +297,6 @@ const AdminPanel = () => {
                 className="w-full p-3 mb-4 border border-gray-700 rounded bg-gray-900 text-white"
               />
 
-
-
               <input
                 type="text"
                 name="slug"
@@ -329,7 +324,7 @@ const AdminPanel = () => {
                 required
               />
               <label className="block text-white mb-2">Category</label>
-              
+
               <input
                 type="number"
                 name="rating"
@@ -344,11 +339,10 @@ const AdminPanel = () => {
                 className="w-full p-3 mb-4 border border-gray-700 rounded bg-gray-900 text-white"
                 required
               />
+            </div>
 
-              </div>
-              
-              {/* Right Column */}
-              <div>
+            {/* Right Column */}
+            <div>
               <label className="text-white">
                 <input
                   type="checkbox"
@@ -364,11 +358,8 @@ const AdminPanel = () => {
                 />
                 New Arrival
               </label>
-
-              
-              
             </div>
-  
+
             <button
               type="submit"
               className="w-full py-3 text-white bg-gray-800 rounded hover:bg-gray-700 mt-4"
@@ -378,7 +369,7 @@ const AdminPanel = () => {
           </form>
           <button
             className="absolute top-2 right-2 text-white"
-            onClick={() => setShowModal(false)} 
+            onClick={() => setShowModal(false)}
           >
             &times;
           </button>
@@ -397,7 +388,7 @@ const AdminPanel = () => {
       >
         <div
           className="bg-gray-900 text-white p-6 rounded-lg w-1/2"
-          onClick={(e) => e.stopPropagation()} 
+          onClick={(e) => e.stopPropagation()}
         >
           <h2 className="text-xl font-semibold mb-4">Edit Product</h2>
           <form onSubmit={handleUpdateProduct}>
@@ -454,7 +445,7 @@ const AdminPanel = () => {
           </form>
           <button
             className="absolute top-2 right-2 text-white"
-            onClick={() => setShowEditModal(false)} 
+            onClick={() => setShowEditModal(false)}
           >
             &times;
           </button>
@@ -466,10 +457,10 @@ const AdminPanel = () => {
   const renderTable = (data, type) => {
     const getDisplayValue = (item, key) => {
       // If the value is an object, handle it appropriately
-      if (typeof item[key] === 'object' && item[key] !== null) {
+      if (typeof item[key] === "object" && item[key] !== null) {
         // If it's an array, join the values
         if (Array.isArray(item[key])) {
-          return item[key].map(obj => obj.name || obj.value || '').join(', ');
+          return item[key].map((obj) => obj.name || obj.value || "").join(", ");
         }
         // For other objects, return a placeholder or relevant property
         return item[key].name || item[key].value || JSON.stringify(item[key]);
@@ -477,14 +468,14 @@ const AdminPanel = () => {
       // For non-object values, return as is
       return item[key];
     };
-  
+
     const columns = {
       products: ["id", "slug", "brand", "price", "rating", "description", "Actions"],
       categories: ["ID", "Name", "Description", "Actions"],
       orders: ["ID", "Customer", "Status", "Total", "Date", "Actions"],
       transactions: ["ID", "Order ID", "Amount", "Status", "Date", "Actions"],
     };
-  
+
     return (
       <table className="w-full table-auto border-separate border-spacing-0">
         <thead>
@@ -522,7 +513,7 @@ const AdminPanel = () => {
                     </td>
                   );
                 }
-                
+
                 // For other columns, render the value
                 const key = col.toLowerCase();
                 return (
@@ -576,7 +567,7 @@ const AdminPanel = () => {
   };
 
   return (
-    <div className="flex p-8 bg-gray-900">
+    <div className="flex p-8 bg-gray-900 min-h-screen w-full">
       {/* Sidebar */}
       <div className="w-1/4 p-4 bg-gray-800 text-white rounded-lg">
         <h2 className="mb-6 text-xl font-bold">Admin Panel</h2>
@@ -605,18 +596,20 @@ const AdminPanel = () => {
       </div>
 
       {/* Content */}
-      <div className="flex-1 p-6 ml-6 bg-gray-900 text-white rounded-lg justify-end">
-        <button
-          onClick={() => setShowModal(true)}
-          className="mb-6 px-4 py-2 text-white bg-blue-600 rounded hover:bg-blue-500"
-          >
-            Add Product
-          </button>
+      <div className="flex-1 p-6 ml-6 bg-gray-900 text-white rounded-lg ">
+        {/* Only show "Add Product" button if the "products" tab is active */}
         {activeTab === "products" && (
-          <>
-            {renderTable(products, "products")}
-          </>
+          <div className="flex items-center mb-6 w-full">
+            <button
+              onClick={() => setShowModal(true)}
+              className="px-4 py-2 text-white bg-gray-600 rounded hover:bg-gray-400 ml-auto"
+            >
+              Add Product
+            </button>
+          </div>
         )}
+
+        {activeTab === "products" && renderTable(products, "products")}
         {activeTab === "categories" && renderTable(categories, "categories")}
         {activeTab === "orders" && renderTable(orders, "orders")}
         {activeTab === "transactions" &&
@@ -629,7 +622,6 @@ const AdminPanel = () => {
         {renderModal()}
         {/* Render the edit modal */}
         {renderEditModal()}
-        
       </div>
     </div>
   );
