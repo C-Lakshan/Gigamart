@@ -381,6 +381,82 @@ const AdminPanel = () => {
     );
   };
 
+  const renderEditModal = () => {
+    return (
+      <div
+        className={`fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75 ${
+          !showEditModal && "hidden"
+        }`}
+        onClick={() => setShowEditModal(false)} 
+      >
+        <div
+          className="bg-gray-900 text-white p-6 rounded-lg w-1/2"
+          onClick={(e) => e.stopPropagation()} 
+        >
+          <h2 className="text-xl font-semibold mb-4">Edit Product</h2>
+          <form onSubmit={handleUpdateProduct}>
+            <input
+              type="text"
+              name="name"
+              placeholder="Product Name"
+              value={editProduct ? editProduct.name : ""}
+              onChange={(e) =>
+                setEditProduct({ ...editProduct, name: e.target.value })
+              }
+              className="w-full p-3 mb-4 border border-gray-700 rounded bg-gray-900 text-white"
+              required
+            />
+            <input
+              type="number"
+              name="price"
+              placeholder="Price"
+              value={editProduct ? editProduct.price : ""}
+              onChange={(e) =>
+                setEditProduct({ ...editProduct, price: e.target.value })
+              }
+              className="w-full p-3 mb-4 border border-gray-700 rounded bg-gray-900 text-white"
+              required
+            />
+            <input
+              type="text"
+              name="category"
+              placeholder="Category"
+              value={editProduct ? editProduct.category : ""}
+              onChange={(e) =>
+                setEditProduct({ ...editProduct, category: e.target.value })
+              }
+              className="w-full p-3 mb-4 border border-gray-700 rounded bg-gray-900 text-white"
+              required
+            />
+            <input
+              type="number"
+              name="stock"
+              placeholder="Stock"
+              value={editProduct ? editProduct.stock : ""}
+              onChange={(e) =>
+                setEditProduct({ ...editProduct, stock: e.target.value })
+              }
+              className="w-full p-3 mb-4 border border-gray-700 rounded bg-gray-900 text-white"
+              required
+            />
+            <button
+              type="submit"
+              className="w-full py-3 text-white bg-gray-800 rounded hover:bg-gray-700"
+            >
+              Update Product
+            </button>
+          </form>
+          <button
+            className="absolute top-2 right-2 text-white"
+            onClick={() => setShowEditModal(false)} 
+          >
+            &times;
+          </button>
+        </div>
+      </div>
+    );
+  };
+
   const renderTable = (data, type) => {
     const getDisplayValue = (item, key) => {
       if (typeof item[key] === 'object' && item[key] !== null) {
