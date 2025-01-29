@@ -154,7 +154,7 @@ const AdminPanel = () => {
       "productResources": [
         {
           "name": "User Manual",
-          "url": "https://example.com/images/mac_pro_8core.jpg",
+          "url": newProduct.thumbnail,
           "type": "PDF",
           "isPrimary": true
         }
