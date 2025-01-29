@@ -5,3 +5,35 @@
     }
 }
 
+.scroll-container {
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+    white-space: nowrap;
+  }
+  
+  .scroll-content {
+    display: flex;
+    flex-wrap: nowrap; /* Ensure items stay in a single row */
+    gap: 20px;
+    animation: scrollAnimation 20s linear infinite;
+  }
+  
+  .scroll-content .card {
+    min-width: 200px; /* Set a fixed width for cards */
+    flex: 0 0 auto; /* Prevent shrinking */
+  }
+  
+  @keyframes scrollAnimation {
+    from {
+      transform: translateX(0%);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
+  
+  .scroll-content:hover {
+    animation-play-state: paused;
+  }
+  
