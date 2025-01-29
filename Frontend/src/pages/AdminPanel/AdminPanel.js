@@ -124,6 +124,187 @@ const AdminPanel = () => {
     alert(`Update clicked for ID ${id} in ${type}`);
   };
 
+  const handleAddProduct = (e) => {
+    e.preventDefault();
+  };
+  
+
+  const handleUpdateProduct = (e) => {
+    e.preventDefault();
+    setProducts(products.map((product) =>
+      product.id === editProduct.id ? { ...editProduct } : product
+    ));
+    setShowEditModal(false); 
+    alert('Product updated successfully');
+  };
+
+  const handleEdit = (product) => {
+    setEditProduct(product); 
+    setNewProduct({ ...product }); 
+  };
+
+  const renderModal = () => {
+    return (
+      <div
+        className={`fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75 ${!showModal && "hidden"}`}
+        onClick={() => setShowModal(false)}
+      >
+        <div
+          className="bg-gray-900 text-white p-6 rounded-lg w-2/3 md:w-1/2"
+          onClick={(e) => e.stopPropagation()} 
+        >
+          <h2 className="text-xl font-semibold mb-4">
+            {editProduct ? "Edit Product" : "Add Product"}
+          </h2>
+          <form onSubmit={editProduct ? handleUpdateProduct : handleAddProduct} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            
+            {/* Left Column */}
+            <div>
+              <input
+                type="text"
+                name="name"
+                placeholder="Product Name"
+                value={editProduct ? editProduct.name : newProduct.name}
+                onChange={(e) =>
+                  setNewProduct({
+                    ...newProduct,
+                    name: e.target.value,
+                  })
+                }
+                className="w-full p-3 mb-4 border border-gray-700 rounded bg-gray-900 text-white"
+                required
+              />
+              
+              <input
+                type="number"
+                name="price"
+                placeholder="Price"
+                value={editProduct ? editProduct.price : newProduct.price}
+                onChange={(e) =>
+                  setNewProduct({
+                    ...newProduct,
+                    price: e.target.value,
+                  })
+                }
+                className="w-full p-3 mb-4 border border-gray-700 rounded bg-gray-900 text-white"
+                required
+              />
+              <input
+                type="text"
+                name="brand"
+                placeholder="Brand"
+                value={editProduct ? editProduct.brand : newProduct.brand}
+                onChange={(e) =>
+                  setNewProduct({
+                    ...newProduct,
+                    brand: e.target.value,
+                  })
+                }
+                className="w-full p-3 mb-4 border border-gray-700 rounded bg-gray-900 text-white"
+                required
+              />
+              <input
+                type="url"
+                name="thumbnail"
+                placeholder="Thumbnail URL"
+                value={editProduct ? editProduct.thumbnail : newProduct.thumbnail}
+                onChange={(e) =>
+                  setNewProduct({
+                    ...newProduct,
+                    thumbnail: e.target.value,
+                  })
+                }
+                className="w-full p-3 mb-4 border border-gray-700 rounded bg-gray-900 text-white"
+              />
+            
+
+
+
+
+              <input
+                type="text"
+                name="slug"
+                placeholder="Slug"
+                value={editProduct ? editProduct.slug : newProduct.slug}
+                onChange={(e) =>
+                  setNewProduct({
+                    ...newProduct,
+                    slug: e.target.value,
+                  })
+                }
+                className="w-full p-3 mb-4 border border-gray-700 rounded bg-gray-900 text-white"
+              />
+              <textarea
+                name="description"
+                placeholder="Description"
+                value={editProduct ? editProduct.description : newProduct.description}
+                onChange={(e) =>
+                  setNewProduct({
+                    ...newProduct,
+                    description: e.target.value,
+                  })
+                }
+                className="w-full p-3 mb-4 border border-gray-700 rounded bg-gray-900 text-white"
+                required
+              />
+              <label className="block text-white mb-2">Category</label>
+              
+              <input
+                type="number"
+                name="rating"
+                placeholder="Rating"
+                value={editProduct ? editProduct.rating : newProduct.rating}
+                onChange={(e) =>
+                  setNewProduct({
+                    ...newProduct,
+                    rating: e.target.value,
+                  })
+                }
+                className="w-full p-3 mb-4 border border-gray-700 rounded bg-gray-900 text-white"
+                required
+              />
+
+              </div>
+              
+              {/* Right Column */}
+              <div>
+              <label className="text-white">
+                <input
+                  type="checkbox"
+                  name="newArrival"
+                  checked={editProduct ? editProduct.newArrival : newProduct.newArrival}
+                  onChange={(e) =>
+                    setNewProduct({
+                      ...newProduct,
+                      newArrival: e.target.checked,
+                    })
+                  }
+                  className="mr-2"
+                />
+                New Arrival
+              </label>
+
+              
+              
+            </div>
+  
+            <button
+              type="submit"
+              className="w-full py-3 text-white bg-gray-800 rounded hover:bg-gray-700 mt-4"
+            >
+              {editProduct ? "Update Product" : "Add Product"}
+            </button>
+          </form>
+          <button
+            className="absolute top-2 right-2 text-white"
+            onClick={() => setShowModal(false)} 
+          >
+            &times;
+          </button>
+        </div>
+      </div>
+    );
+  };
 
   const renderTable = (data, type) => {
     const getDisplayValue = (item, key) => {
