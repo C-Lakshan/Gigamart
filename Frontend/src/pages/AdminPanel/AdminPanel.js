@@ -27,6 +27,19 @@ const AdminPanel = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [editProduct, setEditProduct] = useState(null);
 
+  const initialProductState = {
+    name: "",
+    brand: "",
+    deviceType: "",
+    price: "",
+    thumbnail: "",
+    slug: "",
+    description: "",
+    variants: [{ color: "", size: "", stockQuantity: 0 }],
+    productResources: [{ name: "", url: "", type: "" }],
+    newArrival: false,
+  };
+  
   // Simulated API calls
   const fetchProducts = async () => {
     try {
@@ -136,25 +149,25 @@ const AdminPanel = () => {
       price: newProduct.price,
       brand: newProduct.brand,
       newArrival: true,
-      rating: newProduct.rating,
+      rating: 4,
       categoryId: "edb0c4b4-6e85-404e-a8d0-72857b1c4395",
       thumbnail: "https://example.com/images/mac_pro_8core.jpg",
       slug: newProduct.slug,
-      categoryName: "Desktop",
+      categoryName: newProduct.deviceType,
       categoryTypeId: "49cc3d90-606d-4851-8cd7-934a1434f756",
-      categoryTypeName: "Apple",
+      categoryTypeName: newProduct.brand,
       variants: [
         {
-          color: "Silver",
-          size: "Standard",
-          stockQuantity: 25,
+          color: newProduct.variantsColor,
+          size: newProduct.variantsSize,
+          stockQuantity: newProduct.variantsStockQuantity,
         },
       ],
       productResources: [
         {
-          name: "User Manual",
-          url: newProduct.thumbnail,
-          type: "PDF",
+          name: newProduct.productResourceName,
+          url: newProduct.productResourceUrl,
+          type: newProduct.productResourceType,
           isPrimary: true,
         },
       ],
@@ -196,8 +209,25 @@ const AdminPanel = () => {
           categoryName: "",
           categoryTypeId: "",
           categoryTypeName: "",
+          variants: [
+            {
+              color: "",
+              size: "",
+              stockQuantity: "",
+            },
+          ],
+          productResources: [
+            {
+              name: "",
+              url: "",
+              type: "",
+              isPrimary: "",
+            },
+          ],
         });
         alert("Product added successfully");
+        setNewProduct(initialProductState);
+        // setShowModal(false); // Close the modal after submission
       })
       .catch((error) => {
         console.error("Error adding product:", error);
@@ -208,12 +238,15 @@ const AdminPanel = () => {
   const handleUpdateProduct = (e) => {
     e.preventDefault();
     // Update the products state with the edited product
-    setProducts(products.map((product) =>
+    setProducts(
+      products.map((product) =>
         product.id === editProduct.id ? { ...editProduct } : product
       )
     );
     setShowEditModal(false);
     alert("Product updated successfully");
+    setNewProduct(initialProductState);
+    setShowModal(false);
   };
 
   // // Set the product being edited
@@ -227,7 +260,9 @@ const AdminPanel = () => {
   const renderModal = () => {
     return (
       <div
-        className={`fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75 ${!showModal && "hidden"}`}
+        className={`fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75 ${
+          !showModal && "hidden"
+        }`}
         onClick={() => setShowModal(false)}
       >
         <div
@@ -237,7 +272,10 @@ const AdminPanel = () => {
           <h2 className="text-xl font-semibold mb-4">
             {editProduct ? "Edit Product" : "Add Product"}
           </h2>
-          <form onSubmit={editProduct ? handleUpdateProduct : handleAddProduct} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <form
+            onSubmit={editProduct ? handleUpdateProduct : handleAddProduct}
+            className="grid grid-cols-1 md:grid-cols-2 gap-4"
+          >
             {/* Left Column */}
             <div>
               <input
@@ -251,9 +289,62 @@ const AdminPanel = () => {
                     name: e.target.value,
                   })
                 }
-                className="w-full p-3 mb-4 border border-gray-700 rounded bg-gray-900 text-white"
+                className="w-full p-2 mb-4 border border-gray-700 rounded bg-gray-900 text-white text-sm"
                 required
               />
+
+              {/* Brand Dropdown */}
+              {/* <label className="block text-white text-sm mb-2">Brand</label> */}
+              <select
+                name="brand"
+                value={editProduct ? editProduct.brand : newProduct.brand}
+                onChange={(e) =>
+                  setNewProduct({
+                    ...newProduct,
+                    brand: e.target.value,
+                  })
+                }
+                className="w-full p-2 mb-4 border border-gray-700 rounded bg-gray-900 text-white text-sm"
+                required
+              >
+                <option value="" disabled selected>
+                  Select a Brand
+                </option>
+                <option value="Apple">Apple</option>
+                <option value="Asus">Asus</option>
+                <option value="Acer">Acer</option>
+                <option value="Dell">Dell</option>
+                <option value="HP">HP</option>
+                <option value="Lenovo">Lenovo</option>
+                <option value="Microsoft">Microsoft</option>
+                <option value="MSI">MSI</option>
+                <option value="Samsung">Samsung</option>
+              </select>
+
+              {/* Device Type Dropdown */}
+              {/* <label className="block text-white text-sm mb-2">
+                Device Type
+              </label> */}
+              <select
+                name="deviceType"
+                value={
+                  editProduct ? editProduct.deviceType : newProduct.deviceType
+                }
+                onChange={(e) =>
+                  setNewProduct({
+                    ...newProduct,
+                    deviceType: e.target.value,
+                  })
+                }
+                className="w-full p-2 mb-4 border border-gray-700 rounded bg-gray-900 text-white text-sm"
+                required
+              >
+                <option value="" disabled selected>
+                  Select a Device Type
+                </option>
+                <option value="Desktop">Desktop</option>
+                <option value="Laptop">Laptop</option>
+              </select>
 
               <input
                 type="number"
@@ -266,10 +357,10 @@ const AdminPanel = () => {
                     price: e.target.value,
                   })
                 }
-                className="w-full p-3 mb-4 border border-gray-700 rounded bg-gray-900 text-white"
+                className="w-full p-2 mb-2 border border-gray-700 rounded bg-gray-900 text-white text-sm"
                 required
               />
-              <input
+              {/* <input
                 type="text"
                 name="brand"
                 placeholder="Brand"
@@ -280,21 +371,23 @@ const AdminPanel = () => {
                     brand: e.target.value,
                   })
                 }
-                className="w-full p-3 mb-4 border border-gray-700 rounded bg-gray-900 text-white"
+                className="w-full p-2 mb-2 border border-gray-700 rounded bg-gray-900 text-white text-sm"
                 required
-              />
+              /> */}
               <input
                 type="url"
                 name="thumbnail"
                 placeholder="Thumbnail URL"
-                value={editProduct ? editProduct.thumbnail : newProduct.thumbnail}
+                value={
+                  editProduct ? editProduct.thumbnail : newProduct.thumbnail
+                }
                 onChange={(e) =>
                   setNewProduct({
                     ...newProduct,
                     thumbnail: e.target.value,
                   })
                 }
-                className="w-full p-3 mb-4 border border-gray-700 rounded bg-gray-900 text-white"
+                className="w-full p-2 mb-2 border border-gray-700 rounded bg-gray-900 text-white text-sm"
               />
 
               <input
@@ -308,24 +401,25 @@ const AdminPanel = () => {
                     slug: e.target.value,
                   })
                 }
-                className="w-full p-3 mb-4 border border-gray-700 rounded bg-gray-900 text-white"
+                className="w-full p-2 mb-2 border border-gray-700 rounded bg-gray-900 text-white text-sm"
               />
               <textarea
                 name="description"
                 placeholder="Description"
-                value={editProduct ? editProduct.description : newProduct.description}
+                value={
+                  editProduct ? editProduct.description : newProduct.description
+                }
                 onChange={(e) =>
                   setNewProduct({
                     ...newProduct,
                     description: e.target.value,
                   })
                 }
-                className="w-full p-3 mb-4 border border-gray-700 rounded bg-gray-900 text-white"
+                className="w-full p-2 mb-2 border border-gray-700 rounded bg-gray-900 text-white text-sm"
                 required
               />
-              <label className="block text-white mb-2">Category</label>
 
-              <input
+              {/* <input
                 type="number"
                 name="rating"
                 placeholder="Rating"
@@ -336,18 +430,192 @@ const AdminPanel = () => {
                     rating: e.target.value,
                   })
                 }
-                className="w-full p-3 mb-4 border border-gray-700 rounded bg-gray-900 text-white"
+                className="w-full p-2 mb-2 border border-gray-700 rounded bg-gray-900 text-white text-sm"
                 required
-              />
+              /> */}
             </div>
 
             {/* Right Column */}
             <div>
+              {/* New Fields */}
+
+              {/* Variants */}
+              <div className="mb-6">
+                <label className="block text-white text-sm mb-2">
+                  Product Variants
+                </label>
+                <input
+                  type="text"
+                  name="variantsColor"
+                  placeholder="Variant Color"
+                  value={
+                    editProduct
+                      ? editProduct.variants?.[0]?.color
+                      : newProduct.variants?.[0]?.color
+                  }
+                  onChange={(e) =>
+                    setNewProduct({
+                      ...newProduct,
+                      variants: (newProduct.variants || []).map(
+                        (variant, index) =>
+                          index === 0
+                            ? { ...variant, color: e.target.value } // Update only the color field
+                            : variant // Keep the other variants unchanged
+                      ),
+                    })
+                  }
+                  className="w-full p-2 mb-2 border border-gray-700 rounded bg-gray-900 text-white text-sm"
+                />
+
+                <input
+                  type="text"
+                  name="variantsSize"
+                  placeholder="Variant Size"
+                  value={
+                    editProduct
+                      ? editProduct.variants?.[0]?.size
+                      : newProduct.variants?.[0]?.size
+                  }
+                  onChange={(e) =>
+                    setNewProduct({
+                      ...newProduct,
+                      variants: (newProduct.variants || []).map(
+                        (variant, index) =>
+                          index === 0
+                            ? { ...variant, size: e.target.value } // Update only the size field
+                            : variant // Keep the other variants unchanged
+                      ),
+                    })
+                  }
+                  className="w-full p-2 mb-2 border border-gray-700 rounded bg-gray-900 text-white text-sm"
+                />
+
+                <input
+                  type="number"
+                  name="variantsStockQuantity"
+                  placeholder="Variant Stock Quantity"
+                  value={
+                    editProduct
+                      ? editProduct.variants?.[0]?.stockQuantity
+                      : newProduct.variants?.[0]?.stockQuantity
+                  }
+                  onChange={(e) =>
+                    setNewProduct({
+                      ...newProduct,
+                      variants: (newProduct.variants || []).map(
+                        (variant, index) =>
+                          index === 0
+                            ? { ...variant, stockQuantity: e.target.value } // Update only the stockQuantity field
+                            : variant // Keep the other variants unchanged
+                      ),
+                    })
+                  }
+                  className="w-full p-2 mb-2 border border-gray-700 rounded bg-gray-900 text-white text-sm"
+                />
+              </div>
+              {/* Product Resources */}
+              <div className="mb-4">
+                <label className="block text-white text-sm mb-2">
+                  Product Resources
+                </label>
+                <input
+                  type="text"
+                  name="productResourceName"
+                  placeholder="Resource Name"
+                  value={
+                    editProduct
+                      ? editProduct.productResources?.[0]?.name
+                      : newProduct.productResources?.[0]?.name
+                  }
+                  onChange={(e) =>
+                    setNewProduct({
+                      ...newProduct,
+                      productResources: [
+                        {
+                          ...newProduct.productResources?.[0],
+                          name: e.target.value,
+                        },
+                      ],
+                    })
+                  }
+                  className="w-full p-2 mb-2 border border-gray-700 rounded bg-gray-900 text-white text-sm"
+                />
+                <input
+                  type="url"
+                  name="productResourceUrl"
+                  placeholder="Product Resource URL"
+                  value={
+                    editProduct
+                      ? editProduct.productResources?.[0]?.url
+                      : newProduct.productResources?.[0]?.url
+                  }
+                  onChange={(e) =>
+                    setNewProduct({
+                      ...newProduct,
+                      productResources: [
+                        {
+                          ...newProduct.productResources?.[0],
+                          url: e.target.value,
+                        },
+                      ],
+                    })
+                  }
+                  className="w-full p-2 mb-2 border border-gray-700 rounded bg-gray-900 text-white text-sm"
+                />
+                <input
+                  type="text"
+                  name="productResourceType"
+                  placeholder="Resource Type (PDF, Image, etc.)"
+                  value={
+                    editProduct
+                      ? editProduct.productResources?.[0]?.type
+                      : newProduct.productResources?.[0]?.type
+                  }
+                  onChange={(e) =>
+                    setNewProduct({
+                      ...newProduct,
+                      productResources: [
+                        {
+                          ...newProduct.productResources?.[0],
+                          type: e.target.value,
+                        },
+                      ],
+                    })
+                  }
+                  className="w-full p-2 mb-2 border border-gray-700 rounded bg-gray-900 text-white text-sm"
+                />
+                {/* <label className="block text-white mb-2">
+                  <input
+                    type="checkbox"
+                    name="productResourceIsPrimary"
+                    checked={
+                      editProduct
+                        ? editProduct.productResources?.[0]?.isPrimary
+                        : newProduct.productResources?.[0]?.isPrimary
+                    }
+                    onChange={(e) =>
+                      setNewProduct({
+                        ...newProduct,
+                        productResources: [
+                          {
+                            ...newProduct.productResources?.[0],
+                            isPrimary: e.target.checked,
+                          },
+                        ],
+                      })
+                    }
+                    className="mr-2"
+                  />
+                  Primary Resource
+                </label> */}
+              </div>
               <label className="text-white">
                 <input
                   type="checkbox"
                   name="newArrival"
-                  checked={editProduct ? editProduct.newArrival : newProduct.newArrival}
+                  checked={
+                    editProduct ? editProduct.newArrival : newProduct.newArrival
+                  }
                   onChange={(e) =>
                     setNewProduct({
                       ...newProduct,
@@ -400,7 +668,7 @@ const AdminPanel = () => {
               onChange={(e) =>
                 setEditProduct({ ...editProduct, name: e.target.value })
               }
-              className="w-full p-3 mb-4 border border-gray-700 rounded bg-gray-900 text-white"
+              className="w-full p-2 mb-2 border border-gray-700 rounded bg-gray-900 text-white text-sm"
               required
             />
             <input
@@ -411,7 +679,7 @@ const AdminPanel = () => {
               onChange={(e) =>
                 setEditProduct({ ...editProduct, price: e.target.value })
               }
-              className="w-full p-3 mb-4 border border-gray-700 rounded bg-gray-900 text-white"
+              className="w-full p-2 mb-2 border border-gray-700 rounded bg-gray-900 text-white text-sm"
               required
             />
             <input
@@ -422,7 +690,7 @@ const AdminPanel = () => {
               onChange={(e) =>
                 setEditProduct({ ...editProduct, category: e.target.value })
               }
-              className="w-full p-3 mb-4 border border-gray-700 rounded bg-gray-900 text-white"
+              className="w-full p-2 mb-2 border border-gray-700 rounded bg-gray-900 text-white text-sm"
               required
             />
             <input
@@ -433,7 +701,7 @@ const AdminPanel = () => {
               onChange={(e) =>
                 setEditProduct({ ...editProduct, stock: e.target.value })
               }
-              className="w-full p-3 mb-4 border border-gray-700 rounded bg-gray-900 text-white"
+              className="w-full p-2 mb-2 border border-gray-700 rounded bg-gray-900 text-white text-sm"
               required
             />
             <button
@@ -470,7 +738,15 @@ const AdminPanel = () => {
     };
 
     const columns = {
-      products: ["id", "slug", "brand", "price", "rating", "description", "Actions"],
+      products: [
+        "id",
+        "slug",
+        "brand",
+        "price",
+        "rating",
+        "description",
+        "Actions",
+      ],
       categories: ["ID", "Name", "Description", "Actions"],
       orders: ["ID", "Customer", "Status", "Total", "Date", "Actions"],
       transactions: ["ID", "Order ID", "Amount", "Status", "Date", "Actions"],
@@ -495,21 +771,23 @@ const AdminPanel = () => {
                 if (col === "Actions") {
                   return (
                     <td key={col} className="px-6 py-4 text-white text-sm">
-                      <button
-                        className="px-4 py-2 mr-2 text-white bg-gray-600 rounded hover:bg-gray-500"
-                        onClick={() => {
-                          setEditProduct(item);
-                          setShowEditModal(true);
-                        }}
-                      >
-                        Edit
-                      </button>
-                      <button
-                        className="px-4 py-2 text-white bg-red-600 rounded hover:bg-red-500"
-                        onClick={() => handleDelete(item.id, type)}
-                      >
-                        Delete
-                      </button>
+                      <div className="flex gap-2">
+                        <button
+                          className="flex-1 px-4 py-2 text-white bg-gray-600 rounded hover:bg-gray-500"
+                          onClick={() => {
+                            setEditProduct(item);
+                            setShowEditModal(true);
+                          }}
+                        >
+                          Edit
+                        </button>
+                        <button
+                          className="flex-1 px-4 py-2 text-white bg-red-600 rounded hover:bg-red-500"
+                          onClick={() => handleDelete(item.id, type)}
+                        >
+                          Delete
+                        </button>
+                      </div>
                     </td>
                   );
                 }
