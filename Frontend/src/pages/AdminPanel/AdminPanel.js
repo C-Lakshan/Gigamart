@@ -20,10 +20,10 @@ const AdminPanel = () => {
 
   // State for handling product form and edit mode
   const [newProduct, setNewProduct] = useState({
-    name: "",
-    price: "",
-    category: "",
-    stock: "",
+    // name: "",
+    // price: "",
+    // category: "",
+    // stock: "",
   });
   const [showEditModal, setShowEditModal] = useState(false);
   const [editProduct, setEditProduct] = useState(null);
@@ -33,7 +33,7 @@ const AdminPanel = () => {
 
   const ConfirmationModal = ({ isOpen, onClose, onConfirm }) => {
     if (!isOpen) return null;
-  
+
     return (
       <div className="fixed inset-0 flex justify-center items-center bg-gray-800 bg-opacity-50">
         <div className="bg-white p-6 rounded-lg shadow-lg w-96">
@@ -41,7 +41,8 @@ const AdminPanel = () => {
             Confirm Deletion
           </h2>
           <p className="text-gray-600 mb-6">
-            Are you sure you want to delete this item? This action cannot be undone.
+            Are you sure you want to delete this item? This action cannot be
+            undone.
           </p>
           <div className="flex justify-end gap-4">
             <button
@@ -64,13 +65,11 @@ const AdminPanel = () => {
 
   const ErrorModal = ({ isOpen, onClose }) => {
     if (!isOpen) return null;
-  
+
     return (
       <div className="fixed inset-0 flex justify-center items-center bg-gray-800 bg-opacity-50">
         <div className="bg-white p-6 rounded-lg shadow-lg w-96">
-          <h2 className="text-xl font-semibold text-red-600 mb-4">
-            Error
-          </h2>
+          <h2 className="text-xl font-semibold text-red-600 mb-4">Error</h2>
           <p className="text-gray-600 mb-6">
             Error deleting the item. Please try again.
           </p>
@@ -85,8 +84,7 @@ const AdminPanel = () => {
         </div>
       </div>
     );
-  };  
-  
+  };
 
   const initialProductState = {
     name: "",
@@ -137,43 +135,34 @@ const AdminPanel = () => {
   };
 
   const fetchOrders = async () => {
-    const data = [
-      {
-        id: 1,
-        customer: "John Doe",
-        status: "Pending",
-        total: 299.97,
-        date: "2024-01-25",
-      },
-      {
-        id: 2,
-        customer: "Jane Smith",
-        status: "Delivered",
-        total: 149.99,
-        date: "2024-01-26",
-      },
-    ];
-    setOrders(data);
+    try {
+      const response = await fetch("http://localhost:8080/api/order");
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const data = await response.json();
+      console.log("Fetched orders:", data);
+  
+      const filteredDataOrders = data.map((order) => ({
+        id: order.id,
+        // createdDate: order.createdAt,
+        totalAmount: order.totalAmount,
+        orderStatus: order.orderStatus,
+        userId: order.userId,
+        addressId: order.addressId,
+      }));
+  
+      // console.log('Fetched orders:', filteredData);
+      // Update the state with the fetched orders
+      setOrders(filteredDataOrders);
+    } catch (error) {
+      console.error("Error fetching orders:", error);
+    }
   };
+  
 
   const fetchTransactions = async () => {
-    const data = [
-      {
-        id: 1,
-        orderId: 1,
-        amount: 299.97,
-        status: "Completed",
-        date: "2024-01-25",
-      },
-      {
-        id: 2,
-        orderId: 2,
-        amount: 149.99,
-        status: "Completed",
-        date: "2024-01-26",
-      },
-    ];
-    setTransactions(data);
+    
   };
 
   // Fetch data when tab changes
@@ -845,97 +834,144 @@ const AdminPanel = () => {
     );
   };
 
-  const renderTable = (data, type) => {
-    const getDisplayValue = (item, key) => {
-      // If the value is an object, handle it appropriately
-      if (typeof item[key] === "object" && item[key] !== null) {
-        // If it's an array, join the values
-        if (Array.isArray(item[key])) {
-          return item[key].map((obj) => obj.name || obj.value || "").join(", ");
-        }
-        // For other objects, return a placeholder or relevant property
-        return item[key].name || item[key].value || JSON.stringify(item[key]);
+  // Replace the columns object in the code with this updated version
+const columns = {
+  products: ["Id", "Slug", "Brand", "Price", "Rating", "Description", "Actions"],
+  categories: ["ID", "Name", "Description", "Actions"],
+  orders: [
+    { header: "ID", key: "id" },
+    { header: "Total Amount", key: "totalAmount" },
+    { header: "Order Status", key: "orderStatus" },
+    { header: "User ID", key: "userId" },
+    { header: "Address ID", key: "addressId" },
+    { header: "Actions", key: "actions" }
+  ],
+  transactions: [
+    { header: "ID", key: "id" },
+    { header: "Order ID", key: "orderId" },
+    { header: "Payment Date", key: "paymentDate" },
+    { header: "Amount", key: "amount" },
+    { header: "Payment Method", key: "paymentMethod" },
+    { header: "Payment Status", key: "paymentStatus" },
+    { header: "Actions", key: "actions" }
+  ]
+};
+
+// Update the renderTable function to use the new column structure
+const renderTable = (data, type) => {
+  const getDisplayValue = (item, column) => {
+    if (column.key === "actions") return null;
+    
+    const value = item[column.key];
+    if (typeof value === "object" && value !== null) {
+      if (Array.isArray(value)) {
+        return value.map((obj) => obj.name || obj.value || "").join(", ");
       }
-      // For non-object values, return as is
-      return item[key];
-    };
+      return value.name || value.value || JSON.stringify(value);
+    }
+    return value;
+  };
 
-    const columns = {
-      products: [
-        "id",
-        "slug",
-        "brand",
-        "price",
-        "rating",
-        "description",
-        "Actions",
-      ],
-      categories: ["ID", "Name", "Description", "Actions"],
-      orders: ["ID", "Customer", "Status", "Total", "Date", "Actions"],
-      transactions: ["ID", "Order ID", "Amount", "Status", "Date", "Actions"],
-    };
+  const tableColumns = columns[type];
+  const isNewFormat = tableColumns[0]?.hasOwnProperty('header'); // Check if using new column format
 
-    return (
-      <>
-        <table className="w-full table-auto border-separate border-spacing-0">
-          <thead>
-            <tr className="bg-gray-800 text-white">
-              {columns[type].map((col) => (
-                <th key={col} className="px-6 py-3 text-left font-semibold">
-                  {col}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {data.map((item) => (
-              <tr key={item.id} className="bg-gray-700 hover:bg-gray-600">
-                {columns[type].map((col) => {
-                  // Skip rendering for "Actions" column
-                  if (col === "Actions") {
+  return (
+    <>
+      <table className="w-full table-auto border-separate border-spacing-0">
+        <thead>
+          <tr className="bg-gray-800 text-white">
+            {isNewFormat 
+              ? tableColumns.map((col) => (
+                  <th key={col.header} className="px-6 py-3 text-left font-semibold">
+                    {col.header}
+                  </th>
+                ))
+              : tableColumns.map((col) => (
+                  <th key={col} className="px-6 py-3 text-left font-semibold">
+                    {col}
+                  </th>
+                ))
+            }
+          </tr>
+        </thead>
+        <tbody>
+          {data.map((item) => (
+            <tr key={item.id} className="bg-gray-700 hover:bg-gray-600">
+              {isNewFormat
+                ? tableColumns.map((col) => {
+                    if (col.key === "actions") {
+                      return (
+                        <td key={col.header} className="px-6 py-4 text-white text-sm">
+                          <div className="flex gap-2">
+                            <button
+                              className="flex-1 px-4 py-2 text-white bg-gray-600 rounded hover:bg-gray-500"
+                              onClick={() => {
+                                setEditProduct(item);
+                                setShowEditModal(true);
+                              }}
+                            >
+                              Edit
+                            </button>
+                            <button
+                              className="flex-1 px-4 py-2 text-white bg-red-600 rounded hover:bg-red-500"
+                              onClick={() => handleDelete(item.id, type)}
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </td>
+                      );
+                    }
                     return (
-                      <td key={col} className="px-6 py-4 text-white text-sm">
-                        <div className="flex gap-2">
-                          <button
-                            className="flex-1 px-4 py-2 text-white bg-gray-600 rounded hover:bg-gray-500"
-                            onClick={() => {
-                              setEditProduct(item);
-                              setShowEditModal(true);
-                            }}
-                          >
-                            Edit
-                          </button>
-                          <button
-                            className="flex-1 px-4 py-2 text-white bg-red-600 rounded hover:bg-red-500"
-                            onClick={() => handleDelete(item.id, type)}
-                          >
-                            Delete
-                          </button>
-                        </div>
+                      <td key={col.header} className="px-6 py-4 text-white text-sm">
+                        {getDisplayValue(item, col)}
                       </td>
                     );
-                  }
-
-                  // For other columns, render the value
-                  const key = col.toLowerCase();
-                  return (
-                    <td key={col} className="px-6 py-4 text-white text-sm">
-                      {getDisplayValue(item, key)}
-                    </td>
-                  );
-                })}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        <ConfirmationModal
-          isOpen={showConfirmModal}
-          onClose={() => setShowConfirmModal(false)}
-          onConfirm={handleDeleteConfirmed}
-        />
-      </>
-    );
-  };
+                  })
+                : tableColumns.map((col) => {
+                    if (col === "Actions") {
+                      return (
+                        <td key={col} className="px-6 py-4 text-white text-sm">
+                          <div className="flex gap-2">
+                            <button
+                              className="flex-1 px-4 py-2 text-white bg-gray-600 rounded hover:bg-gray-500"
+                              onClick={() => {
+                                setEditProduct(item);
+                                setShowEditModal(true);
+                              }}
+                            >
+                              Edit
+                            </button>
+                            <button
+                              className="flex-1 px-4 py-2 text-white bg-red-600 rounded hover:bg-red-500"
+                              onClick={() => handleDelete(item.id, type)}
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </td>
+                      );
+                    }
+                    const key = col.toLowerCase();
+                    return (
+                      <td key={col} className="px-6 py-4 text-white text-sm">
+                        {getDisplayValue(item, { key })}
+                      </td>
+                    );
+                  })
+              }
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <ConfirmationModal
+        isOpen={showConfirmModal}
+        onClose={() => setShowConfirmModal(false)}
+        onConfirm={handleDeleteConfirmed}
+      />
+    </>
+  );
+};
 
   const renderCard = (title, value) => {
     return (
@@ -1051,7 +1087,10 @@ const AdminPanel = () => {
         {/* Render the edit modal */}
         {renderEditModal()}
       </div>
-      <ErrorModal isOpen={isErrorModalOpen} onClose={() => setIsErrorModalOpen(false)} />
+      <ErrorModal
+        isOpen={isErrorModalOpen}
+        onClose={() => setIsErrorModalOpen(false)}
+      />
     </div>
   );
 };
