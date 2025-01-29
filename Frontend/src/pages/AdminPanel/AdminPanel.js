@@ -162,7 +162,27 @@ const AdminPanel = () => {
   
 
   const fetchTransactions = async () => {
-    
+    try {
+      const response = await fetch("http://localhost:8080/api/payment");
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const data = await response.json();
+      console.log("Fetched transactions:", data);
+  
+      const filteredData = data.map((transaction) => ({
+        id: transaction.id,
+        orderId: transaction.orderId,
+        paymentDate: transaction.paymentDate,
+        amount: transaction.amount,
+        paymentMethod: transaction.paymentMethod,
+        paymentStatus: transaction.paymentStatus,
+      }));
+  
+      setTransactions(filteredData);
+    } catch (error) {
+      console.error("Error fetching transactions:", error);
+    }
   };
 
   // Fetch data when tab changes
