@@ -24,46 +24,52 @@ public class ProductController {
     private ProductService productService;
 
     @Autowired
-    public ProductController(ProductService productService){
+    public ProductController(ProductService productService) {
         this.productService = productService;
     }
 
     @GetMapping
-    public ResponseEntity<List<ProductDto>> getAllProducts(@RequestParam(required = false,name = "categoryId",value = "categoryId") UUID categoryId, @RequestParam(required = false,name = "typeId",value = "typeId") UUID typeId, @RequestParam(required = false) String slug, HttpServletResponse response){
+    public ResponseEntity<List<ProductDto>> getAllProducts(
+            @RequestParam(required = false, name = "categoryId", value = "categoryId") UUID categoryId,
+            @RequestParam(required = false, name = "typeId", value = "typeId") UUID typeId,
+            @RequestParam(required = false) String slug, HttpServletResponse response) {
         List<ProductDto> productList = new ArrayList<>();
-        if(StringUtils.isNotBlank(slug)){
+        if (StringUtils.isNotBlank(slug)) {
             ProductDto productDto = productService.getProductBySlug(slug);
             productList.add(productDto);
-        }
-        else {
+        } else {
             productList = productService.getAllProducts(categoryId, typeId);
         }
-        response.setHeader("Content-Range",String.valueOf(productList.size()));
+        response.setHeader("Content-Range", String.valueOf(productList.size()));
         return new ResponseEntity<>(productList, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ProductDto> getProductById(@PathVariable UUID id){
+    public ResponseEntity<ProductDto> getProductById(@PathVariable UUID id) {
         ProductDto productDto = productService.getProductById(id);
         return new ResponseEntity<>(productDto, HttpStatus.OK);
     }
 
     @PostMapping
-    public ResponseEntity<Product> createProduct(@RequestBody ProductDto productDto){
+    public ResponseEntity<Product> createProduct(@RequestBody ProductDto productDto) {
         Product product = productService.addProduct(productDto);
-        return new ResponseEntity<>(product,HttpStatus.CREATED);
+        return new ResponseEntity<>(product, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Product> updateProduct(@RequestBody ProductDto productDto,@PathVariable UUID id){
-        Product product = productService.updateProduct(productDto,id);
-        return new ResponseEntity<>(product,HttpStatus.OK);
+    public ResponseEntity<Product> updateProduct(@RequestBody ProductDto productDto, @PathVariable UUID id) {
+        Product product = productService.updateProduct(productDto, id);
+        return new ResponseEntity<>(product, HttpStatus.OK);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteProduct(@PathVariable UUID id) {
+        boolean isDeleted = productService.deleteProductById(id);
+        if (isDeleted) {
+            return new ResponseEntity<>("Product deleted successfully", HttpStatus.NO_CONTENT);
+        } else {
+            return new ResponseEntity<>("Product not found", HttpStatus.NOT_FOUND);
+        }
+    }
+
 }
-
-
-
-
-
-
-
