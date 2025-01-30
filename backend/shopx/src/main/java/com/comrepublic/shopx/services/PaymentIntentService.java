@@ -2,14 +2,18 @@ package com.comrepublic.shopx.services;
 
 import com.stripe.exception.StripeException;
 import com.stripe.model.PaymentIntent;
+import com.stripe.model.PaymentIntentCollection;
 import com.stripe.param.PaymentIntentCreateParams;
+import com.stripe.param.PaymentIntentListParams;
 import com.comrepublic.shopx.auth.entities.User;
 import com.comrepublic.shopx.entities.Order;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Component
 public class PaymentIntentService {
@@ -32,4 +36,16 @@ public class PaymentIntentService {
         map.put("client_secret", paymentIntent.getClientSecret());
         return map;
     }
+
+    // New method to get all payment intents (payments)
+    // public List<PaymentIntent> getAllPayments() throws StripeException {
+    //     PaymentIntentListParams params = PaymentIntentListParams.builder()
+    //             .setLimit(100L)  // You can adjust the number of records retrieved here
+    //             .build();
+
+    //     PaymentIntentCollection paymentIntents = PaymentIntent.list(params);
+
+    //     return paymentIntents.getData().stream()
+    //             .collect(Collectors.toList());
+    // }
 }

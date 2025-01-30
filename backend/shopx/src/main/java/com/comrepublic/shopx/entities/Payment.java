@@ -1,5 +1,6 @@
 package com.comrepublic.shopx.entities;
 
+import com.comrepublic.shopx.dto.PaymentDTO;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
@@ -37,4 +38,15 @@ public class Payment {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private PaymentStatus paymentStatus;
+
+    public PaymentDTO toDTO() {
+        PaymentDTO dto = new PaymentDTO();
+        dto.setId(this.getId());
+        dto.setOrderId(this.getOrder() != null ? this.getOrder().getId() : null);
+        dto.setPaymentDate(this.getPaymentDate());
+        dto.setAmount(this.getAmount());
+        dto.setPaymentMethod(this.getPaymentMethod());
+        dto.setPaymentStatus(this.getPaymentStatus());
+        return dto;
+    }
 }
