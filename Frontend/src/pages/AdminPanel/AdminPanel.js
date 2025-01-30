@@ -1,8 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Line } from "react-chartjs-2";
-import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from "chart.js";
-
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
+import { LineChart, Line as RechartsLine, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer } from "recharts";
 
 const AdminPanel = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
@@ -1069,49 +1066,65 @@ const renderTable = (data, type) => {
     );
   };
 
-  const renderCard = (title, value) => {
+  const renderCard = (title, value, icon, bgColor) => {
     return (
-      <div className="w-1/3 p-6 bg-gray-800 text-white rounded shadow-lg">
-        <h3 className="text-lg font-semibold mb-2">{title}</h3>
-        <p className="text-2xl">{value}</p>
+      <div className={`p-6 ${bgColor} text-white rounded-lg shadow-lg flex flex-col items-center justify-center`}>
+        <div className="text-3xl">{icon}</div>
+        <h3 className="text-lg font-semibold mt-2">{title}</h3>
+        <p className="text-2xl font-bold">{value}</p>
       </div>
     );
   };
-
   const renderDashboard = () => {
     // Define the data for the transactions graph
-    const chartData = {
-      labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-      datasets: [
-        {
-          label: "Transactions",
-          data: dashboardData.transactionsPerMonth || [30, 50, 80, 60, 100, 120, 140, 160, 180, 200, 220, 250],
-          borderColor: "#4CAF50",
-          backgroundColor: "rgba(76, 175, 80, 0.2)",
-          tension: 0.4,
-        },
-      ],
+    // const chartData = {
+    //   labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+    //   datasets: [
+    //     {
+    //       label: "Transactions",
+    //       data: dashboardData.transactionsPerMonth || [30, 50, 80, 60, 100, 120, 140, 160, 180, 200, 220, 250],
+    //       borderColor: "#4CAF50",
+    //       backgroundColor: "rgba(76, 175, 80, 0.2)",
+    //       tension: 0.4,
+    //     },
+    //   ],
+    // };
+
+    const dashboardData = {
+      users: 1000,
+      sales: 5000,
+      totalCustomers: 300,
+      totalOrders: 150,
+      totalTransactions: 200,
+      transactionsPerMonth: [30, 50, 80, 60, 100, 120, 140, 160, 180, 200, 220, 250], // Example data
     };
   
     return (
-      <div>
-        {/* Cards Section */}
-        <div className="flex space-x-6 mb-6">
-          {renderCard("Total Users", dashboardData.users)}
-          {renderCard("Total Sales", `$${dashboardData.sales}`)}
-          {renderCard("Total Customers", dashboardData.totalCustomers)}
-          {renderCard("Total Orders", dashboardData.totalOrders)}
-          {renderCard("Total Transactions", dashboardData.totalTransactions)}
-        </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+        {/* Stats Cards */}
+        {renderCard("Users", dashboardData.users, "👤", "bg-gray-500")}
+        {renderCard("Sales", `$${dashboardData.sales}`, "💰", "bg-gray-600")}
+        {renderCard("Total Customers", dashboardData.totalCustomers, "🛒", "bg-gray-600")}
+        {renderCard("Total Orders", dashboardData.totalOrders, "📦", "bg-gray-600")}
+        {renderCard("Total Transactions", dashboardData.totalTransactions, "🔄", "bg-gray-600")}
   
-        {/* Chart Section */}
-        <div className="p-6 bg-gray-800 rounded shadow-lg">
-          <h3 className="text-lg font-semibold mb-4">Monthly Transactions</h3>
-          <Line data={chartData} />
+        {/* Line Chart */}
+        <div className="col-span-1 md:col-span-2 lg:col-span-4 p-6 bg-gray-800 text-white rounded-lg shadow-lg">
+          <h3 className="text-lg font-semibold mb-4">Transactions Over Time</h3>
+          <ResponsiveContainer width="100%" height={300}>
+            <LineChart data={dashboardData.transactionsPerMonth.map((value, index) => ({ month: `M${index + 1}`, value }))}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#444" />
+              <XAxis dataKey="month" stroke="#ccc" />
+              <YAxis stroke="#ccc" />
+              <RechartsTooltip />
+              <RechartsLine type="monotone" dataKey="value" stroke="#4ade80" strokeWidth={2} />
+            </LineChart>
+          </ResponsiveContainer>
         </div>
       </div>
     );
   };
+  
   
 
   const renderMarketing = () => {
