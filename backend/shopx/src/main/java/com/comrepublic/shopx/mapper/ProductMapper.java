@@ -8,8 +8,9 @@ import com.comrepublic.shopx.entities.*;
 import com.comrepublic.shopx.services.CategoryService;
 import org.springframework.stereotype.Component;
 
-
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -85,11 +86,19 @@ public class ProductMapper {
     }
 
     public List<ProductDto> getProductDtos(List<Product> products) {
-        return products.stream().map(this::mapProductToDto).toList();
+        if (products == null) {
+            return Collections.emptyList();
+        }
+        return products.stream()
+                .filter(Objects::nonNull)
+                .map(this::mapProductToDto)
+                .collect(Collectors.toList());
     }
-
     public ProductDto mapProductToDto(Product product) {
-
+        String thumbnail = null;
+        if (product.getResources() != null && !product.getResources().isEmpty()) {
+            thumbnail = getProductThumbnail(product.getResources());
+        }
         return ProductDto.builder()
                 .id(product.getId())
                 .brand(product.getBrand())
@@ -99,11 +108,23 @@ public class ProductMapper {
                 .rating(product.getRating())
                 .description(product.getDescription())
                 .slug(product.getSlug())
-                .thumbnail(getProductThumbnail(product.getResources())).build();
+                .thumbnail(thumbnail)
+                .categoryId(product.getCategory() != null ? product.getCategory().getId() : null)
+                .categoryName(product.getCategory() != null ? product.getCategory().getName() : null)
+                .categoryTypeId(product.getCategoryType() != null ? product.getCategoryType().getId() : null)
+                .categoryTypeName(product.getCategoryType() != null ? product.getCategoryType().getName() : null)
+                .build();
     }
 
     private String getProductThumbnail(List<Resources> resources) {
-        return resources.stream().filter(Resources::getIsPrimary).findFirst().orElse(null).getUrl();
+        if (resources == null || resources.isEmpty()) {
+            return null;
+        }
+        return resources.stream()
+                .filter(r -> r != null && Boolean.TRUE.equals(r.getIsPrimary()))
+                .map(Resources::getUrl)
+                .findFirst()
+                .orElse(null);
     }
 
     public List<ProductVariantDto> mapProductVariantListToDto(List<ProductVariant> productVariants) {
