@@ -1,4 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
+import { createSelector } from "@reduxjs/toolkit";
 
 const wishlistSlice = createSlice({
   name: 'wishlist',
@@ -18,5 +19,5 @@ const wishlistSlice = createSlice({
 
 export const { addToWishlist, removeFromWishlist } = wishlistSlice.actions;
 export const selectWishListItems = (state) => state.wishlist;
-
+export const countWishlistItems = (state) => state.wishlist?.length || 0;
 export default wishlistSlice.reducer;
