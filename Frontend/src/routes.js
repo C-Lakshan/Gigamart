@@ -18,6 +18,7 @@ import Profile from "./pages/Account/Profile";
 import Orders from "./pages/Account/Orders";
 import Settings from "./pages/Account/Settings";
 import AdminPanel  from "./pages/AdminPanel/AdminPanel";
+import WishList from "./pages/Wishlist/Wishlist"; 
 
 export const router = createBrowserRouter([
     {
@@ -49,6 +50,10 @@ export const router = createBrowserRouter([
          path:'/cart-items',
          element: <Cart />
         },
+        {
+          path:'/wishlist',
+          element: <WishList />
+         },
         {
           path:'/account-details/',
           element: <ProtectedRoute><Account /></ProtectedRoute>,
