@@ -1,33 +1,30 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import FilterIcon from '../../components/common/FilterIcon';
-import content from '../../data/content.json';
-import Categories from '../../components/Filters/Categories';
 import PriceFilter from '../../components/Filters/PriceFilter';
 import ProductCard from './ProductCard';
 import { getAllProducts } from '../../api/fetchProducts';
 import { useDispatch, useSelector } from 'react-redux';
 import { setLoading } from '../../store/features/common';
 import DriftWidget from '../../components/DriftWidget';
-
-const categories = content?.categories;
+import Categories from '../../components/Filters/Categories';
 
 const ProductListPage = ({ categoryType }) => {
   const categoryData = useSelector((state) => state?.categoryState?.categories);
   const dispatch = useDispatch();
   const [products, setProducts] = useState([]);
-  const [priceRange, setPriceRange] = useState({ min: 10, max: 10000 }); // Moved state here
+  const [priceRange, setPriceRange] = useState({ min: 10, max: 10000 });
+  const [selectedCategoryTypes, setSelectedCategoryTypes] = useState([]);
 
-  const categoryContent = useMemo(() => {
-    return categories?.find((category) => category.code === categoryType);
-  }, [categoryType]);
-
+  // Get category details from Redux store (for description, etc.)
   const category = useMemo(() => {
     return categoryData?.find((element) => element?.code === categoryType);
   }, [categoryData, categoryType]);
 
+  // Fetch products for the given category
   useEffect(() => {
+    if (!category?.id) return;
     dispatch(setLoading(true));
-    getAllProducts(category?.id)
+    getAllProducts(category.id)
       .then((res) => {
         setProducts(res);
       })
@@ -39,12 +36,29 @@ const ProductListPage = ({ categoryType }) => {
       });
   }, [category?.id, dispatch]);
 
-  // Filter products by price range
+  // Compute unique category types from the loaded products
+  const productCategoryTypes = useMemo(() => {
+    const typesSet = new Set();
+    products.forEach((product) => {
+      if (product?.categoryTypeName) {
+        typesSet.add(product.categoryTypeName);
+      }
+    });
+    // Map to objects with code and name (customize if needed)
+    return Array.from(typesSet).map((type) => ({ code: type, name: type }));
+  }, [products]);
+
+  // Filter products by price range and selected category types
   const filteredProducts = useMemo(() => {
-    return products?.filter(
-      (product) => product?.price >= priceRange.min && product?.price <= priceRange.max
-    );
-  }, [products, priceRange]);
+    return products?.filter((product) => {
+      const isWithinPriceRange =
+        product?.price >= priceRange.min && product?.price <= priceRange.max;
+      const isMatchingCategory =
+        selectedCategoryTypes.length === 0 ||
+        selectedCategoryTypes.includes(product?.categoryTypeName);
+      return isWithinPriceRange && isMatchingCategory;
+    });
+  }, [products, priceRange, selectedCategoryTypes]);
 
   return (
     <div className="relative">
@@ -57,10 +71,14 @@ const ProductListPage = ({ categoryType }) => {
           </div>
           <div>
             <p className="text-[16px] text-black mt-5">Categories</p>
-            <Categories types={categoryContent?.types} />
+            <Categories
+              types={productCategoryTypes}
+              selectedTypes={selectedCategoryTypes}
+              setSelectedTypes={setSelectedCategoryTypes}
+            />
             <hr />
           </div>
-          {/* Price */}
+          {/* Price Filter */}
           <PriceFilter range={priceRange} setRange={setPriceRange} />
         </div>
 
@@ -69,12 +87,15 @@ const ProductListPage = ({ categoryType }) => {
           {/* Products */}
           <div className="pt-4 grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2 gap-8 px-2">
             {filteredProducts?.map((item, index) => (
-              <ProductCard key={item?.id + '_' + index} {...item} title={item?.name} />
+              <ProductCard
+                key={`${item?.id}_${index}`}
+                {...item}
+                title={item?.name}
+              />
             ))}
           </div>
         </div>
       </div>
-
       {/* DriftWidget */}
       <DriftWidget />
     </div>
