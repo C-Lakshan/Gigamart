@@ -16,6 +16,7 @@ import { addToCart } from '../../store/features/cart';
 import _ from 'lodash';
 import { getAllProducts } from '../../api/fetchProducts';
 import { addItemToCartAction } from '../../store/actions/cartAction';
+import { addItemToWishListAction } from '../../store/actions/wishlistAction';
 
 
   
@@ -75,6 +76,8 @@ const ProductDetails = () => {
     setBreadCrumbLink(arrayLinks);
   }, [productCategory, product]);
 
+  
+
   const addItemToCart = useCallback(()=>{
     
     //dispatch(addToCart({id:product?.id,quantity:1}));
@@ -91,6 +94,13 @@ const ProductDetails = () => {
     }))
 
   },[dispatch, product?.id]);
+
+  // Add item to wishlist
+  const onAddToWishlist = () => {
+    const item = { productId: product?.id, title: product?.name, price: product?.price, brand: product?.brand, thumbnail: product?.thumbnail };
+    dispatch(addItemToWishListAction(item)); // Dispatch action to add item to wishlist
+  };
+  
     
   return (  
     <>
@@ -128,11 +138,18 @@ const ProductDetails = () => {
         <p className='text-lg bold '>Colors Available</p>
         <ProductColors colors={product?.color}/>
       </div>
-      <div className='flex py-4'>
+      <div className='flex py-4 gap-4'>
           <button onClick={addItemToCart} className='bg-black rounded-lg hover:bg-gray-700'><div className='flex h-[42px] rounded-lg w-[150px] px-2 items-center justify-center bg-black text-white hover:bg-gray-700'><svg width="17" height="16" className='' viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M1.5 1.33325H2.00526C2.85578 1.33325 3.56986 1.97367 3.6621 2.81917L4.3379 9.014C4.43014 9.8595 5.14422 10.4999 5.99474 10.4999H13.205C13.9669 10.4999 14.6317 9.98332 14.82 9.2451L15.9699 4.73584C16.2387 3.68204 15.4425 2.65733 14.355 2.65733H4.5M4.52063 13.5207H5.14563M4.52063 14.1457H5.14563M13.6873 13.5207H14.3123M13.6873 14.1457H14.3123M5.66667 13.8333C5.66667 14.2935 5.29357 14.6666 4.83333 14.6666C4.3731 14.6666 4 14.2935 4 13.8333C4 13.373 4.3731 12.9999 4.83333 12.9999C5.29357 12.9999 5.66667 13.373 5.66667 13.8333ZM14.8333 13.8333C14.8333 14.2935 14.4602 14.6666 14 14.6666C13.5398 14.6666 13.1667 14.2935 13.1667 13.8333C13.1667 13.373 13.5398 12.9999 14 12.9999C14.4602 12.9999 14.8333 13.373 14.8333 13.8333Z" stroke="white" strokeWidth="1.5" strokeLinecap="round" />
           </svg>Add to cart</div></button>
+
+          <button onClick={onAddToWishlist} className='bg-black rounded-lg hover:bg-gray-700'>
+              <div className='flex h-[42px] rounded-lg w-[150px] px-2 items-center justify-center bg-black text-white hover:bg-gray-700'>
+                Add to Wishlist
+              </div>
+            </button>
       </div>
+      
       <div className='grid grid-cols-2 gap-4 pt-4'>
         {/*  */}
         {
