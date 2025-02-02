@@ -1,8 +1,22 @@
 import React from "react";
-import SectionHeading from "./SectionsHeading/SectionHeading";
-import Card from "../Card/Card";
+import Section_Heading from "./SectionsHeading/SectionHeading";
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css"; 
+import "slick-carousel/slick/slick-theme.css";
 import "./NewArrivals.css";
 
+// --- Simple Card Component ---
+const Card = ({ title, imagePath }) => {
+  return (
+    <div className="card">
+      <img src={imagePath} alt={title} className="card-img" />
+      <h3 className="card-title">{title}</h3>
+    </div>
+  );
+};
+
+
+// --- Items Data ---
 const items = [
   {
     title: "Asus ROG Strix G16 G614JIR- i9",
@@ -43,17 +57,69 @@ const items = [
 ];
 
 const NewArrivals = () => {
+  // Updated slider settings to show 5 products at a time with manual scroll support.
+  const settings = {
+    infinite: true,
+    speed: 500,
+    autoplay: true,
+    autoplaySpeed: 1500,
+    pauseOnHover: true,
+    arrows: true, // Show navigation arrows
+    dots: false,  // Hide dots
+    slidesToShow: 5, // Show 5 products at a time on desktop
+    slidesToScroll: 1,
+    // Enable manual scrolling via drag/swipe
+    draggable: true,
+    swipe: true,
+    swipeToSlide: true,
+    responsive: [
+      {
+        breakpoint: 1200, // Slightly smaller screens
+        settings: {
+          slidesToShow: 4,
+          slidesToScroll: 1,
+        },
+      },
+      {
+        breakpoint: 900, // Tablet view
+        settings: {
+          slidesToShow: 3,
+          slidesToScroll: 1,
+        },
+      },
+      {
+        breakpoint: 600, // Mobile view
+        settings: {
+          slidesToShow: 2,
+          slidesToScroll: 1,
+        },
+      },
+      {
+        breakpoint: 480, // Smaller mobile screens
+        settings: {
+          slidesToShow: 1,
+          slidesToScroll: 1,
+        },
+      },
+    ],
+  };
+
   return (
+    <div className="mt-12">
     <>
-      <SectionHeading title={"New Arrivals"} />
-      <div className="scroll-container">
-        <div className="scroll-content">
-          {items.concat(items).map((item, index) => ( // Duplicate for seamless loop
-            <Card key={index} title={item.title} imagePath={item.imagePath} />
+      <Section_Heading title="Featured Products" />
+      <div className="new-arrivals-slider">
+        <Slider {...settings}>
+          {items.map((item, index) => (
+            <div key={index} className="slider-item">
+              <Card title={item.title} imagePath={item.imagePath} />
+            </div>
           ))}
-        </div>
+        </Slider>
       </div>
     </>
+    </div>
+    
   );
 };
 
