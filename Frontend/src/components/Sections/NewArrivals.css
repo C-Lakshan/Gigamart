@@ -1,39 +1,107 @@
-.react-slider-custom-item{
-    max-width: 220px;
-    img {
-        height: 220px;
-    }
+/* src/components/NewArrivals.css */
+
+.new-arrivals-section {
+  padding: 20px;
+  background-color: #f8f8f8;
 }
 
-.scroll-container {
-    width: 100%;
-    overflow: hidden;
-    position: relative;
-    white-space: nowrap;
-  }
-  
-  .scroll-content {
-    display: flex;
-    flex-wrap: nowrap; /* Ensure items stay in a single row */
-    gap: 20px;
-    animation: scrollAnimation 20s linear infinite;
-  }
-  
-  .scroll-content .card {
-    min-width: 200px; /* Set a fixed width for cards */
-    flex: 0 0 auto; /* Prevent shrinking */
-  }
-  
-  @keyframes scrollAnimation {
-    from {
-      transform: translateX(0%);
-    }
-    to {
-      transform: translateX(-50%);
-    }
-  }
-  
-  .scroll-content:hover {
-    animation-play-state: paused;
-  }
-  
+.section-heading {
+  text-align: left;
+  margin-bottom: 20px;
+  margin-top: 20px;
+  font-size: 1.7rem;
+  color: #333;
+}
+
+.new-arrivals-slider {
+  position: relative;
+  margin: 0 auto;
+  max-width: 1300px;
+}
+
+/* Slider item spacing */
+.slider-item {
+  padding: 8px;
+}
+
+/* Card styling */
+.card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px;
+  background: #fff;
+  border-radius: 8px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  max-width: 200px;
+  height: 250px;
+  margin: 0 auto;
+  position: relative;
+}
+
+/* Image container with fixed height */
+.card-img-container {
+  width: 100%;
+  height: 170px; /* Fixed height to maintain consistency */
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f1f1f1; /* Optional: Placeholder background */
+}
+
+.card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Ensures uniform image cropping */
+  border-radius: 4px;
+}
+
+/* Title always at the bottom */
+.card-title {
+  position: absolute;
+  bottom: 8px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 0.9rem;
+  color: #333;
+  background: rgba(255, 255, 255, 0.8);
+  padding: 4px 0;
+  font-weight: bold;
+}
+
+/* Custom Arrow styling */
+.custom-arrow {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 50%;
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  cursor: pointer;
+  transform: translateY(-50%);
+  z-index: 10;
+  font-size: 20px;
+  font-weight: bold;
+  color: black;  /* Ensure arrows are visible */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: background 0.3s ease-in-out;
+}
+
+.custom-arrow:hover {
+  background: rgba(200, 200, 200, 0.9);
+}
+
+.custom-prev-arrow {
+  left: 10px;
+}
+
+.custom-next-arrow {
+  right: 10px;
+}

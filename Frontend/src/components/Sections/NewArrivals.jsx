@@ -1,59 +1,70 @@
-import React from "react";
-import SectionHeading from "./SectionsHeading/SectionHeading";
-import Card from "../Card/Card";
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import Section_Heading from "./SectionsHeading/SectionHeading";
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css"; 
+import "slick-carousel/slick/slick-theme.css";
 import "./NewArrivals.css";
 
-const items = [
-  {
-    title: "Asus ROG Strix G16 G614JIR- i9",
-    imagePath: require("../../assets/img/Asus ROG Strix G16 G614JIR- i9.webp"),
-  },
-  {
-    title: "Lenovo IdeaPad Slim 3 15IRH8 – i7",
-    imagePath: require("../../assets/img/Lenovo IdeaPad Slim 3 15IRH8 – i7.webp"),
-  },
-  {
-    title: "Hp Victus fb2132Ax Gaming – Ryzen 7",
-    imagePath: require("../../assets/img/Hp Victus fb2132Ax Gaming – Ryzen 7.jpg"),
-  },
-  {
-    title: "Lenovo IdeaPad Slim 3 15IRH8 – i5",
-    imagePath: require("../../assets/img/Lenovo IdeaPad Slim 3 15IRH8 – i5.webp"),
-  },
-  {
-    title: "Lenovo IdeaPad 1 15IGL7 – Intel Celeron",
-    imagePath: require("../../assets/img/Lenovo IdeaPad 1 15IGL7 – Intel Celeron.webp"),
-  },
-  {
-    title: "Asus TUF A15 Gaming FA507NUR – Ryzen 7",
-    imagePath: require("../../assets/img/Asus TUF A15 Gaming FA507NUR – Ryzen 7.jpg"),
-  },
-  {
-    title: "Asus Vivobook Pro 15 Creator Q543MJ – Ultra9",
-    imagePath: require("../../assets/img/Asus Vivobook Pro 15 Creator Q543MJ – Ultra9.webp"),
-  },
-  {
-    title: "Lenovo Legion 9 Gaming 16IRX9 – i9",
-    imagePath: require("../../assets/img/Lenovo Legion 9 Gaming 16IRX9 – i9.jpg"),
-  },
-  {
-    title: "HP 15 fd0333TU – i5",
-    imagePath: require("../../assets/img/HP 15 fd0333TU – i5.webp"),
-  },
-];
+// --- Simple Card Component ---
+const Card = ({ name, thumbnail, slug }) => {
+  return (
+    <div className="card">
+      <Link to={`/product/${slug}`}>
+        <img src={thumbnail} alt={name} className="card-img" />
+        <h3 className="card-title">{name}</h3>
+      </Link>
+    </div>
+  );
+};
 
 const NewArrivals = () => {
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    fetch("http://localhost:8080/api/products")
+      .then((res) => res.json())
+      .then((data) => {
+        const newArrivals = data.filter((product) => product.newArrival);
+        setProducts(newArrivals);
+      })
+      .catch((error) => console.error("Error fetching products:", error));
+  }, []);
+
+  const settings = {
+    infinite: true,
+    speed: 500,
+    autoplay: true,
+    autoplaySpeed: 1500,
+    pauseOnHover: true,
+    arrows: true,
+    dots: false,
+    slidesToShow: 5,
+    slidesToScroll: 1,
+    draggable: true,
+    swipe: true,
+    swipeToSlide: true,
+    responsive: [
+      { breakpoint: 1200, settings: { slidesToShow: 4, slidesToScroll: 1 } },
+      { breakpoint: 900, settings: { slidesToShow: 3, slidesToScroll: 1 } },
+      { breakpoint: 600, settings: { slidesToShow: 2, slidesToScroll: 1 } },
+      { breakpoint: 480, settings: { slidesToShow: 1, slidesToScroll: 1 } },
+    ],
+  };
+
   return (
-    <>
-      <SectionHeading title={"New Arrivals"} />
-      <div className="scroll-container">
-        <div className="scroll-content">
-          {items.concat(items).map((item, index) => ( // Duplicate for seamless loop
-            <Card key={index} title={item.title} imagePath={item.imagePath} />
+    <div className="mt-12">
+      <Section_Heading title="Featured Products" />
+      <div className="new-arrivals-slider">
+        <Slider {...settings}>
+          {products.map((product, index) => (
+            <div key={index} className="slider-item">
+              <Card name={product.name} thumbnail={product.thumbnail} slug={product.slug} />
+            </div>
           ))}
-        </div>
+        </Slider>
       </div>
-    </>
+    </div>
   );
 };
 
