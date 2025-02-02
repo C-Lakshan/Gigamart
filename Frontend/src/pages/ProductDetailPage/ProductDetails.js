@@ -20,7 +20,6 @@ import { addItemToWishListAction } from '../../store/actions/wishlistAction';
 
 
   
-
 //const categories = content?.categories
 
 const extraSections = [
