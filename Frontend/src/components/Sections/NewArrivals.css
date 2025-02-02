@@ -26,26 +26,51 @@
 
 /* Card styling */
 .card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
   padding: 8px;
   background: #fff;
   border-radius: 8px;
   text-align: center;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   max-width: 200px;
+  height: 250px;
   margin: 0 auto;
+  position: relative;
+}
+
+/* Image container with fixed height */
+.card-img-container {
+  width: 100%;
+  height: 170px; /* Fixed height to maintain consistency */
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f1f1f1; /* Optional: Placeholder background */
 }
 
 .card-img {
   width: 100%;
-  height: auto;
-  object-fit: cover;
+  height: 100%;
+  object-fit: cover; /* Ensures uniform image cropping */
   border-radius: 4px;
 }
 
+/* Title always at the bottom */
 .card-title {
-  margin-top: 8px;
+  position: absolute;
+  bottom: 8px;
+  left: 0;
+  right: 0;
+  text-align: center;
   font-size: 0.9rem;
   color: #333;
+  background: rgba(255, 255, 255, 0.8);
+  padding: 4px 0;
+  font-weight: bold;
 }
 
 /* Custom Arrow styling */
