@@ -1,5 +1,21 @@
 import React, { useState, useEffect } from "react";
-import { LineChart, Line as RechartsLine, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer } from "recharts";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip as RechartsTooltip,
+  ResponsiveContainer,
+} from "recharts";
+import {
+  Users,
+  DollarSign,
+  ShoppingCart,
+  Package,
+  RefreshCw,
+} from "lucide-react";
+import { PencilIcon, TrashIcon } from "@heroicons/react/solid";
 
 const AdminPanel = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
@@ -10,12 +26,14 @@ const AdminPanel = () => {
   const [dashboardData, setDashboardData] = useState({
     users: 100,
     sales: 5000,
-    totalCustomers: 50, // Add total customers count
-    totalOrders: 120, // Add total orders count
-    totalTransactions: 200, // Add total transactions count
-    transactionsPerMonth: [30, 50, 80, 60, 100, 120, 140, 160, 180, 200, 220, 250], // Sample transaction data for the graph
+    totalCustomers: 50,
+    totalOrders: 120,
+    totalTransactions: 200,
+    transactionsPerMonth: [
+      30, 50, 80, 60, 100, 120, 140, 160, 180, 200, 220, 250,
+    ], // Sample transaction data for the graph
   });
-  
+
   const [marketingData, setMarketingData] = useState({
     campaigns: 3,
     leads: 250,
@@ -108,13 +126,13 @@ const AdminPanel = () => {
 
   const [sortConfig, setSortConfig] = useState({
     key: null,
-    direction: 'asc'
+    direction: "asc",
   });
 
   const handleSort = (key) => {
-    let direction = 'asc';
-    if (sortConfig.key === key && sortConfig.direction === 'asc') {
-      direction = 'desc';
+    let direction = "asc";
+    if (sortConfig.key === key && sortConfig.direction === "asc") {
+      direction = "desc";
     }
     setSortConfig({ key, direction });
   };
@@ -137,10 +155,10 @@ const AdminPanel = () => {
       }
 
       if (aValue < bValue) {
-        return sortConfig.direction === 'asc' ? -1 : 1;
+        return sortConfig.direction === "asc" ? -1 : 1;
       }
       if (aValue > bValue) {
-        return sortConfig.direction === 'asc' ? 1 : -1;
+        return sortConfig.direction === "asc" ? 1 : -1;
       }
       return 0;
     });
@@ -151,9 +169,7 @@ const AdminPanel = () => {
       return <span className="ml-1 text-gray-400">↕</span>;
     }
     return (
-      <span className="ml-1">
-        {sortConfig.direction === 'asc' ? '↑' : '↓'}
-      </span>
+      <span className="ml-1">{sortConfig.direction === "asc" ? "↑" : "↓"}</span>
     );
   };
 
@@ -200,7 +216,7 @@ const AdminPanel = () => {
       }
       const data = await response.json();
       console.log("Fetched orders:", data);
-  
+
       const filteredDataOrders = data.map((order) => ({
         id: order.id,
         // createdDate: order.createdAt,
@@ -209,7 +225,7 @@ const AdminPanel = () => {
         userId: order.user?.id,
         addressId: order.address?.id,
       }));
-  
+
       // console.log('Fetched orders:', filteredData);
       // Update the state with the fetched orders
       setOrders(filteredDataOrders);
@@ -217,7 +233,6 @@ const AdminPanel = () => {
       console.error("Error fetching orders:", error);
     }
   };
-  
 
   const fetchTransactions = async () => {
     try {
@@ -227,7 +242,7 @@ const AdminPanel = () => {
       }
       const data = await response.json();
       console.log("Fetched transactions:", data);
-  
+
       const filteredData = data.map((transaction) => ({
         id: transaction.id,
         orderId: transaction.orderId,
@@ -236,7 +251,7 @@ const AdminPanel = () => {
         paymentMethod: transaction.paymentMethod,
         paymentStatus: transaction.paymentStatus,
       }));
-  
+
       setTransactions(filteredData);
     } catch (error) {
       console.error("Error fetching transactions:", error);
@@ -913,33 +928,40 @@ const AdminPanel = () => {
   };
 
   // Replace the columns object in the code with this updated version
-const columns = {
-  products: ["ID", "Slug", "Brand", "Price", "Rating", "Description", "Actions"],
-  categories: ["ID", "Name", "Description", "Actions"],
-  orders: [
-    { header: "ID", key: "id" },
-    { header: "Total Amount", key: "totalAmount" },
-    { header: "Order Status", key: "orderStatus" },
-    { header: "User ID", key: "userId" },
-    { header: "Address ID", key: "addressId" },
-    { header: "Actions", key: "actions" }
-  ],
-  transactions: [
-    { header: "ID", key: "id" },
-    { header: "Order ID", key: "orderId" },
-    { header: "Payment Date", key: "paymentDate" },
-    { header: "Amount", key: "amount" },
-    { header: "Payment Method", key: "paymentMethod" },
-    { header: "Payment Status", key: "paymentStatus" },
-    { header: "Actions", key: "actions" }
-  ]
-};
+  const columns = {
+    products: [
+      "ID",
+      "Slug",
+      "Brand",
+      "Price",
+      "Rating",
+      "Description",
+      "Actions",
+    ],
+    categories: ["ID", "Name", "Description", "Actions"],
+    orders: [
+      { header: "ID", key: "id" },
+      { header: "Total Amount", key: "totalAmount" },
+      { header: "Order Status", key: "orderStatus" },
+      { header: "User ID", key: "userId" },
+      { header: "Address ID", key: "addressId" },
+      { header: "Actions", key: "actions" },
+    ],
+    transactions: [
+      { header: "ID", key: "id" },
+      { header: "Order ID", key: "orderId" },
+      { header: "Payment Date", key: "paymentDate" },
+      { header: "Amount", key: "amount" },
+      // { header: "Payment Method", key: "paymentMethod" },
+      { header: "Payment Status", key: "paymentStatus" },
+      { header: "Actions", key: "actions" },
+    ],
+  };
 
-// Update the renderTable function to use the new column structure
-const renderTable = (data, type) => {
+  const renderTable = (data, type) => {
     const getDisplayValue = (item, column) => {
       if (column.key === "actions") return null;
-      
+
       const value = item[column.key];
       if (typeof value === "object" && value !== null) {
         if (Array.isArray(value)) {
@@ -951,7 +973,7 @@ const renderTable = (data, type) => {
     };
 
     const tableColumns = columns[type];
-    const isNewFormat = tableColumns[0]?.hasOwnProperty('header');
+    const isNewFormat = tableColumns[0]?.hasOwnProperty("header");
     const sortedData = getSortedData(data, type);
 
     return (
@@ -959,32 +981,39 @@ const renderTable = (data, type) => {
         <table className="w-full table-auto border-separate border-spacing-0">
           <thead>
             <tr className="bg-gray-800 text-white">
-              {isNewFormat 
+              {isNewFormat
                 ? tableColumns.map((col) => (
-                    <th 
-                      key={col.header} 
-                      className="px-6 py-3 text-left font-semibold cursor-pointer hover:bg-gray-700"
-                      onClick={() => col.key !== 'actions' && handleSort(col.key)}
+                    <th
+                      key={col.header}
+                      className="px-4 py-2 text-xs font-semibold cursor-pointer hover:bg-gray-700"
+                      onClick={() =>
+                        col.key !== "actions" && handleSort(col.key)
+                      }
                     >
                       <div className="flex items-center">
                         {col.header}
-                        {col.key !== 'actions' && <SortIndicator column={col.key} />}
+                        {col.key !== "actions" && (
+                          <SortIndicator column={col.key} />
+                        )}
                       </div>
                     </th>
                   ))
                 : tableColumns.map((col) => (
-                    <th 
-                      key={col} 
-                      className="px-6 py-3 text-left font-semibold cursor-pointer hover:bg-gray-700"
-                      onClick={() => col !== 'Actions' && handleSort(col.toLowerCase())}
+                    <th
+                      key={col}
+                      className="px-4 py-2 text-xs font-semibold cursor-pointer hover:bg-gray-700"
+                      onClick={() =>
+                        col !== "Actions" && handleSort(col.toLowerCase())
+                      }
                     >
                       <div className="flex items-center">
                         {col}
-                        {col !== 'Actions' && <SortIndicator column={col.toLowerCase()} />}
+                        {col !== "Actions" && (
+                          <SortIndicator column={col.toLowerCase()} />
+                        )}
                       </div>
                     </th>
-                  ))
-              }
+                  ))}
             </tr>
           </thead>
           <tbody>
@@ -994,29 +1023,35 @@ const renderTable = (data, type) => {
                   ? tableColumns.map((col) => {
                       if (col.key === "actions") {
                         return (
-                          <td key={col.header} className="px-6 py-4 text-white text-sm">
+                          <td
+                            key={col.header}
+                            className="px-4 py-3 text-white text-xs"
+                          >
                             <div className="flex gap-2">
                               <button
-                                className="flex-1 px-4 py-2 text-white bg-gray-600 rounded hover:bg-gray-500"
+                                className="flex-1 p-2 text-white bg-gray-600 rounded hover:bg-gray-500 text-xs"
                                 onClick={() => {
                                   setEditProduct(item);
                                   setShowEditModal(true);
                                 }}
                               >
-                                Edit
+                                <PencilIcon className="w-5 h-5" />
                               </button>
                               <button
-                                className="flex-1 px-4 py-2 text-white bg-red-600 rounded hover:bg-red-500"
+                                className="flex-1 p-2 text-white bg-red-600 rounded hover:bg-red-500 text-xs"
                                 onClick={() => handleDelete(item.id, type)}
                               >
-                                Delete
+                                <TrashIcon className="w-5 h-5" />
                               </button>
                             </div>
                           </td>
                         );
                       }
                       return (
-                        <td key={col.header} className="px-6 py-4 text-white text-sm">
+                        <td
+                          key={col.header}
+                          className="px-4 py-3 text-white text-xs"
+                        >
                           {getDisplayValue(item, col)}
                         </td>
                       );
@@ -1024,22 +1059,25 @@ const renderTable = (data, type) => {
                   : tableColumns.map((col) => {
                       if (col === "Actions") {
                         return (
-                          <td key={col} className="px-6 py-4 text-white text-sm">
+                          <td
+                            key={col}
+                            className="px-4 py-3 text-white text-xs"
+                          >
                             <div className="flex gap-2">
                               <button
-                                className="flex-1 px-4 py-2 text-white bg-gray-600 rounded hover:bg-gray-500"
+                                className="flex-1 p-2 text-white bg-gray-600 rounded hover:bg-gray-500 text-xs"
                                 onClick={() => {
                                   setEditProduct(item);
                                   setShowEditModal(true);
                                 }}
                               >
-                                Edit
+                                <PencilIcon className="w-5 h-5" />
                               </button>
                               <button
-                                className="flex-1 px-4 py-2 text-white bg-red-600 rounded hover:bg-red-500"
+                                className="flex-1 p-2 text-white bg-red-600 rounded hover:bg-red-500 text-xs"
                                 onClick={() => handleDelete(item.id, type)}
                               >
-                                Delete
+                                <TrashIcon className="w-5 h-5" />
                               </button>
                             </div>
                           </td>
@@ -1047,12 +1085,11 @@ const renderTable = (data, type) => {
                       }
                       const key = col.toLowerCase();
                       return (
-                        <td key={col} className="px-6 py-4 text-white text-sm">
+                        <td key={col} className="px-4 py-3 text-white text-xs">
                           {getDisplayValue(item, { key })}
                         </td>
                       );
-                    })
-                }
+                    })}
               </tr>
             ))}
           </tbody>
@@ -1066,15 +1103,23 @@ const renderTable = (data, type) => {
     );
   };
 
-  const renderCard = (title, value, icon, bgColor) => {
+  const renderCard = (title, value, Icon) => {
     return (
-      <div className={`p-6 ${bgColor} text-white rounded-lg shadow-lg flex flex-col items-center justify-center`}>
-        <div className="text-3xl">{icon}</div>
-        <h3 className="text-lg font-semibold mt-2">{title}</h3>
-        <p className="text-2xl font-bold">{value}</p>
+      <div
+        className="p-6 border-2 border-blue-500 shadow-lg rounded-lg flex flex-col items-center justify-center 
+                    bg-white text-black relative overflow-hidden"
+      >
+        <div className="absolute inset-0 border-2 border-blue-400 rounded-lg blur-md"></div>{" "}
+        {/* Blue glowing border */}
+        <div className="relative z-10 flex flex-col items-center">
+          <Icon className="w-8 h-8 text-blue-500" />
+          <h3 className="text-base font-semibold mt-2">{title}</h3>
+          <p className="text-xl font-bold text-blue-800">{value}</p>
+        </div>
       </div>
     );
   };
+
   const renderDashboard = () => {
     // Define the data for the transactions graph
     // const chartData = {
@@ -1096,36 +1141,71 @@ const renderTable = (data, type) => {
       totalCustomers: 300,
       totalOrders: 150,
       totalTransactions: 200,
-      transactionsPerMonth: [30, 50, 80, 60, 100, 120, 140, 160, 180, 200, 220, 250], // Example data
+      transactionsPerMonth: [
+        30, 50, 80, 60, 100, 120, 140, 160, 180, 200, 220, 250,
+      ], // Example data
     };
-  
+
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
         {/* Stats Cards */}
-        {renderCard("Users", dashboardData.users, "👤", "bg-gray-500")}
-        {renderCard("Sales", `$${dashboardData.sales}`, "💰", "bg-gray-600")}
-        {renderCard("Total Customers", dashboardData.totalCustomers, "🛒", "bg-gray-600")}
-        {renderCard("Total Orders", dashboardData.totalOrders, "📦", "bg-gray-600")}
-        {renderCard("Total Transactions", dashboardData.totalTransactions, "🔄", "bg-gray-600")}
-  
+        {renderCard("Users", dashboardData.users, Users)}
+        {renderCard("Sales", `$${dashboardData.sales}`, DollarSign)}
+        {renderCard(
+          "Total Customers",
+          dashboardData.totalCustomers,
+          ShoppingCart
+        )}
+        {renderCard("Total Orders", dashboardData.totalOrders, Package)}
+        {renderCard(
+          "Total Transactions",
+          dashboardData.totalTransactions,
+          RefreshCw
+        )}
+
         {/* Line Chart */}
-        <div className="col-span-1 md:col-span-2 lg:col-span-4 p-6 bg-gray-800 text-white rounded-lg shadow-lg">
-          <h3 className="text-lg font-semibold mb-4">Transactions Over Time</h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={dashboardData.transactionsPerMonth.map((value, index) => ({ month: `M${index + 1}`, value }))}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#444" />
-              <XAxis dataKey="month" stroke="#ccc" />
-              <YAxis stroke="#ccc" />
-              <RechartsTooltip />
-              <RechartsLine type="monotone" dataKey="value" stroke="#4ade80" strokeWidth={2} />
-            </LineChart>
-          </ResponsiveContainer>
+        <div className="col-span-1 md:col-span-2 lg:col-span-4 p-6 bg-white text-black rounded-lg shadow-lg border-2 border-blue-500">
+          <h3 className="text-lg font-semibold mb-4 text-blue-800">
+            Transactions Over Time
+          </h3>
+          <div className="w-full h-full">
+            <ResponsiveContainer width="100%" height={300}>
+              <LineChart
+                data={dashboardData.transactionsPerMonth.map(
+                  (value, index) => ({ month: `M${index + 1}`, value })
+                )}
+              >
+                <CartesianGrid strokeDasharray="5 5" stroke="#ddd" />
+                <XAxis dataKey="month" stroke="#888" />
+                <YAxis stroke="#888" />
+                <RechartsTooltip />
+                <Line
+                  type="monotone"
+                  dataKey="value"
+                  stroke="url(#lineGradient)"
+                  strokeWidth={3}
+                  dot={{ r: 4 }}
+                  activeDot={{ r: 6 }}
+                />
+                <defs>
+                  <linearGradient
+                    id="lineGradient"
+                    x1="0%"
+                    y1="0%"
+                    x2="100%"
+                    y2="100%"
+                  >
+                    <stop offset="0%" stopColor="#4ade80" />
+                    <stop offset="100%" stopColor="#1e3a8a" />
+                  </linearGradient>
+                </defs>
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
         </div>
       </div>
     );
   };
-  
-  
 
   const renderMarketing = () => {
     return (
@@ -1149,8 +1229,9 @@ const renderTable = (data, type) => {
   return (
     <div className="flex p-8 bg-gray-900 min-h-screen w-full">
       {/* Sidebar */}
-      <div className="w-1/4 p-4 bg-gray-800 text-white rounded-lg">
-        <h2 className="mb-6 text-xl font-bold">Admin Panel</h2>
+      <div className="w-1/5 p-4 bg-gray-800 text-white rounded-lg">
+        <h2 className="mb-6 text-lg font-semibold">Admin Panel</h2>{" "}
+        {/* Reduced font size */}
         <ul className="space-y-4">
           {[
             "dashboard",
@@ -1158,12 +1239,14 @@ const renderTable = (data, type) => {
             // "categories",
             "orders",
             "transactions",
+            "Users",
             "marketing",
             "reports",
           ].map((tab) => (
             <li key={tab}>
               <button
-                className={`w-full text-left p-3 rounded-md ${
+                className={`w-full text-left p-3 rounded-md text-sm ${
+                  // Reduced text size
                   activeTab === tab ? "bg-gray-600" : "hover:bg-gray-700"
                 }`}
                 onClick={() => setActiveTab(tab)}
@@ -1176,7 +1259,7 @@ const renderTable = (data, type) => {
       </div>
 
       {/* Content */}
-      <div className="flex-1 p-6 ml-6 bg-gray-900 text-white rounded-lg ">
+      <div className="flex-1 p-6 ml-6 bg-gray-900 text-white rounded-lg">
         {/* Only show "Add Product" button if the "products" tab is active */}
         {activeTab === "products" && (
           <div className="flex items-center mb-6 w-full gap-4">
@@ -1186,7 +1269,7 @@ const renderTable = (data, type) => {
                 placeholder="Search by slug..."
                 value={searchSlug}
                 onChange={(e) => setSearchSlug(e.target.value)}
-                className="px-4 py-2 bg-gray-800 text-white rounded border border-gray-700 focus:outline-none focus:border-gray-500 flex-1"
+                className="px-4 py-2 bg-gray-800 text-white rounded border border-gray-700 focus:outline-none focus:border-gray-500 flex-1 text-sm" // Reduced text size
                 onKeyPress={(e) => {
                   if (e.key === "Enter") {
                     handleSearch();
@@ -1195,14 +1278,14 @@ const renderTable = (data, type) => {
               />
               <button
                 onClick={handleSearch}
-                className="px-4 py-2 text-white bg-gray-600 rounded hover:bg-gray-500"
+                className="px-4 py-2 text-white bg-gray-600 rounded hover:bg-gray-500 text-sm" // Reduced text size
               >
                 Search
               </button>
             </div>
             <button
               onClick={() => setShowModal(true)}
-              className="px-4 py-2 text-white bg-gray-600 rounded hover:bg-gray-400 ml-auto"
+              className="px-4 py-2 text-white bg-gray-600 rounded hover:bg-gray-400 ml-auto text-sm" // Reduced text size
             >
               Add Product
             </button>
