@@ -16,7 +16,8 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { PencilIcon, TrashIcon } from "@heroicons/react/solid";
-
+import { jsPDF } from "jspdf";
+import html2canvas from "html2canvas";
 const AdminPanel = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [products, setProducts] = useState([]);
@@ -1218,10 +1219,106 @@ const AdminPanel = () => {
   };
 
   const renderReports = () => {
+    // Function to handle exporting to PDF
+    const exportToPDF = () => {
+    };
+
     return (
-      <div>
-        <h2 className="text-xl font-semibold mb-4">Reports</h2>
-        <p>Report: {reportsData.salesReport}</p>
+      <div
+        id="report-content"
+        className="bg-gray-100 p-8 rounded-lg shadow-lg"
+        style={{ backgroundColor: "#f7fafc" }} // Page color
+      >
+        {/* Report Title */}
+        <h2 className="text-xl text-blue-800 font-semibold mb-4">
+          E-commerce Report
+        </h2>
+
+        {/* Transactions Over Time Chart */}
+        <div
+          id="transaction-graph"
+          className="col-span-1 md:col-span-2 lg:col-span-4 p-6 bg-white text-black rounded-lg shadow-lg border-2 border-blue-500 mb-4"
+        >
+          <h3 className="text-lg font-semibold mb-4 text-blue-800">
+            Transactions Over Time
+          </h3>
+          <div className="w-full h-full">
+            <ResponsiveContainer width="100%" height={300}>
+              <LineChart
+                data={dashboardData.transactionsPerMonth.map(
+                  (value, index) => ({ month: `M${index + 1}`, value })
+                )}
+              >
+                <CartesianGrid strokeDasharray="5 5" stroke="#ddd" />
+                <XAxis dataKey="month" stroke="#888" />
+                <YAxis stroke="#888" />
+                <RechartsTooltip />
+                <Line
+                  type="monotone"
+                  dataKey="value"
+                  stroke="url(#lineGradient)"
+                  strokeWidth={3}
+                  dot={{ r: 4 }}
+                  activeDot={{ r: 6 }}
+                />
+                <defs>
+                  <linearGradient
+                    id="lineGradient"
+                    x1="0%"
+                    y1="0%"
+                    x2="100%"
+                    y2="100%"
+                  >
+                    <stop offset="0%" stopColor="#4ade80" />
+                    <stop offset="100%" stopColor="#1e3a8a" />
+                  </linearGradient>
+                </defs>
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* Sales Overview */}
+        <div className="bg-white p-6 rounded-lg shadow-lg mb-4">
+          <h3 className="text-lg font-semibold text-blue-800 mb-4">
+            Sales Overview
+          </h3>
+          <p>Total Sales: ${reportsData.totalSales}</p>
+          <p>Number of Orders: {reportsData.totalOrders}</p>
+          <p>Average Order Value: ${reportsData.avgOrderValue}</p>
+          <p>Sales Growth: {reportsData.salesGrowth}%</p>
+        </div>
+
+        {/* Order Summary */}
+        <div className="bg-white p-6 rounded-lg shadow-lg mb-4">
+          <h3 className="text-lg font-semibold text-blue-800 mb-4">
+            Order Summary
+          </h3>
+          <p>Orders Completed: {reportsData.ordersCompleted}</p>
+          <p>Orders Pending: {reportsData.ordersPending}</p>
+          <p>Top Selling Product: {reportsData.topSellingProduct}</p>
+        </div>
+
+        {/* Customer Insights */}
+        <div className="bg-white p-6 rounded-lg shadow-lg mb-4">
+          <h3 className="text-lg font-semibold text-blue-800 mb-4">
+            Customer Insights
+          </h3>
+          <p>New Customers: {reportsData.newCustomers}</p>
+          <p>Repeat Customer Rate: {reportsData.repeatCustomerRate}%</p>
+          <p>Customer Demographics: {reportsData.customerDemographics}</p>
+        </div>
+
+        {/* Export Button */}
+        <div className="mt-4">
+          <button
+            id="export-btn"
+            onClick={exportToPDF}
+            className="px-4 py-2 bg-blue-800 text-white rounded hover:bg-blue-500"
+          >
+            Export to PDF
+          </button>
+        </div>
       </div>
     );
   };
