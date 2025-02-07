@@ -1256,6 +1256,128 @@ const AdminPanel = () => {
   const renderReports = () => {
     // Function to handle exporting to PDF
     const exportToPDF = () => {
+      
+      const button = document.getElementById("export-btn");
+      button.style.display = "none"; // Hide button temporarily
+
+      const graphContent = document.getElementById("transaction-graph"); // Select only the Transactions Over Time graph
+
+      html2canvas(graphContent).then((canvas) => {
+        const imgData = canvas.toDataURL("image/png");
+
+        const pdf = new jsPDF("p", "mm", "a4");
+        const pageWidth = pdf.internal.pageSize.width;
+        const pageHeight = pdf.internal.pageSize.height;
+        let y = 30; // Initial Y position for content
+
+        const reportsData = {
+          totalSales: 45000,
+          totalOrders: 1200,
+          avgOrderValue: 37.5,
+          salesGrowth: 15, // Optional: you can use or comment this out depending on your needs
+          ordersCompleted: 1100,
+          ordersPending: 100,
+          topSellingProduct: "Wireless Mouse", // Optional: you can use or comment this out
+          newCustomers: 300,
+          repeatCustomerRate: 40, // Optional: you can use or comment this out
+          customerDemographics: "Age 25-45, Tech-Savvy", // Optional: you can use or comment this out
+          ctr: 3.5, // Optional: you can use or comment this out
+          conversionRate: 2.8, // Optional: you can use or comment this out
+          socialMediaReach: "50,000+ Followers" // Optional: you can use or comment this out
+        };
+        
+        // Header: Title & Date
+        const currentDate = new Date().toLocaleString();
+        pdf.setFont("helvetica", "bold");
+        pdf.setFontSize(18);
+        pdf.setTextColor(60, 60, 60); // Light gray for header text
+        pdf.text("Gigamart Sales Report", 10, 20); // Title
+        pdf.setFontSize(12);
+        pdf.setFont("helvetica", "normal");
+        pdf.setTextColor(100, 100, 100); // Light gray for date
+        pdf.text(`Generated on: ${currentDate}`, pageWidth - 80, 20); // Date
+
+        // Transactions Over Time Graph
+        pdf.setFontSize(14);
+        pdf.setFont("helvetica", "bold");
+        pdf.setTextColor(40, 40, 40); // Dark gray for section titles
+        y += 8;
+        pdf.addImage(imgData, "PNG", 10, y, pageWidth - 20, 80); // Adjust height dynamically
+        y += 90; // Move below the image
+
+        // Function to add a structured table with light background
+        const addTable = (title, data, startY) => {
+          pdf.setFont("helvetica", "bold");
+          pdf.setFontSize(14);
+          pdf.setTextColor(40, 40, 40); // Dark gray for section titles
+          pdf.text(title, 20, startY); // Section Title
+          startY += 8;
+          pdf.setFontSize(12);
+          pdf.setFont("helvetica", "normal");
+
+          // Light background for table section
+          pdf.setFillColor(230, 240, 255); // Light blue background for table sections
+          pdf.rect(10, startY - 15, pageWidth - 20, 42, "F");
+
+          data.forEach(([label, value]) => {
+            pdf.text(`${label}:`, 25, startY);
+            pdf.setFont("helvetica", "bold");
+            pdf.setTextColor(50, 50, 50); // Darker text color for table values
+            pdf.text(`${value}`, 80, startY);
+            pdf.setFont("helvetica", "normal");
+            startY += 7;
+          });
+
+          return startY + 5;
+        };
+
+        // Adding structured sections
+        y = addTable(
+          "Sales Overview",
+          [
+            ["Total Sales", `$${reportsData.totalSales}`],
+            ["Number of Orders", reportsData.totalOrders],
+            ["Average Order Value", `$${reportsData.avgOrderValue}`],
+            // ["Sales Growth", `${reportsData.salesGrowth}%`],
+          ],
+          y
+        );
+
+        y = addTable(
+          "Order Summary",
+          [
+            ["Orders Completed", reportsData.ordersCompleted],
+            ["Orders Pending", reportsData.ordersPending],
+            // ["Top Selling Product", reportsData.topSellingProduct],
+          ],
+          y
+        );
+
+        y = addTable(
+          "Customer Insights",
+          [
+            ["New Customers", reportsData.newCustomers],
+            // ["Repeat Customer Rate", `${reportsData.repeatCustomerRate}%`],
+            // ["Customer Demographics", reportsData.customerDemographics],
+          ],
+          y
+        );
+
+        // Footer with page number
+        pdf.setFontSize(10);
+        pdf.setTextColor(150, 150, 150); // Light gray for footer text
+        pdf.text(
+          `Page 1/${pdf.internal.getNumberOfPages()}`,
+          pageWidth - 50,
+          pageHeight - 10
+        );
+
+        // Save the PDF
+        pdf.save("ecommerce_report.pdf");
+
+        // Reset button visibility
+        button.style.display = "inline-block";
+      });
     };
 
     return (
