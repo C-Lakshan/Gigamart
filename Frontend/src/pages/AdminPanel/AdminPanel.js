@@ -24,6 +24,7 @@ const AdminPanel = () => {
   const [categories, setCategories] = useState([]);
   const [orders, setOrders] = useState([]);
   const [transactions, setTransactions] = useState([]);
+  const [users, setUsers] = useState([]);
   const [dashboardData, setDashboardData] = useState({
     users: 100,
     sales: 5000,
@@ -223,7 +224,7 @@ const AdminPanel = () => {
         // createdDate: order.createdAt,
         totalAmount: order.totalAmount,
         orderStatus: order.orderStatus,
-        userId: order.user?.id,
+        name: order.address?.name,
         addressId: order.address?.id,
       }));
 
@@ -259,12 +260,37 @@ const AdminPanel = () => {
     }
   };
 
+  const fetchUsers = async () => {
+  try {
+    const response = await fetch("http://localhost:8080/api/user/all");
+    if (!response.ok) {
+      throw new Error("Network response was not ok");
+    }
+    const data = await response.json();
+    console.log("Fetched users:", data);
+
+    const filteredUserData = data.map((user) => ({
+      id: user.id,
+      name: `${user.firstName} ${user.lastName}`,
+      email: user.email,
+      phoneNo: user.phoneNumber,
+      role: user.authorityList?.[0]?.roleCode || "USER", // Get first role if exists
+      address: user.addressList?.[0]?.state || "N/A", // Get state of first address if exists
+    }));
+
+    setUsers(filteredUserData);
+  } catch (error) {
+    console.error("Error fetching users:", error);
+  }
+};
+
   // Fetch data when tab changes
   useEffect(() => {
     if (activeTab === "products") fetchProducts();
     if (activeTab === "categories") fetchCategories();
     if (activeTab === "orders") fetchOrders();
     if (activeTab === "transactions") fetchTransactions();
+    if (activeTab === "users") fetchUsers();
   }, [activeTab]);
 
   const handleSearch = async () => {
@@ -944,7 +970,7 @@ const AdminPanel = () => {
       { header: "ID", key: "id" },
       { header: "Total Amount", key: "totalAmount" },
       { header: "Order Status", key: "orderStatus" },
-      { header: "User ID", key: "userId" },
+      { header: "User ID", key: "name" },
       { header: "Address ID", key: "addressId" },
       { header: "Actions", key: "actions" },
     ],
@@ -955,6 +981,15 @@ const AdminPanel = () => {
       { header: "Amount", key: "amount" },
       // { header: "Payment Method", key: "paymentMethod" },
       { header: "Payment Status", key: "paymentStatus" },
+      // { header: "Actions", key: "actions" },
+    ],
+    users: [
+      { header: "ID", key: "id" },
+      { header: "Name", key: "name" },
+      { header: "E-mail", key: "email" },
+      { header: "Phone No", key: "phoneNo" },
+      { header: "State", key: "address" },
+      { header: "Authority", key: "role" },
       { header: "Actions", key: "actions" },
     ],
   };
@@ -1336,8 +1371,7 @@ const AdminPanel = () => {
             // "categories",
             "orders",
             "transactions",
-            "Users",
-            "marketing",
+            "users",
             "reports",
           ].map((tab) => (
             <li key={tab}>
@@ -1392,6 +1426,7 @@ const AdminPanel = () => {
         {activeTab === "products" && renderTable(products, "products")}
         {activeTab === "categories" && renderTable(categories, "categories")}
         {activeTab === "orders" && renderTable(orders, "orders")}
+        {activeTab === "users" && renderTable(users, "users")}
         {activeTab === "transactions" &&
           renderTable(transactions, "transactions")}
         {activeTab === "dashboard" && renderDashboard()}
