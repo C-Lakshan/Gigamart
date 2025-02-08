@@ -278,7 +278,19 @@ const Quotation = () => {
             </select>
           </div>
 
-          
+          {/* Additional Information */}
+          <div className="flex flex-col space-y-2">
+            <label htmlFor="additionalInfo" className="text-lg font-medium">
+              Additional Information (Optional)
+            </label>
+            <textarea
+              id="additionalInfo"
+              name="additionalInfo"
+              value={formData.additionalInfo}
+              onChange={handleChange}
+              className="border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent min-h-[120px]"
+            />
+          </div>
 
           {/* Submit Button */}
           <div className="text-center pt-4">
