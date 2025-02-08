@@ -256,6 +256,28 @@ const Quotation = () => {
             />
           </div>
 
+          {/* Accessories (Multi-select) */}
+          <div className="flex flex-col space-y-2">
+            <label htmlFor="accessories" className="text-lg font-medium">
+              What accessories would you need?
+            </label>
+            <select
+              id="accessories"
+              name="accessories"
+              multiple
+              value={formData.accessories}
+              onChange={handleMultiSelectChange}
+              className="border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent min-h-[120px]"
+            >
+              <option value="mouse">Mouse</option>
+              <option value="keyboard">Keyboard</option>
+              <option value="headphones">Headphones</option>
+              <option value="charger">Charger</option>
+              <option value="externalStorage">External Storage</option>
+              <option value="case">Laptop Case</option>
+            </select>
+          </div>
+
           
 
           {/* Submit Button */}
