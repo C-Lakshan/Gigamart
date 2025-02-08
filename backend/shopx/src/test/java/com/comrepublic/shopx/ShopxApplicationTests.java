@@ -87,6 +87,73 @@ public class ShopxApplicationTests {
             e.printStackTrace();
         }
 
+        // Find the web component ('Laptop' link) by using XPath
+        // WebElement laptopLink = driver.findElement(By.xpath("//a[@href='/Laptop']"));
+        // Click link
+        // laptopLink.click();
+
+        // Find the web component ('Desktop' link) by using XPath
+        WebElement DesktopLink = driver.findElement(By.xpath("//a[@href='/Desktop']"));
+        // Click link
+        DesktopLink.click();
+        try {
+            Thread.sleep(loadTime);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        // Verification
+        assertTrue(driver.getCurrentUrl().contains("Desktop"), "User should be on the Desktop page");
+        try {
+            Thread.sleep(loadTime);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        // Find the web component ('Apple Mac Studio' product image link) by using XPath & href
+        WebElement productImageLink = driver.findElement(By.xpath("//a[@href='/product/apple-mac-studio']"));
+        productImageLink.click();
+        try {
+            Thread.sleep(loadTime);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        // Find the web component (Button inside a div with the text of "Add to cart") by using XPath
+        WebElement addToCartButton = driver.findElement(By.xpath("//button[.//div[contains(text(), 'Add to cart')]]"));
+        addToCartButton.click();
+        try {
+            Thread.sleep(loadTime);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        // Find the web component (cart icon link) by using XPath & href
+        WebElement cartIcon = driver.findElement(By.xpath("//a[@href='/cart-items']"));
+        cartIcon.click();
+        try {
+            Thread.sleep(loadTime);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        // Verification
+        assertTrue(driver.getCurrentUrl().contains("cart-items"), "User should be redirected to the cart page.");
+        try {
+            Thread.sleep(200);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        // Find the web component ("Checkout" button) using xpath & text content
+        WebElement checkout = driver.findElement(By.xpath("//button[text()='Checkout']"));
+        checkout.click();
+        try {
+            Thread.sleep(loadTime);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         
 
     }
