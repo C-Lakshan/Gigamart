@@ -225,6 +225,22 @@ const Quotation = () => {
             </select>
           </div>
 
+          {/* Software Field */}
+          <div className="flex flex-col space-y-2">
+            <label htmlFor="software" className="text-lg font-medium">
+              What software do you plan to use?
+            </label>
+            <input
+              type="text"
+              id="software"
+              name="software"
+              value={formData.software}
+              onChange={handleChange}
+              className="border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
+              required
+            />
+          </div>
+
           
 
           {/* Submit Button */}
