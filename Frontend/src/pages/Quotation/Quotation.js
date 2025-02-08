@@ -202,7 +202,31 @@ const Quotation = () => {
             </select>
           </div>
 
+          {/* Features Field (Multi-select) */}
+          <div className="flex flex-col space-y-2">
+            <label htmlFor="features" className="text-lg font-medium">
+              What features are most important to you?
+            </label>
+            <select
+              id="features"
+              name="features"
+              multiple
+              value={formData.features}
+              onChange={handleMultiSelectChange}
+              className="border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent min-h-[120px]"
+              required
+            >
+              <option value="fastPerformance">Fast Performance</option>
+              <option value="batteryLife">Long Battery Life</option>
+              <option value="lightWeight">Lightweight</option>
+              <option value="highResolution">High Resolution Display</option>
+              <option value="gaming">Gaming Features</option>
+              <option value="business">Business Features</option>
+            </select>
+          </div>
+
           
+
           {/* Submit Button */}
           <div className="text-center pt-4">
             <button
