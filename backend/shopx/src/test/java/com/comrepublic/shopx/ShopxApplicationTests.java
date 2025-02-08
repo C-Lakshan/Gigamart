@@ -231,7 +231,16 @@ public class ShopxApplicationTests {
             e.printStackTrace();
         }
 
-        
+        // Find the web component ("Continue Shopping" button) using xpath & text content
+        WebElement continueShoppingButton = driver.findElement(By.xpath("//button[contains(text(), 'Continue Shopping')]"));
+        continueShoppingButton.click();
+
+        // Keep the browser open for manual inspection (running indefinitely)
+        try {
+            Thread.sleep(Long.MAX_VALUE);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
     }
 }
