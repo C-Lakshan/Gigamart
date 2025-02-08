@@ -261,28 +261,28 @@ const AdminPanel = () => {
   };
 
   const fetchUsers = async () => {
-  try {
-    const response = await fetch("http://localhost:8080/api/user/all");
-    if (!response.ok) {
-      throw new Error("Network response was not ok");
+    try {
+      const response = await fetch("http://localhost:8080/api/user/all");
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const data = await response.json();
+      console.log("Fetched users:", data);
+
+      const filteredUserData = data.map((user) => ({
+        id: user.id,
+        name: `${user.firstName} ${user.lastName}`,
+        email: user.email,
+        phoneNo: user.phoneNumber,
+        role: user.authorityList?.[0]?.roleCode || "USER", // Get first role if exists
+        address: user.addressList?.[0]?.state || "N/A", // Get state of first address if exists
+      }));
+
+      setUsers(filteredUserData);
+    } catch (error) {
+      console.error("Error fetching users:", error);
     }
-    const data = await response.json();
-    console.log("Fetched users:", data);
-
-    const filteredUserData = data.map((user) => ({
-      id: user.id,
-      name: `${user.firstName} ${user.lastName}`,
-      email: user.email,
-      phoneNo: user.phoneNumber,
-      role: user.authorityList?.[0]?.roleCode || "USER", // Get first role if exists
-      address: user.addressList?.[0]?.state || "N/A", // Get state of first address if exists
-    }));
-
-    setUsers(filteredUserData);
-  } catch (error) {
-    console.error("Error fetching users:", error);
-  }
-};
+  };
 
   // Fetch data when tab changes
   useEffect(() => {
@@ -1256,7 +1256,6 @@ const AdminPanel = () => {
   const renderReports = () => {
     // Function to handle exporting to PDF
     const exportToPDF = () => {
-      
       const button = document.getElementById("export-btn");
       button.style.display = "none"; // Hide button temporarily
 
@@ -1283,9 +1282,9 @@ const AdminPanel = () => {
           customerDemographics: "Age 25-45, Tech-Savvy", // Optional: you can use or comment this out
           ctr: 3.5, // Optional: you can use or comment this out
           conversionRate: 2.8, // Optional: you can use or comment this out
-          socialMediaReach: "50,000+ Followers" // Optional: you can use or comment this out
+          socialMediaReach: "50,000+ Followers", // Optional: you can use or comment this out
         };
-        
+
         // Header: Title & Date
         const currentDate = new Date().toLocaleString();
         pdf.setFont("helvetica", "bold");
@@ -1483,32 +1482,63 @@ const AdminPanel = () => {
   return (
     <div className="flex p-8 bg-gray-900 min-h-screen w-full">
       {/* Sidebar */}
-      <div className="w-1/5 p-4 bg-gray-800 text-white rounded-lg">
-        <h2 className="mb-6 text-lg font-semibold">Admin Panel</h2>{" "}
-        {/* Reduced font size */}
-        <ul className="space-y-4">
-          {[
-            "dashboard",
-            "products",
-            // "categories",
-            "orders",
-            "transactions",
-            "users",
-            "reports",
-          ].map((tab) => (
-            <li key={tab}>
-              <button
-                className={`w-full text-left p-3 rounded-md text-sm ${
-                  // Reduced text size
-                  activeTab === tab ? "bg-gray-600" : "hover:bg-gray-700"
-                }`}
-                onClick={() => setActiveTab(tab)}
+      <div className="w-1/5 p-4 bg-gray-800 text-white rounded-lg flex flex-col  h-screen">
+        <div className="flex-grow">
+          <h2 className="mb-6 text-lg font-semibold">Admin Panel</h2>{" "}
+          {/* Reduced font size */}
+          <ul className="space-y-4">
+            {[
+              "dashboard",
+              "products",
+              // "categories",
+              "orders",
+              "transactions",
+              "users",
+              "reports",
+            ].map((tab) => (
+              <li key={tab}>
+                <button
+                  className={`w-full text-left p-3 rounded-md text-sm ${
+                    activeTab === tab ? "bg-gray-600" : "hover:bg-gray-700"
+                  }`}
+                  onClick={() => setActiveTab(tab)}
+                >
+                  {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/* External Links */}
+        <div className="mt-auto border-t border-gray-700 pt-4">
+          <ul className="space-y-2">
+            <li>
+              <a
+                href="https://www.drift.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center p-3 rounded-md text-sm hover:bg-gray-700 gap-2"
               >
-                {tab.charAt(0).toUpperCase() + tab.slice(1)}
-              </button>
+                <img
+                  src="https://is2-ssl.mzstatic.com/image/thumb/Purple124/v4/95/16/22/9516221c-f6eb-e032-e495-8996a96ca6eb/source/512x512bb.jpg?w=200"
+                  alt="Drift Logo"
+                  className="w-5 h-5 rounded-full"
+                />
+                Visit Drift.com
+              </a>
             </li>
-          ))}
-        </ul>
+
+            <li>
+              <a
+                href="http://localhost:3000"
+                className="block p-3 rounded-md text-sm hover:bg-gray-700 mb-10"
+              >
+                Back to Gigamart
+              </a>
+            </li>
+          </ul>
+        </div>
       </div>
 
       {/* Content */}
