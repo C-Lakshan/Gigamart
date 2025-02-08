@@ -241,6 +241,21 @@ const Quotation = () => {
             />
           </div>
 
+          {/* Brand Preference */}
+          <div className="flex flex-col space-y-2">
+            <label htmlFor="brandPreference" className="text-lg font-medium">
+              Do you have any brand preferences?
+            </label>
+            <input
+              type="text"
+              id="brandPreference"
+              name="brandPreference"
+              value={formData.brandPreference}
+              onChange={handleChange}
+              className="border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
+            />
+          </div>
+
           
 
           {/* Submit Button */}
