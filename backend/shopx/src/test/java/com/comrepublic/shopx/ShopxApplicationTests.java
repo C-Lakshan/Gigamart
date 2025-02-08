@@ -154,7 +154,93 @@ public class ShopxApplicationTests {
             e.printStackTrace();
         }
 
+        // Find the web component (radio button for "Credit/Debit Card") using xpath & input type
+        WebElement cardRadioButton = driver.findElement(By.xpath("//input[@type='radio' and @value='CARD']"));
+        cardRadioButton.click();
+        try {
+            Thread.sleep(loadTime);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        // Verification
+        assertTrue(cardRadioButton.isSelected(), "The Credit/Debit Card option should be selected.");
+        try {
+            Thread.sleep(200);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        // Find the web component ("elements-inner-payment" iframe) using xpath & src attribute
+        WebElement iframe = driver.findElement(By.xpath("//iframe[contains(@src, 'elements-inner-payment')]"));
+        try {
+            Thread.sleep(200);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        // Switch to the iframe 
+        driver.switchTo().frame(iframe);
+        try {
+            Thread.sleep(200);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        // Find the web component (card number input field) using xpath & placeholder
+        WebElement cardNumberInput = driver.findElement(By.xpath("//input[@placeholder='1234 1234 1234 1234']"));
+        cardNumberInput.sendKeys("4242424242424242");
+        try {
+            Thread.sleep(300);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        // Find the web component (expiry month input field) using xpath & placeholder
+        WebElement expiryDateInput = driver.findElement(By.xpath("//input[@placeholder='MM / YY']"));
+        expiryDateInput.sendKeys("12/25");
+        try {
+            Thread.sleep(300);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         
+        // Find the web component (cvc field) using xpath & placeholder
+        WebElement cvcInput = driver.findElement(By.xpath("//input[@placeholder='CVC']"));
+        cvcInput.sendKeys("123");
+        try {
+            Thread.sleep(300);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        // Switch to the default 
+        driver.switchTo().defaultContent();
+        try {
+            Thread.sleep(200);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        // Find the web component ("Pay Now" button) using xpath & text content
+        WebElement payNowButton = driver.findElement(By.xpath("//button[text()='Pay Now']"));
+        payNowButton.click();
+        try {
+            Thread.sleep(10000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        // Find the web component ("Continue Shopping" button) using xpath & text content
+        WebElement continueShoppingButton = driver.findElement(By.xpath("//button[contains(text(), 'Continue Shopping')]"));
+        continueShoppingButton.click();
+
+        // Keep the browser open for manual inspection (running indefinitely)
+        try {
+            Thread.sleep(Long.MAX_VALUE);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
     }
 }
