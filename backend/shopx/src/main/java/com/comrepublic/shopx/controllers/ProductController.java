@@ -44,6 +44,16 @@ public class ProductController {
         return new ResponseEntity<>(productList, HttpStatus.OK);
     }
 
+    // New API for searching by partial slug
+    @GetMapping("/searchProductsBySlugPart")
+    public ResponseEntity<List<ProductDto>> searchProductsBySlugPart(
+            @RequestParam String slugPart, HttpServletResponse response) {
+
+        List<ProductDto> productList = productService.searchProductsBySlugPart(slugPart);
+        response.setHeader("Content-Range", String.valueOf(productList.size()));
+        return new ResponseEntity<>(productList, HttpStatus.OK);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<ProductDto> getProductById(@PathVariable UUID id) {
         ProductDto productDto = productService.getProductById(id);

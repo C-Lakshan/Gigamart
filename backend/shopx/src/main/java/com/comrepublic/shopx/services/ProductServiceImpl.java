@@ -22,7 +22,7 @@ import java.util.UUID;
 import java.util.List;
 
 @Service
-public class ProductServiceImpl implements ProductService{
+public class ProductServiceImpl implements ProductService {
     @Autowired
     private ProductRepository productRepository;
 
@@ -47,12 +47,12 @@ public class ProductServiceImpl implements ProductService{
     @Override
     public List<ProductDto> getAllProducts(UUID categoryId, UUID typeId) {
 
-        Specification<Product> productSpecification= Specification.where(null);
+        Specification<Product> productSpecification = Specification.where(null);
 
-        if(null != categoryId){
+        if (null != categoryId) {
             productSpecification = productSpecification.and(ProductSpecification.hasCategoryId(categoryId));
         }
-        if(null != typeId){
+        if (null != typeId) {
             productSpecification = productSpecification.and(ProductSpecification.hasCategoryTypeId(typeId));
         }
 
@@ -62,8 +62,8 @@ public class ProductServiceImpl implements ProductService{
 
     @Override
     public ProductDto getProductBySlug(String slug) {
-        Product product= productRepository.findBySlug(slug);
-        if(null == product){
+        Product product = productRepository.findBySlug(slug);
+        if (null == product) {
             throw new ResourceNotFoundEx("Product Not Found!");
         }
         ProductDto productDto = productMapper.mapProductToDto(product);
@@ -76,7 +76,8 @@ public class ProductServiceImpl implements ProductService{
 
     @Override
     public ProductDto getProductById(UUID id) {
-        Product product= productRepository.findById(id).orElseThrow(()-> new ResourceNotFoundEx("Product Not Found!"));
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundEx("Product Not Found!"));
         ProductDto productDto = productMapper.mapProductToDto(product);
         productDto.setCategoryId(product.getCategory().getId());
         productDto.setCategoryTypeId(product.getCategoryType().getId());
@@ -87,7 +88,8 @@ public class ProductServiceImpl implements ProductService{
 
     @Override
     public Product updateProduct(ProductDto productDto, UUID id) {
-        Product product= productRepository.findById(id).orElseThrow(()-> new ResourceNotFoundEx("Product Not Found!"));
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundEx("Product Not Found!"));
         productDto.setId(product.getId());
         return productRepository.save(productMapper.mapToProductEntity(productDto));
     }
@@ -106,22 +108,30 @@ public class ProductServiceImpl implements ProductService{
             // Delete associated ProductVariants
             List<ProductVariant> productVariants = product.getProductVariants();
             if (productVariants != null) {
-                productVariantRepository.deleteAll(productVariants);  // Delete all related product variants
+                productVariantRepository.deleteAll(productVariants); // Delete all related product variants
             }
 
             // Delete associated Resources
             List<Resources> resources = product.getResources();
             if (resources != null) {
-                resourcesRepository.deleteAll(resources);  // Delete all related resources
+                resourcesRepository.deleteAll(resources); // Delete all related resources
             }
 
             // Now, delete the product itself
             productRepository.delete(product);
 
-            return true;  // Return true if the product was successfully deleted
+            return true; // Return true if the product was successfully deleted
         }
 
-        return false;  // Return false if the product was not found
+        return false; // Return false if the product was not found
     }
-    
+
+    @Override
+    public List<ProductDto> searchProductsBySlugPart(String slugPart) {
+        List<Product> products = productRepository.searchBySlugPart(slugPart);
+        if (products.isEmpty()) {
+            throw new ResourceNotFoundEx("No products found matching: " + slugPart);
+        }
+        return productMapper.getProductDtos(products);
+    }
 }
