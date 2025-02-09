@@ -63,5 +63,9 @@ public class PaymentController {
         return ResponseEntity.ok(paymentDTOs);
     }
 
-    
+    @GetMapping("/dashboard-stats")
+    public ResponseEntity<DashboardStats> getDashboardStats() {
+        DashboardStats stats = transactionService.getDashboardStats();
+        return ResponseEntity.ok(stats);
+    }
 }
