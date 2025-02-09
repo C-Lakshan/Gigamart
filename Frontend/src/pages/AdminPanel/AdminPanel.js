@@ -32,7 +32,7 @@ const AdminPanel = () => {
     totalOrders: 120,
     totalTransactions: 200,
     transactionsPerMonth: [
-      30, 50, 80, 60, 100, 120, 140, 160, 180, 200, 220, 250,
+      80, 60, 80, 120, 115, 150, 130, 150, 120, 200, 180, 210,
     ], // Sample transaction data for the graph
   });
 
@@ -1141,16 +1141,13 @@ const AdminPanel = () => {
 
   const renderCard = (title, value, Icon) => {
     return (
-      <div
-        className="p-6 border-2 border-blue-500 shadow-lg rounded-lg flex flex-col items-center justify-center 
-                    bg-white text-black relative overflow-hidden"
-      >
-        <div className="absolute inset-0 border-2 border-blue-400 rounded-lg blur-md"></div>{" "}
-        {/* Blue glowing border */}
+      <div className="p-6 border-2 border-gray-600 shadow-lg rounded-lg flex flex-col items-center justify-center bg-gray-900 text-white relative overflow-hidden">
+        <div className="absolute inset-0 border-2 border-gray-500 rounded-lg blur-md animate-pulse"></div>
+        {/* Gray glowing border effect */}
         <div className="relative z-10 flex flex-col items-center">
-          <Icon className="w-8 h-8 text-blue-500" />
-          <h3 className="text-base font-semibold mt-2">{title}</h3>
-          <p className="text-xl font-bold text-blue-800">{value}</p>
+          <Icon className="w-8 h-8 text-gray-400" />
+          <h3 className="text-lg font-semibold mt-2 text-gray-300">{title}</h3>
+          <p className="text-2xl font-bold text-gray-400">{value}</p>
         </div>
       </div>
     );
@@ -1178,68 +1175,31 @@ const AdminPanel = () => {
       totalOrders: 150,
       totalTransactions: 200,
       transactionsPerMonth: [
-        30, 50, 80, 60, 100, 120, 140, 160, 180, 200, 220, 250,
+        80, 60, 80, 120, 115, 150, 130, 150, 120, 200, 180, 210,
       ], // Example data
     };
 
-    return (
+    return (<div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-        {/* Stats Cards */}
         {renderCard("Users", dashboardData.users, Users)}
         {renderCard("Sales", `$${dashboardData.sales}`, DollarSign)}
-        {renderCard(
-          "Total Customers",
-          dashboardData.totalCustomers,
-          ShoppingCart
-        )}
+        {renderCard("Total Customers", dashboardData.totalCustomers, ShoppingCart)}
         {renderCard("Total Orders", dashboardData.totalOrders, Package)}
-        {renderCard(
-          "Total Transactions",
-          dashboardData.totalTransactions,
-          RefreshCw
-        )}
-
-        {/* Line Chart */}
-        <div className="col-span-1 md:col-span-2 lg:col-span-4 p-6 bg-white text-black rounded-lg shadow-lg border-2 border-blue-500">
-          <h3 className="text-lg font-semibold mb-4 text-blue-800">
-            Transactions Over Time
-          </h3>
-          <div className="w-full h-full">
-            <ResponsiveContainer width="100%" height={300}>
-              <LineChart
-                data={dashboardData.transactionsPerMonth.map(
-                  (value, index) => ({ month: `M${index + 1}`, value })
-                )}
-              >
-                <CartesianGrid strokeDasharray="5 5" stroke="#ddd" />
-                <XAxis dataKey="month" stroke="#888" />
-                <YAxis stroke="#888" />
-                <RechartsTooltip />
-                <Line
-                  type="monotone"
-                  dataKey="value"
-                  stroke="url(#lineGradient)"
-                  strokeWidth={3}
-                  dot={{ r: 4 }}
-                  activeDot={{ r: 6 }}
-                />
-                <defs>
-                  <linearGradient
-                    id="lineGradient"
-                    x1="0%"
-                    y1="0%"
-                    x2="100%"
-                    y2="100%"
-                  >
-                    <stop offset="0%" stopColor="#4ade80" />
-                    <stop offset="100%" stopColor="#1e3a8a" />
-                  </linearGradient>
-                </defs>
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
+        {renderCard("Total Transactions", dashboardData.totalTransactions, RefreshCw)}
       </div>
+      {/* Line Chart */}
+      <div className="p-6 bg-gray-900 rounded-lg shadow-lg border-2 border-gray-600">
+        <h3 className="text-xl font-semibold mb-4 text-gray-300">Transactions Over Time</h3>
+        <ResponsiveContainer width="100%" height={300}>
+          <LineChart data={dashboardData.transactionsPerMonth.map((value, index) => ({ month: `M${index + 1}`, value }))}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#2a2a2a" />
+            <XAxis dataKey="month" stroke="#bbb" />
+            <YAxis stroke="#bbb" />
+            <RechartsTooltip cursor={{ stroke: "#8f8f8f", strokeWidth: 2 }} contentStyle={{ backgroundColor: "#222", borderRadius: "5px", color: "#fff" }} />
+            <Line type="monotone" dataKey="value" stroke="#8f8f8f" strokeWidth={3} dot={{ r: 5, fill: "#8f8f8f" }} activeDot={{ r: 7, stroke: "#8f8f8f" }} />
+          </LineChart>
+        </ResponsiveContainer>
+      </div></div>
     );
   };
 
@@ -1270,15 +1230,15 @@ const AdminPanel = () => {
         let y = 30; // Initial Y position for content
 
         const reportsData = {
-          totalSales: 45000,
-          totalOrders: 1200,
-          avgOrderValue: 37.5,
+          totalSales: 32000,
+          totalOrders: 28,
+          avgOrderValue: 1142,
           salesGrowth: 15, // Optional: you can use or comment this out depending on your needs
-          ordersCompleted: 1100,
-          ordersPending: 100,
+          ordersCompleted: 25,
+          ordersPending: 3,
           topSellingProduct: "Wireless Mouse", // Optional: you can use or comment this out
-          newCustomers: 300,
-          repeatCustomerRate: 40, // Optional: you can use or comment this out
+          newCustomers: 12,
+          repeatCustomerRate: 10, // Optional: you can use or comment this out
           customerDemographics: "Age 25-45, Tech-Savvy", // Optional: you can use or comment this out
           ctr: 3.5, // Optional: you can use or comment this out
           conversionRate: 2.8, // Optional: you can use or comment this out
@@ -1484,38 +1444,42 @@ const AdminPanel = () => {
       {/* Sidebar */}
       <div className="w-1/5 p-4 bg-gray-800 text-white rounded-lg flex flex-col  h-screen">
         <div className="flex-grow">
-          <h2 className="mb-6 text-lg font-semibold">Admin Panel</h2>{" "}
-          {/* Reduced font size */}
-          <ul className="space-y-4">
-            {[
-              "dashboard",
-              "products",
-              // "categories",
-              "orders",
-              "transactions",
-              "users",
-              "reports",
-            ].map((tab) => (
-              <li key={tab}>
-                <button
-                  className={`w-full text-left p-3 rounded-md text-sm ${
-                    activeTab === tab ? "bg-gray-600" : "hover:bg-gray-700"
-                  }`}
-                  onClick={() => setActiveTab(tab)}
-                >
-                  {tab.charAt(0).toUpperCase() + tab.slice(1)}
-                </button>
-              </li>
-            ))}
-          </ul>
-        </div>
+  <div className="flex items-center mb-6">
+    <img src="https://i.ibb.co/FbBJxxBy/ONLINE-SHOPPING-1.png" alt="Admin Icon" className="w-14 h-14 mr-3" />
+    <h2 className="text-2xl font-semibold">Admin Panel</h2>
+  </div>
+
+  <ul className="space-y-4">
+    {[
+      "dashboard",
+      "products",
+      // "categories",
+      "orders",
+      "transactions",
+      "users",
+      "reports",
+    ].map((tab) => (
+      <li key={tab}>
+        <button
+          className={`w-full text-left p-3 rounded-md text-sm ${
+            activeTab === tab ? "bg-gray-600" : "hover:bg-gray-700"
+          }`}
+          onClick={() => setActiveTab(tab)}
+        >
+          {tab.charAt(0).toUpperCase() + tab.slice(1)}
+        </button>
+      </li>
+    ))}
+  </ul>
+</div>
+
 
         {/* External Links */}
         <div className="mt-auto border-t border-gray-700 pt-4">
           <ul className="space-y-2">
             <li>
               <a
-                href="https://www.drift.com"
+                href="https://app.drift.com/conversations"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center p-3 rounded-md text-sm hover:bg-gray-700 gap-2"
