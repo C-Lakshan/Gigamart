@@ -64,6 +64,22 @@ public class OrderService {
         List<OrderItem> orderItems = orderRequest.getOrderItemRequests().stream().map(orderItemRequest -> {
             try {
                 Product product = productService.fetchProductById(orderItemRequest.getProductId());
+                ProductVariant productVariant = product.getProductVariants().stream()
+                        .filter(variant -> variant.getId().equals(orderItemRequest.getProductVariantId()))
+                        .findFirst()
+                        .orElseThrow(() -> new RuntimeException("Product variant not found"));
+
+                // Check if the product variant quantity is sufficient
+                if (productVariant.getStockQuantity() == 0) {
+                    throw new RuntimeException("Product variant " + productVariant.getColor() + " "
+                            + productVariant.getSize() + " is out of stock.");
+                }
+
+                // Check if the quantity requested exceeds the stock available
+                if (orderItemRequest.getQuantity() > productVariant.getStockQuantity()) {
+                    throw new RuntimeException("Not enough stock for product variant " + productVariant.getColor()
+                            + " " + productVariant.getSize());
+                }
                 OrderItem orderItem = OrderItem.builder()
                         .product(product)
                         .productVariantId(orderItemRequest.getProductVariantId())
@@ -72,7 +88,7 @@ public class OrderService {
                         .build();
                 return orderItem;
             } catch (Exception e) {
-                throw new RuntimeException(e);
+                throw new RuntimeException("Error processing order item: " + e.getMessage());
             }
         }).toList();
 
@@ -102,12 +118,12 @@ public class OrderService {
 
     private void sendOrderConfirmationEmail(User user, Order order) {
         String orderId = order.getId().toString();
-    
-        String lastSixDigits = orderId.length() > 6 
-            ? orderId.substring(orderId.length() - 6) 
-            : orderId;
-        String subject = "Order Confirmation - Order #GM"+lastSixDigits;
-        
+
+        String lastSixDigits = orderId.length() > 8
+                ? orderId.substring(orderId.length() - 8)
+                : orderId;
+        String subject = "Order Confirmation - Order #GM-" + lastSixDigits;
+
         // HTML email content
         String message = "<!DOCTYPE html>" +
                 "<html>" +
@@ -127,7 +143,7 @@ public class OrderService {
                 "            margin-bottom: 20px;" +
                 "        }" +
                 "        .logo img {" +
-                "            max-width: 100px;" + 
+                "            max-width: 100px;" +
                 "            height: auto;" +
                 "        }" +
                 "        .header {" +
@@ -145,10 +161,10 @@ public class OrderService {
                 "            display: inline-block;" +
                 "            margin-top: 20px;" +
                 "            padding: 10px 20px;" +
-                "            color: #000 !important;" + 
-                "            background-color: #fff;" +  
+                "            color: #000 !important;" +
+                "            background-color: #fff;" +
                 "            text-decoration: none;" +
-                "            border: 2px solid #000;" +  
+                "            border: 2px solid #000;" +
                 "            border-radius: 5px;" +
                 "            text-align: center;" +
                 "        }" +
@@ -163,13 +179,13 @@ public class OrderService {
                 "<body>" +
                 "    <div class='email-container'>" +
                 "       <div class='logo'>" +
-                "            <img src='https://i.ibb.co/5LYCT1j/Screenshot-2025-01-18-181720.png' alt='ShopX Logo'>" +
+                "            <img src='https://i.ibb.co/FbBJxxBy/ONLINE-SHOPPING-1.png' alt='ShopX Logo'>" +
                 "        </div>" +
                 "        <h2 class='header'>Thank you for shopping with us!</h2>" +
                 "        <p><strong>Dear " + user.getFirstName() + ",</strong></p>" +
                 "        <p>Thank you for your order. Here are the details:</p>" +
                 "        <div class='order-details'>" +
-                "            <p><strong>Order ID:</strong> " + "GM"+lastSixDigits + "</p>" +
+                "            <p><strong>Order ID:</strong> " + "GM" + lastSixDigits + "</p>" +
                 "            <p><strong>Total Amount:</strong> $" + order.getTotalAmount() + "</p>" +
                 "            <p><strong>Payment Method:</strong> " + order.getPaymentMethod() + "</p>" +
                 "            <p><strong>Expected Delivery Date:</strong> " + order.getExpectedDeliveryDate() + "</p>" +
@@ -290,7 +306,5 @@ public class OrderService {
                     .build();
         }).toList();
     }
-    
-
 
 }
