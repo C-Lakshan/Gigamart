@@ -981,7 +981,7 @@ const AdminPanel = () => {
       { header: "Amount", key: "amount" },
       // { header: "Payment Method", key: "paymentMethod" },
       { header: "Payment Status", key: "paymentStatus" },
-      // { header: "Actions", key: "actions" },
+      { header: "Actions", key: "actions" },
     ],
     users: [
       { header: "ID", key: "id" },
