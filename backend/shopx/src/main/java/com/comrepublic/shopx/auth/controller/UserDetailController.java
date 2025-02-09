@@ -2,6 +2,7 @@ package com.comrepublic.shopx.auth.controller;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -66,5 +70,11 @@ public class UserDetailController {
                 .collect(Collectors.toList());
 
         return new ResponseEntity<>(userDetailsDtoList, HttpStatus.OK);
+    }
+
+    @PutMapping("/userProfile/{userId}")
+    public ResponseEntity<User> updateUser(@PathVariable UUID userId, @RequestBody User updatedUser) {
+        User user = userService.updateUser(userId, updatedUser);
+        return ResponseEntity.ok(user);
     }
 }
