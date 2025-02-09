@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+// import com.comrepublic.shopx.auth.dto.PasswordChangeRequest;
 import com.comrepublic.shopx.auth.dto.UserDetailsDto;
 import com.comrepublic.shopx.auth.entities.User;
 import com.comrepublic.shopx.auth.services.UserService;
@@ -77,4 +78,14 @@ public class UserDetailController {
         User user = userService.updateUser(userId, updatedUser);
         return ResponseEntity.ok(user);
     }
+
+    @PutMapping("/change-password/{userId}")
+    public ResponseEntity<String> changePassword(@PathVariable UUID userId,
+            @RequestBody String newPassword,
+            Principal principal) {
+        // Sample text for testing
+        return new ResponseEntity<>("This is a sample text for testing the change password functionality.",
+                HttpStatus.OK);
+    }
+
 }
