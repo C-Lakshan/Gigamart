@@ -8,6 +8,7 @@ import com.comrepublic.shopx.dto.OrderItemDetail;
 import com.comrepublic.shopx.dto.OrderRequest;
 import com.comrepublic.shopx.entities.*;
 import com.comrepublic.shopx.repositories.OrderRepository;
+import com.comrepublic.shopx.repositories.ProductVariantRepository;
 
 import jakarta.mail.internet.MimeMessage;
 import jakarta.transaction.Transactional;
@@ -31,6 +32,9 @@ public class OrderService {
 
     @Autowired
     private OrderRepository orderRepository;
+
+    @Autowired
+    private ProductVariantRepository productVariantRepository;
 
     @Autowired
     ProductService productService;
@@ -86,6 +90,11 @@ public class OrderService {
                         .quantity(orderItemRequest.getQuantity())
                         .order(order)
                         .build();
+                // Decrease the stock quantity of the ordered product variant
+                productVariant.setStockQuantity(productVariant.getStockQuantity() - orderItemRequest.getQuantity());
+                // Save the updated ProductVariant back to the repository
+                productVariantRepository.save(productVariant);
+
                 return orderItem;
             } catch (Exception e) {
                 throw new RuntimeException("Error processing order item: " + e.getMessage());
