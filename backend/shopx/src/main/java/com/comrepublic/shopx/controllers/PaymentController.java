@@ -1,14 +1,17 @@
 package com.comrepublic.shopx.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.comrepublic.shopx.dto.DashboardStats;
 import com.comrepublic.shopx.dto.PaymentDTO;
 import com.comrepublic.shopx.entities.Payment;
 import com.comrepublic.shopx.services.TransactionService;
 
+import java.sql.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -43,4 +46,22 @@ public class PaymentController {
     //     paymentService.deletePayment(paymentId);
     //     return ResponseEntity.noContent().build();
     // }
+
+    @GetMapping("/transactionsBetweenDays")
+    public ResponseEntity<List<PaymentDTO>> getTransactionsBetweenDates(
+            @RequestParam("startDate") String startDate,
+            @RequestParam("endDate") String endDate) {
+        
+        // Convert String to java.sql.Date
+        Date sqlStartDate = Date.valueOf(startDate);
+        Date sqlEndDate = Date.valueOf(endDate);
+        
+        List<Payment> payments = transactionService.getPaymentsBetweenDates(sqlStartDate, sqlEndDate);
+        List<PaymentDTO> paymentDTOs = payments.stream()
+            .map(Payment::toDTO)
+            .collect(Collectors.toList());
+        return ResponseEntity.ok(paymentDTOs);
+    }
+
+    
 }
