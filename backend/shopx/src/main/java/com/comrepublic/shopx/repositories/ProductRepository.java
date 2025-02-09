@@ -18,5 +18,4 @@ public interface ProductRepository extends JpaRepository<Product, UUID>, JpaSpec
 
         @Query("SELECT p FROM Product p WHERE LOWER(p.slug) LIKE LOWER(CONCAT('%', :slugPart, '%'))")
         List<Product> searchBySlugPart(@Param("slugPart") String slugPart);
-
 }

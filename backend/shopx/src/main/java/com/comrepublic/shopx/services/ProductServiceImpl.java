@@ -134,4 +134,21 @@ public class ProductServiceImpl implements ProductService {
         }
         return productMapper.getProductDtos(products);
     }
+
+    @Override
+    public List<ProductVariant> updateVariantsQuantity(UUID productId, Integer quantity) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new ResourceNotFoundEx("Product Not Found!"));
+
+        List<ProductVariant> variants = productVariantRepository.findByProductId(productId);
+
+        // Update the quantity for each variant
+        for (ProductVariant variant : variants) {
+            variant.setStockQuantity(quantity); // Set the quantity for each variant
+            productVariantRepository.save(variant); // Save each updated variant
+        }
+
+        return variants;
+    }
+
 }

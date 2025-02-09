@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.comrepublic.shopx.dto.ProductDto;
 import com.comrepublic.shopx.entities.Product;
+import com.comrepublic.shopx.entities.ProductVariant;
 import com.comrepublic.shopx.services.ProductService;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -80,6 +81,15 @@ public class ProductController {
         } else {
             return new ResponseEntity<>("Product not found", HttpStatus.NOT_FOUND);
         }
+    }
+
+    @PutMapping("/updateQuantity/{productId}")
+    public ResponseEntity<List<ProductVariant>> updateProductVariantsQuantity(
+            @PathVariable UUID productId,
+            @RequestParam Integer quantity) {
+
+        List<ProductVariant> updatedVariants = productService.updateVariantsQuantity(productId, quantity);
+        return new ResponseEntity<>(updatedVariants, HttpStatus.OK);
     }
 
 }
