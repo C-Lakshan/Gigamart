@@ -15,5 +15,6 @@ public class DashboardStats {
     private long totalCustomers;
     private long totalOrders;
     private long totalTransactions;
+    private double[] monthlySales;
 }
 
