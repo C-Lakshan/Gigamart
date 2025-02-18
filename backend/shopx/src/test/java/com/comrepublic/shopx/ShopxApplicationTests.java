@@ -239,7 +239,7 @@ public class ShopxApplicationTests {
         // boolean isShoppingPageDisplayed = driver.getCurrentUrl().contains("shopping"); 
         
         // Verification
-        assertTrue(true,"Payment cycle completed successfully, user clicked 'Continue Shopping' and page transitioned.");
+        // assertTrue(true,"Payment cycle completed successfully, user clicked 'Continue Shopping' and page transitioned.");
 
         // Keep the browser open for manual inspection (running indefinitely)
         try {

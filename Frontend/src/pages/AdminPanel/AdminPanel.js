@@ -18,6 +18,12 @@ import {
 import { PencilIcon, TrashIcon } from "@heroicons/react/solid";
 import { jsPDF } from "jspdf";
 import html2canvas from "html2canvas";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css"; 
+
+const BASE_URL = "http://localhost:8080/";
+// const BASE_URL = "http://localhost:8000/";
+
 const AdminPanel = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [products, setProducts] = useState([]);
@@ -25,15 +31,27 @@ const AdminPanel = () => {
   const [orders, setOrders] = useState([]);
   const [transactions, setTransactions] = useState([]);
   const [users, setUsers] = useState([]);
+  // const [dashboardData, setDashboardData] = useState({
+  //   users: 100,
+  //   sales: 5000,
+  //   totalCustomers: 50,
+  //   totalOrders: 120,
+  //   totalTransactions: 200,
+  //   transactionsPerMonth: [
+  //     80, 60, 80, 120, 115, 150, 130, 150, 120, 200, 180, 210,
+  //   ], // Sample transaction data for the graph
+  // });
+
+  // Initialize as null to handle loading state
+  // const [dashboardData, setDashboardData] = useState(null);
+
   const [dashboardData, setDashboardData] = useState({
-    users: 100,
-    sales: 5000,
-    totalCustomers: 50,
-    totalOrders: 120,
-    totalTransactions: 200,
-    transactionsPerMonth: [
-      80, 60, 80, 120, 115, 150, 130, 150, 120, 200, 180, 210,
-    ], // Sample transaction data for the graph
+    users: 0,
+    sales: 0,
+    totalCustomers: 0,
+    totalOrders: 0,
+    totalTransactions: 0,
+    monthlySales: [],
   });
 
   const [marketingData, setMarketingData] = useState({
@@ -44,7 +62,6 @@ const AdminPanel = () => {
   const [showModal, setShowModal] = useState(false);
   const [searchSlug, setSearchSlug] = useState("");
 
-  // State for handling product form and edit mode
   const [newProduct, setNewProduct] = useState({
     // name: "",
     // price: "",
@@ -175,10 +192,9 @@ const AdminPanel = () => {
     );
   };
 
-  // Simulated API calls
   const fetchProducts = async () => {
     try {
-      const response = await fetch("http://localhost:8080/api/products");
+      const response = await fetch(`${BASE_URL}api/products`);
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
@@ -195,7 +211,6 @@ const AdminPanel = () => {
         description: product.description,
       }));
       // console.log('Fetched products:', filteredData);
-      // Update the state with the fetched products
       setProducts(filteredData);
     } catch (error) {
       console.error("Error fetching products:", error);
@@ -212,7 +227,7 @@ const AdminPanel = () => {
 
   const fetchOrders = async () => {
     try {
-      const response = await fetch("http://localhost:8080/api/order");
+      const response = await fetch(`${BASE_URL}api/order`);
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
@@ -229,7 +244,6 @@ const AdminPanel = () => {
       }));
 
       // console.log('Fetched orders:', filteredData);
-      // Update the state with the fetched orders
       setOrders(filteredDataOrders);
     } catch (error) {
       console.error("Error fetching orders:", error);
@@ -238,7 +252,7 @@ const AdminPanel = () => {
 
   const fetchTransactions = async () => {
     try {
-      const response = await fetch("http://localhost:8080/api/payment");
+      const response = await fetch(`${BASE_URL}api/payment`);
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
@@ -262,7 +276,7 @@ const AdminPanel = () => {
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch("http://localhost:8080/api/user/all");
+      const response = await fetch(`${BASE_URL}api/user/all`);
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
@@ -274,13 +288,40 @@ const AdminPanel = () => {
         name: `${user.firstName} ${user.lastName}`,
         email: user.email,
         phoneNo: user.phoneNumber,
-        role: user.authorityList?.[0]?.roleCode || "USER", // Get first role if exists
-        address: user.addressList?.[0]?.state || "N/A", // Get state of first address if exists
+        role: user.authorityList?.[0]?.roleCode || "USER", 
+        address: user.addressList?.[0]?.state || "N/A", 
       }));
 
       setUsers(filteredUserData);
     } catch (error) {
       console.error("Error fetching users:", error);
+    }
+  };
+
+  const fetchDashboardStats = async () => {
+    try {
+      const response = await fetch(
+        "http://localhost:8080/api/payment/dashboard-stats"
+      );
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      const data = await response.json();
+      console.log("Fetched dashboard stats:", data);
+
+      setDashboardData({
+        users: data.totalUsers,
+        sales: data.totalSales,
+        totalCustomers: data.totalCustomers,
+        totalOrders: data.totalOrders,
+        totalTransactions: data.totalTransactions,
+        monthlySales: data.monthlySales,
+      });
+      // setDashboardData(data);
+    } catch (error) {
+      console.error("Error fetching dashboard stats:", error);
     }
   };
 
@@ -291,12 +332,13 @@ const AdminPanel = () => {
     if (activeTab === "orders") fetchOrders();
     if (activeTab === "transactions") fetchTransactions();
     if (activeTab === "users") fetchUsers();
+    if (activeTab === "dashboard") fetchDashboardStats(); 
   }, [activeTab]);
 
   const handleSearch = async () => {
     try {
       const response = await fetch(
-        `http://localhost:8080/api/products?slug=${searchSlug}`
+        `${BASE_URL}api/products?slug=${searchSlug}`
       );
       if (!response.ok) {
         throw new Error("Network response was not ok");
@@ -331,13 +373,13 @@ const AdminPanel = () => {
     try {
       let url = "";
       if (type === "products") {
-        url = `http://localhost:8080/api/products/${id}`;
+        url = `${BASE_URL}api/products/${id}`;
       } else if (type === "categories") {
-        url = `http://localhost:8080/api/categories/${id}`;
+        url = `${BASE_URL}api/categories/${id}`;
       } else if (type === "orders") {
-        url = `http://localhost:8080/api/orders/${id}`;
+        url = `${BASE_URL}/api/orders/${id}`;
       } else if (type === "transactions") {
-        url = `http://localhost:8080/api/transactions/${id}`;
+        url = `${BASE_URL}/api/transactions/${id}`;
       }
 
       const response = await fetch(url, { method: "DELETE" });
@@ -409,7 +451,7 @@ const AdminPanel = () => {
     const authToken = localStorage.getItem("authToken");
     console.log(authToken);
     // POST request to the API
-    fetch("http://localhost:8080/api/products", {
+    fetch(`${BASE_URL}api/products`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -954,7 +996,6 @@ const AdminPanel = () => {
     );
   };
 
-  // Replace the columns object in the code with this updated version
   const columns = {
     products: [
       "ID",
@@ -1012,6 +1053,9 @@ const AdminPanel = () => {
     const isNewFormat = tableColumns[0]?.hasOwnProperty("header");
     const sortedData = getSortedData(data, type);
 
+    // Show skeleton loader if data is not loaded yet
+    const loading = !data || data.length === 0;
+
     return (
       <>
         <table className="w-full table-auto border-separate border-spacing-0">
@@ -1053,81 +1097,98 @@ const AdminPanel = () => {
             </tr>
           </thead>
           <tbody>
-            {sortedData.map((item) => (
-              <tr key={item.id} className="bg-gray-700 hover:bg-gray-600">
-                {isNewFormat
-                  ? tableColumns.map((col) => {
-                      if (col.key === "actions") {
-                        return (
-                          <td
-                            key={col.header}
-                            className="px-4 py-3 text-white text-xs"
-                          >
-                            <div className="flex gap-2">
-                              <button
-                                className="flex-1 p-2 text-white bg-gray-600 rounded hover:bg-gray-500 text-xs"
-                                onClick={() => {
-                                  setEditProduct(item);
-                                  setShowEditModal(true);
-                                }}
-                              >
-                                <PencilIcon className="w-5 h-5" />
-                              </button>
-                              <button
-                                className="flex-1 p-2 text-white bg-red-600 rounded hover:bg-red-500 text-xs"
-                                onClick={() => handleDelete(item.id, type)}
-                              >
-                                <TrashIcon className="w-5 h-5" />
-                              </button>
-                            </div>
-                          </td>
-                        );
-                      }
-                      return (
-                        <td
-                          key={col.header}
-                          className="px-4 py-3 text-white text-xs"
-                        >
-                          {getDisplayValue(item, col)}
+            {loading
+              ? // Show skeleton loader while data is loading
+                Array(10)
+                  .fill(null)
+                  .map((_, index) => (
+                    <tr key={index} className="bg-gray-700 hover:bg-gray-600">
+                      {tableColumns.map((_, i) => (
+                        <td key={i} className="px-4 py-3 text-gray-300 text-xs">
+                          <Skeleton height={20} width={`100%`} />
                         </td>
-                      );
-                    })
-                  : tableColumns.map((col) => {
-                      if (col === "Actions") {
-                        return (
-                          <td
-                            key={col}
-                            className="px-4 py-3 text-white text-xs"
-                          >
-                            <div className="flex gap-2">
-                              <button
-                                className="flex-1 p-2 text-white bg-gray-600 rounded hover:bg-gray-500 text-xs"
-                                onClick={() => {
-                                  setEditProduct(item);
-                                  setShowEditModal(true);
-                                }}
+                      ))}
+                    </tr>
+                  ))
+              : // Render row data after loading
+                sortedData.map((item) => (
+                  <tr key={item.id} className="bg-gray-700 hover:bg-gray-600">
+                    {isNewFormat
+                      ? tableColumns.map((col) => {
+                          if (col.key === "actions") {
+                            return (
+                              <td
+                                key={col.header}
+                                className="px-4 py-3 text-white text-xs"
                               >
-                                <PencilIcon className="w-5 h-5" />
-                              </button>
-                              <button
-                                className="flex-1 p-2 text-white bg-red-600 rounded hover:bg-red-500 text-xs"
-                                onClick={() => handleDelete(item.id, type)}
+                                <div className="flex gap-2">
+                                  <button
+                                    className="flex-1 p-2 text-white bg-gray-600 rounded hover:bg-gray-500 text-xs"
+                                    onClick={() => {
+                                      setEditProduct(item);
+                                      setShowEditModal(true);
+                                    }}
+                                  >
+                                    <PencilIcon className="w-5 h-5" />
+                                  </button>
+                                  <button
+                                    className="flex-1 p-2 text-white bg-red-600 rounded hover:bg-red-500 text-xs"
+                                    onClick={() => handleDelete(item.id, type)}
+                                  >
+                                    <TrashIcon className="w-5 h-5" />
+                                  </button>
+                                </div>
+                              </td>
+                            );
+                          }
+                          return (
+                            <td
+                              key={col.header}
+                              className="px-4 py-3 text-white text-xs"
+                            >
+                              {getDisplayValue(item, col)}
+                            </td>
+                          );
+                        })
+                      : tableColumns.map((col) => {
+                          if (col === "Actions") {
+                            return (
+                              <td
+                                key={col}
+                                className="px-4 py-3 text-white text-xs"
                               >
-                                <TrashIcon className="w-5 h-5" />
-                              </button>
-                            </div>
-                          </td>
-                        );
-                      }
-                      const key = col.toLowerCase();
-                      return (
-                        <td key={col} className="px-4 py-3 text-white text-xs">
-                          {getDisplayValue(item, { key })}
-                        </td>
-                      );
-                    })}
-              </tr>
-            ))}
+                                <div className="flex gap-2">
+                                  <button
+                                    className="flex-1 p-2 text-white bg-gray-600 rounded hover:bg-gray-500 text-xs"
+                                    onClick={() => {
+                                      setEditProduct(item);
+                                      setShowEditModal(true);
+                                    }}
+                                  >
+                                    <PencilIcon className="w-5 h-5" />
+                                  </button>
+                                  <button
+                                    className="flex-1 p-2 text-white bg-red-600 rounded hover:bg-red-500 text-xs"
+                                    onClick={() => handleDelete(item.id, type)}
+                                  >
+                                    <TrashIcon className="w-5 h-5" />
+                                  </button>
+                                </div>
+                              </td>
+                            );
+                          }
+                          const key = col.toLowerCase();
+                          return (
+                            <td
+                              key={col}
+                              className="px-4 py-3 text-white text-xs"
+                            >
+                              {getDisplayValue(item, { key })}
+                            </td>
+                          );
+                        })}
+                  </tr>
+                ))}
           </tbody>
         </table>
         <ConfirmationModal
@@ -1154,7 +1215,6 @@ const AdminPanel = () => {
   };
 
   const renderDashboard = () => {
-    // Define the data for the transactions graph
     // const chartData = {
     //   labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
     //   datasets: [
@@ -1168,38 +1228,77 @@ const AdminPanel = () => {
     //   ],
     // };
 
-    const dashboardData = {
-      users: 1000,
-      sales: 5000,
-      totalCustomers: 300,
-      totalOrders: 150,
-      totalTransactions: 200,
-      transactionsPerMonth: [
-        80, 60, 80, 120, 115, 150, 130, 150, 120, 200, 180, 210,
-      ], // Example data
-    };
-
-    return (<div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-        {renderCard("Users", dashboardData.users, Users)}
-        {renderCard("Sales", `$${dashboardData.sales}`, DollarSign)}
-        {renderCard("Total Customers", dashboardData.totalCustomers, ShoppingCart)}
-        {renderCard("Total Orders", dashboardData.totalOrders, Package)}
-        {renderCard("Total Transactions", dashboardData.totalTransactions, RefreshCw)}
+    // const dashboardData = {
+    //   users: 1000,
+    //   sales: 5000,
+    //   totalCustomers: 300,
+    //   totalOrders: 150,
+    //   totalTransactions: 200,
+    //   transactionsPerMonth: [
+    //     80, 60, 80, 120, 115, 150, 130, 150, 120, 200, 180, 210,
+    //   ], // Example data
+    // };
+    if (!dashboardData) {
+      return (
+        <div className="flex justify-center items-center h-64">
+          <p className="text-gray-400">Loading dashboard data...</p>
+        </div>
+      );
+    }
+    return (
+      <div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+          {renderCard("Users", dashboardData.users, Users)}
+          {renderCard("Sales", `$${dashboardData.sales}`, DollarSign)}
+          {renderCard(
+            "Total Customers",
+            dashboardData.totalCustomers,
+            ShoppingCart
+          )}
+          {renderCard("Total Orders", dashboardData.totalOrders, Package)}
+          {renderCard(
+            "Total Transactions",
+            dashboardData.totalTransactions,
+            RefreshCw
+          )}
+        </div>
+        {/* Line Chart */}
+        <div className="p-6 bg-gray-900 rounded-lg shadow-lg border-2 border-gray-600">
+          <h3 className="text-xl font-semibold mb-4 text-gray-300">
+            Transactions Over Time
+          </h3>
+          <ResponsiveContainer width="100%" height={300}>
+            <LineChart
+              data={[
+                ...(dashboardData.monthlySales || []).map((value, index) => ({
+                  month: `M${index + 1}`,
+                  value,
+                })),
+              ]}
+            >
+              <CartesianGrid strokeDasharray="3 3" stroke="#2a2a2a" />
+              <XAxis dataKey="month" stroke="#bbb" />
+              <YAxis stroke="#bbb" />
+              <RechartsTooltip
+                cursor={{ stroke: "#8f8f8f", strokeWidth: 2 }}
+                contentStyle={{
+                  backgroundColor: "#222",
+                  borderRadius: "5px",
+                  color: "#fff",
+                }}
+              />
+              <Line
+                type="monotone"
+                dataKey="value"
+                stroke="#8f8f8f"
+                strokeWidth={3}
+                dot={{ r: 5, fill: "#8f8f8f" }}
+                activeDot={{ r: 7, stroke: "#8f8f8f" }}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
       </div>
-      {/* Line Chart */}
-      <div className="p-6 bg-gray-900 rounded-lg shadow-lg border-2 border-gray-600">
-        <h3 className="text-xl font-semibold mb-4 text-gray-300">Transactions Over Time</h3>
-        <ResponsiveContainer width="100%" height={300}>
-          <LineChart data={dashboardData.transactionsPerMonth.map((value, index) => ({ month: `M${index + 1}`, value }))}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#2a2a2a" />
-            <XAxis dataKey="month" stroke="#bbb" />
-            <YAxis stroke="#bbb" />
-            <RechartsTooltip cursor={{ stroke: "#8f8f8f", strokeWidth: 2 }} contentStyle={{ backgroundColor: "#222", borderRadius: "5px", color: "#fff" }} />
-            <Line type="monotone" dataKey="value" stroke="#8f8f8f" strokeWidth={3} dot={{ r: 5, fill: "#8f8f8f" }} activeDot={{ r: 7, stroke: "#8f8f8f" }} />
-          </LineChart>
-        </ResponsiveContainer>
-      </div></div>
     );
   };
 
@@ -1217,9 +1316,9 @@ const AdminPanel = () => {
     // Function to handle exporting to PDF
     const exportToPDF = () => {
       const button = document.getElementById("export-btn");
-      button.style.display = "none"; // Hide button temporarily
+      button.style.display = "none"; 
 
-      const graphContent = document.getElementById("transaction-graph"); // Select only the Transactions Over Time graph
+      const graphContent = document.getElementById("transaction-graph"); 
 
       html2canvas(graphContent).then((canvas) => {
         const imgData = canvas.toDataURL("image/png");
@@ -1229,59 +1328,59 @@ const AdminPanel = () => {
         const pageHeight = pdf.internal.pageSize.height;
         let y = 30; // Initial Y position for content
 
+        // Construct the reports data from the API data
         const reportsData = {
-          totalSales: 32000,
-          totalOrders: 28,
-          avgOrderValue: 1142,
-          salesGrowth: 15, // Optional: you can use or comment this out depending on your needs
-          ordersCompleted: 25,
-          ordersPending: 3,
-          topSellingProduct: "Wireless Mouse", // Optional: you can use or comment this out
-          newCustomers: 12,
-          repeatCustomerRate: 10, // Optional: you can use or comment this out
-          customerDemographics: "Age 25-45, Tech-Savvy", // Optional: you can use or comment this out
-          ctr: 3.5, // Optional: you can use or comment this out
-          conversionRate: 2.8, // Optional: you can use or comment this out
-          socialMediaReach: "50,000+ Followers", // Optional: you can use or comment this out
+          totalSales: dashboardData.sales,
+          totalOrders: dashboardData.totalOrders,
+          avgOrderValue: (dashboardData.sales / dashboardData.totalOrders).toFixed(2) || 0, // Calculate average order value
+          salesGrowth: 15, 
+          ordersCompleted: dashboardData.totalOrders, 
+          ordersPending: 3, 
+          topSellingProduct: "Wireless Mouse", 
+          customersThisMonth: dashboardData.totalCustomers, 
+          userCount: dashboardData.users,
+          repeatCustomerRate: 10, 
+          customerDemographics: "Age 25-45, Tech-Savvy",
+          ctr: 3.5, 
+          conversionRate: 2.8, 
+          socialMediaReach: "50,000+ Followers",
         };
 
-        // Header: Title & Date
         const currentDate = new Date().toLocaleString();
         pdf.setFont("helvetica", "bold");
         pdf.setFontSize(18);
-        pdf.setTextColor(60, 60, 60); // Light gray for header text
-        pdf.text("Gigamart Sales Report", 10, 20); // Title
+        pdf.setTextColor(60, 60, 60); 
+        pdf.text("Gigamart Sales Report", 10, 20); 
         pdf.setFontSize(12);
         pdf.setFont("helvetica", "normal");
-        pdf.setTextColor(100, 100, 100); // Light gray for date
-        pdf.text(`Generated on: ${currentDate}`, pageWidth - 80, 20); // Date
+        pdf.setTextColor(100, 100, 100); 
+        pdf.text(`Generated on: ${currentDate}`, pageWidth - 80, 20); 
 
         // Transactions Over Time Graph
         pdf.setFontSize(14);
         pdf.setFont("helvetica", "bold");
-        pdf.setTextColor(40, 40, 40); // Dark gray for section titles
+        pdf.setTextColor(40, 40, 40);
         y += 8;
-        pdf.addImage(imgData, "PNG", 10, y, pageWidth - 20, 80); // Adjust height dynamically
-        y += 90; // Move below the image
+        pdf.addImage(imgData, "PNG", 10, y, pageWidth - 20, 80); 
+        y += 90; 
 
-        // Function to add a structured table with light background
+        // Function to add a structured table 
         const addTable = (title, data, startY) => {
           pdf.setFont("helvetica", "bold");
           pdf.setFontSize(14);
-          pdf.setTextColor(40, 40, 40); // Dark gray for section titles
-          pdf.text(title, 20, startY); // Section Title
+          pdf.setTextColor(40, 40, 40);
+          pdf.text(title, 20, startY); 
           startY += 8;
           pdf.setFontSize(12);
           pdf.setFont("helvetica", "normal");
 
-          // Light background for table section
-          pdf.setFillColor(230, 240, 255); // Light blue background for table sections
+          pdf.setFillColor(230, 240, 255);
           pdf.rect(10, startY - 15, pageWidth - 20, 42, "F");
 
           data.forEach(([label, value]) => {
             pdf.text(`${label}:`, 25, startY);
             pdf.setFont("helvetica", "bold");
-            pdf.setTextColor(50, 50, 50); // Darker text color for table values
+            pdf.setTextColor(50, 50, 50); 
             pdf.text(`${value}`, 80, startY);
             pdf.setFont("helvetica", "normal");
             startY += 7;
@@ -1305,8 +1404,8 @@ const AdminPanel = () => {
         y = addTable(
           "Order Summary",
           [
-            ["Orders Completed", reportsData.ordersCompleted],
-            ["Orders Pending", reportsData.ordersPending],
+            ["Orders count", reportsData.ordersCompleted],
+            // ["Orders Pending", reportsData.ordersPending],
             // ["Top Selling Product", reportsData.topSellingProduct],
           ],
           y
@@ -1315,7 +1414,8 @@ const AdminPanel = () => {
         y = addTable(
           "Customer Insights",
           [
-            ["New Customers", reportsData.newCustomers],
+            ["Customers this month", reportsData.customersThisMonth],
+            ["Total Customers", reportsData.userCount],
             // ["Repeat Customer Rate", `${reportsData.repeatCustomerRate}%`],
             // ["Customer Demographics", reportsData.customerDemographics],
           ],
@@ -1343,27 +1443,28 @@ const AdminPanel = () => {
       <div
         id="report-content"
         className="bg-gray-100 p-8 rounded-lg shadow-lg"
-        style={{ backgroundColor: "#f7fafc" }} // Page color
+        style={{ backgroundColor: "#374151" }} // Page color
       >
         {/* Report Title */}
-        <h2 className="text-xl text-blue-800 font-semibold mb-4">
+        <h2 className="text-xl text-white font-semibold mb-4">
           E-commerce Report
         </h2>
 
         {/* Transactions Over Time Chart */}
         <div
           id="transaction-graph"
-          className="col-span-1 md:col-span-2 lg:col-span-4 p-6 bg-white text-black rounded-lg shadow-lg border-2 border-blue-500 mb-4"
+          className="col-span-1 md:col-span-2 lg:col-span-4 p-6 bg-white text-black rounded-lg shadow-lg border-2 border-gray-900 mb-4"
         >
-          <h3 className="text-lg font-semibold mb-4 text-blue-800">
+          <h3 className="text-lg font-semibold mb-4 text-gray-gray-700">
             Transactions Over Time
           </h3>
           <div className="w-full h-full">
             <ResponsiveContainer width="100%" height={300}>
               <LineChart
-                data={dashboardData.transactionsPerMonth.map(
-                  (value, index) => ({ month: `M${index + 1}`, value })
-                )}
+                data={dashboardData.monthlySales.map((value, index) => ({
+                  month: `M${index + 1}`,
+                  value,
+                }))}
               >
                 <CartesianGrid strokeDasharray="5 5" stroke="#ddd" />
                 <XAxis dataKey="month" stroke="#888" />
@@ -1385,7 +1486,7 @@ const AdminPanel = () => {
                     x2="100%"
                     y2="100%"
                   >
-                    <stop offset="0%" stopColor="#4ade80" />
+                    <stop offset="0%" stopColor="#909090" />
                     <stop offset="100%" stopColor="#1e3a8a" />
                   </linearGradient>
                 </defs>
@@ -1395,32 +1496,32 @@ const AdminPanel = () => {
         </div>
 
         {/* Sales Overview */}
-        <div className="bg-white p-6 rounded-lg shadow-lg mb-4">
-          <h3 className="text-lg font-semibold text-blue-800 mb-4">
+        <div className="bg-white text-gray-700 p-6 rounded-lg shadow-lg mb-4">
+          <h3 className="text-lg font-semibold text-gray-700 mb-4">
             Sales Overview
           </h3>
-          <p>Total Sales: ${reportsData.totalSales}</p>
-          <p>Number of Orders: {reportsData.totalOrders}</p>
-          <p>Average Order Value: ${reportsData.avgOrderValue}</p>
-          <p>Sales Growth: {reportsData.salesGrowth}%</p>
+          <p>Total Sales: $ {dashboardData.sales}</p>
+          <p>Number of Orders: {dashboardData.totalOrders}</p>
+          <p>Average Order Value: $ {(dashboardData.sales/dashboardData.totalOrders).toFixed(2)}</p>
+          <p>Sales Growth: {((dashboardData.monthlySales[11]-dashboardData.monthlySales[10]) /dashboardData.monthlySales[10]*100).toFixed(2)}%</p>
         </div>
 
-        {/* Order Summary */}
-        <div className="bg-white p-6 rounded-lg shadow-lg mb-4">
-          <h3 className="text-lg font-semibold text-blue-800 mb-4">
+        {/* Order Summary
+        <div className="bg-white text-gray-700 p-6 rounded-lg shadow-lg mb-4">
+          <h3 className="text-lg font-semibold text-gray-700 mb-4">
             Order Summary
           </h3>
           <p>Orders Completed: {reportsData.ordersCompleted}</p>
           <p>Orders Pending: {reportsData.ordersPending}</p>
           <p>Top Selling Product: {reportsData.topSellingProduct}</p>
-        </div>
+        </div> */}
 
         {/* Customer Insights */}
-        <div className="bg-white p-6 rounded-lg shadow-lg mb-4">
-          <h3 className="text-lg font-semibold text-blue-800 mb-4">
+        <div className="bg-white text-gray-700 p-6 rounded-lg shadow-lg mb-4">
+          <h3 className="text-lg font-semibold text-gray-700 mb-4">
             Customer Insights
           </h3>
-          <p>New Customers: {reportsData.newCustomers}</p>
+          <p>Customers this month: {dashboardData.users}</p>
           <p>Repeat Customer Rate: {reportsData.repeatCustomerRate}%</p>
           <p>Customer Demographics: {reportsData.customerDemographics}</p>
         </div>
@@ -1430,7 +1531,7 @@ const AdminPanel = () => {
           <button
             id="export-btn"
             onClick={exportToPDF}
-            className="px-4 py-2 bg-blue-800 text-white rounded hover:bg-blue-500"
+            className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-400"
           >
             Export to PDF
           </button>
@@ -1444,35 +1545,38 @@ const AdminPanel = () => {
       {/* Sidebar */}
       <div className="w-1/5 p-4 bg-gray-800 text-white rounded-lg flex flex-col  h-screen">
         <div className="flex-grow">
-  <div className="flex items-center mb-6">
-    <img src="https://i.ibb.co/FbBJxxBy/ONLINE-SHOPPING-1.png" alt="Admin Icon" className="w-14 h-14 mr-3" />
-    <h2 className="text-2xl font-semibold">Admin Panel</h2>
-  </div>
+          <div className="flex items-center mb-6">
+            <img
+              src="https://i.ibb.co/FbBJxxBy/ONLINE-SHOPPING-1.png"
+              alt="Admin Icon"
+              className="w-14 h-14 mr-3"
+            />
+            <h2 className="text-2xl font-semibold">Admin Panel</h2>
+          </div>
 
-  <ul className="space-y-4">
-    {[
-      "dashboard",
-      "products",
-      // "categories",
-      "orders",
-      "transactions",
-      "users",
-      "reports",
-    ].map((tab) => (
-      <li key={tab}>
-        <button
-          className={`w-full text-left p-3 rounded-md text-sm ${
-            activeTab === tab ? "bg-gray-600" : "hover:bg-gray-700"
-          }`}
-          onClick={() => setActiveTab(tab)}
-        >
-          {tab.charAt(0).toUpperCase() + tab.slice(1)}
-        </button>
-      </li>
-    ))}
-  </ul>
-</div>
-
+          <ul className="space-y-4">
+            {[
+              "dashboard",
+              "products",
+              // "categories",
+              "orders",
+              "transactions",
+              "users",
+              "reports",
+            ].map((tab) => (
+              <li key={tab}>
+                <button
+                  className={`w-full text-left p-3 rounded-md text-sm ${
+                    activeTab === tab ? "bg-gray-600" : "hover:bg-gray-700"
+                  }`}
+                  onClick={() => setActiveTab(tab)}
+                >
+                  {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
 
         {/* External Links */}
         <div className="mt-auto border-t border-gray-700 pt-4">
@@ -1507,7 +1611,7 @@ const AdminPanel = () => {
 
       {/* Content */}
       <div className="flex-1 p-6 ml-6 bg-gray-900 text-white rounded-lg">
-        {/* Only show "Add Product" button if the "products" tab is active */}
+        {/* Show "Add Product" button if the "products" tab is active */}
         {activeTab === "products" && (
           <div className="flex items-center mb-6 w-full gap-4">
             <div className="flex-1 flex items-center gap-2">
@@ -1516,7 +1620,7 @@ const AdminPanel = () => {
                 placeholder="Search by slug..."
                 value={searchSlug}
                 onChange={(e) => setSearchSlug(e.target.value)}
-                className="px-4 py-2 bg-gray-800 text-white rounded border border-gray-700 focus:outline-none focus:border-gray-500 flex-1 text-sm" // Reduced text size
+                className="px-4 py-2 bg-gray-800 text-white rounded border border-gray-700 focus:outline-none focus:border-gray-500 flex-1 text-sm"
                 onKeyPress={(e) => {
                   if (e.key === "Enter") {
                     handleSearch();
@@ -1525,14 +1629,14 @@ const AdminPanel = () => {
               />
               <button
                 onClick={handleSearch}
-                className="px-4 py-2 text-white bg-gray-600 rounded hover:bg-gray-500 text-sm" // Reduced text size
+                className="px-4 py-2 text-white bg-gray-600 rounded hover:bg-gray-500 text-sm" 
               >
                 Search
               </button>
             </div>
             <button
               onClick={() => setShowModal(true)}
-              className="px-4 py-2 text-white bg-gray-600 rounded hover:bg-gray-400 ml-auto text-sm" // Reduced text size
+              className="px-4 py-2 text-white bg-gray-600 rounded hover:bg-gray-400 ml-auto text-sm" 
             >
               Add Product
             </button>
