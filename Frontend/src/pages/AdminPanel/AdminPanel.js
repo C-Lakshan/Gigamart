@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { API_BASE_URL, API_URLS, getHeaders } from "../../api/constant";
 import {
   LineChart,
   Line,
@@ -19,15 +21,17 @@ import { PencilIcon, TrashIcon } from "@heroicons/react/solid";
 import { jsPDF } from "jspdf";
 import html2canvas from "html2canvas";
 import Skeleton from "react-loading-skeleton";
-import "react-loading-skeleton/dist/skeleton.css"; 
+import "react-loading-skeleton/dist/skeleton.css";
 
-const BASE_URL = "http://localhost:8080/";
+const HOME_URL = "http://localhost:3000/";
+// const BASE_URL = "http://localhost:8080/";
 // const BASE_URL = "http://localhost:8000/";
 
 const AdminPanel = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
+  const [deviceTypes, setDeviceTypes] = useState([]);
   const [orders, setOrders] = useState([]);
   const [transactions, setTransactions] = useState([]);
   const [users, setUsers] = useState([]);
@@ -193,73 +197,110 @@ const AdminPanel = () => {
   };
 
   const fetchProducts = async () => {
+    const url = API_BASE_URL + "/api/products";
     try {
-      const response = await fetch(`${BASE_URL}api/products`);
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-      const data = await response.json();
-      console.log("Fetched products:", data);
+      const result = await axios(url, {
+        method: "GET",
+      });
 
-      const filteredData = data.map((product) => ({
+      const filteredData = result?.data.map((product) => ({
         id: product.id,
         slug: product.slug,
         brand: product.brand,
         price: product.price,
         rating: product.rating,
-        // newArrival: product.newArrival,
         description: product.description,
       }));
-      // console.log('Fetched products:', filteredData);
+
       setProducts(filteredData);
+      return filteredData;
     } catch (error) {
-      console.error("Error fetching products:", error);
+      console.log(error);
     }
   };
 
   const fetchCategories = async () => {
-    const data = [
-      { id: 1, name: "Electronics", description: "Electronic goods" },
-      { id: 2, name: "Clothing", description: "Fashion items" },
-    ];
-    setCategories(data);
+    const url = API_BASE_URL + "/api/category";
+    try {
+      const result = await axios(url, {
+        method: "GET",
+      });
+
+      const allCategories = result?.data.map((category) => ({
+        id: category.id,
+        name: category.name,
+      }));
+
+      console.log("Processed device types:", allCategories);
+      setDeviceTypes(allCategories);
+
+      return result.data;
+    } catch (error) {
+      console.log("Error fetching categories:", error);
+    }
+  };
+
+  const fetchBrandsByDeviceType = (deviceTypeId) => {
+    const url = API_BASE_URL + "/api/category";
+    axios(url, {
+      method: "GET",
+    })
+      .then((result) => {
+        console.log("Looking for device type with ID:", deviceTypeId);
+
+        const selectedCategory = result.data.find(
+          (category) => category.id === deviceTypeId
+        );
+
+        console.log("Found category:", selectedCategory);
+
+        if (selectedCategory) {
+          const brands = selectedCategory.categoryTypes.map((brand) => ({
+            id: brand.id,
+            name: brand.name,
+          }));
+
+          console.log("Processed brands for selected category:", brands);
+          setCategories(brands);
+        }
+      })
+      .catch((error) => {
+        console.log("Error fetching brands:", error);
+      });
   };
 
   const fetchOrders = async () => {
+    const url = API_BASE_URL + "/api/order";
     try {
-      const response = await fetch(`${BASE_URL}api/order`);
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-      const data = await response.json();
-      console.log("Fetched orders:", data);
+      const response = await axios(url, {
+        method: "GET",
+        headers: getHeaders(),
+      });
 
-      const filteredDataOrders = data.map((order) => ({
+      const filteredDataOrders = response?.data.map((order) => ({
         id: order.id,
-        // createdDate: order.createdAt,
         totalAmount: order.totalAmount,
         orderStatus: order.orderStatus,
         name: order.address?.name,
         addressId: order.address?.id,
       }));
 
-      // console.log('Fetched orders:', filteredData);
       setOrders(filteredDataOrders);
-    } catch (error) {
-      console.error("Error fetching orders:", error);
+      return filteredDataOrders;
+    } catch (err) {
+      throw new Error(err);
     }
   };
 
   const fetchTransactions = async () => {
+    const url = API_BASE_URL + "/api/payment";
     try {
-      const response = await fetch(`${BASE_URL}api/payment`);
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-      const data = await response.json();
-      console.log("Fetched transactions:", data);
+      const response = await axios(url, {
+        method: "GET",
+        headers: getHeaders(),
+      });
 
-      const filteredData = data.map((transaction) => ({
+      const filteredData = response?.data.map((transaction) => ({
         id: transaction.id,
         orderId: transaction.orderId,
         paymentDate: transaction.paymentDate,
@@ -269,76 +310,73 @@ const AdminPanel = () => {
       }));
 
       setTransactions(filteredData);
-    } catch (error) {
-      console.error("Error fetching transactions:", error);
+      return filteredData;
+    } catch (err) {
+      throw new Error(err);
     }
   };
 
   const fetchUsers = async () => {
+    const url = API_BASE_URL + "/api/user/all";
     try {
-      const response = await fetch(`${BASE_URL}api/user/all`);
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-      const data = await response.json();
-      console.log("Fetched users:", data);
+      const response = await axios(url, {
+        method: "GET",
+        headers: getHeaders(),
+      });
 
-      const filteredUserData = data.map((user) => ({
+      const filteredUserData = response?.data.map((user) => ({
         id: user.id,
         name: `${user.firstName} ${user.lastName}`,
         email: user.email,
         phoneNo: user.phoneNumber,
-        role: user.authorityList?.[0]?.roleCode || "USER", 
-        address: user.addressList?.[0]?.state || "N/A", 
+        role: user.authorityList?.[0]?.roleCode || "USER",
+        address: user.addressList?.[0]?.state || "N/A",
       }));
 
       setUsers(filteredUserData);
-    } catch (error) {
-      console.error("Error fetching users:", error);
+      return filteredUserData;
+    } catch (err) {
+      throw new Error(err);
     }
   };
 
   const fetchDashboardStats = async () => {
+    const url = API_BASE_URL + "/api/payment/dashboard-stats";
     try {
-      const response = await fetch(
-        "http://localhost:8080/api/payment/dashboard-stats"
-      );
-
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-
-      const data = await response.json();
-      console.log("Fetched dashboard stats:", data);
-
-      setDashboardData({
-        users: data.totalUsers,
-        sales: data.totalSales,
-        totalCustomers: data.totalCustomers,
-        totalOrders: data.totalOrders,
-        totalTransactions: data.totalTransactions,
-        monthlySales: data.monthlySales,
+      const response = await axios(url, {
+        method: "GET",
+        headers: getHeaders(),
       });
-      // setDashboardData(data);
-    } catch (error) {
-      console.error("Error fetching dashboard stats:", error);
+
+      const dashboardData = {
+        users: response?.data.totalUsers,
+        sales: response?.data.totalSales,
+        totalCustomers: response?.data.totalCustomers,
+        totalOrders: response?.data.totalOrders,
+        totalTransactions: response?.data.totalTransactions,
+        monthlySales: response?.data.monthlySales,
+      };
+
+      setDashboardData(dashboardData);
+      return dashboardData;
+    } catch (err) {
+      throw new Error(err);
     }
   };
 
-  // Fetch data when tab changes
   useEffect(() => {
     if (activeTab === "products") fetchProducts();
     if (activeTab === "categories") fetchCategories();
     if (activeTab === "orders") fetchOrders();
     if (activeTab === "transactions") fetchTransactions();
     if (activeTab === "users") fetchUsers();
-    if (activeTab === "dashboard") fetchDashboardStats(); 
+    if (activeTab === "dashboard") fetchDashboardStats();
   }, [activeTab]);
 
   const handleSearch = async () => {
     try {
       const response = await fetch(
-        `${BASE_URL}api/products?slug=${searchSlug}`
+        `${API_BASE_URL}api/products?slug=${searchSlug}`
       );
       if (!response.ok) {
         throw new Error("Network response was not ok");
@@ -373,13 +411,13 @@ const AdminPanel = () => {
     try {
       let url = "";
       if (type === "products") {
-        url = `${BASE_URL}api/products/${id}`;
+        url = `${API_BASE_URL}api/products/${id}`;
       } else if (type === "categories") {
-        url = `${BASE_URL}api/categories/${id}`;
+        url = `${API_BASE_URL}api/categories/${id}`;
       } else if (type === "orders") {
-        url = `${BASE_URL}/api/orders/${id}`;
+        url = `${API_BASE_URL}/api/orders/${id}`;
       } else if (type === "transactions") {
-        url = `${BASE_URL}/api/transactions/${id}`;
+        url = `${API_BASE_URL}/api/transactions/${id}`;
       }
 
       const response = await fetch(url, { method: "DELETE" });
@@ -421,37 +459,38 @@ const AdminPanel = () => {
       name: newProduct.name,
       description: newProduct.description,
       price: newProduct.price,
-      brand: newProduct.brand,
+      brand: newProduct.brandName,
       newArrival: true,
       rating: 4,
-      categoryId: "edb0c4b4-6e85-404e-a8d0-72857b1c4395",
-      thumbnail: "https://example.com/images/mac_pro_8core.jpg",
+      categoryId: newProduct.deviceType,
+      thumbnail: newProduct.thumbnail,
       slug: newProduct.slug,
-      categoryName: newProduct.deviceType,
-      categoryTypeId: "49cc3d90-606d-4851-8cd7-934a1434f756",
-      categoryTypeName: newProduct.brand,
+      categoryName: newProduct.deviceTypeName,
+      categoryTypeId: newProduct.brand,
+      categoryTypeName: newProduct.brandName,
       variants: [
         {
-          color: newProduct.variantsColor,
-          size: newProduct.variantsSize,
-          stockQuantity: newProduct.variantsStockQuantity,
+          color: newProduct.colour,
+          size: newProduct.size,
+          stockQuantity: newProduct.quantity,
         },
       ],
       productResources: [
         {
-          name: newProduct.productResourceName,
-          url: newProduct.productResourceUrl,
-          type: newProduct.productResourceType,
+          name: newProduct.ResourceName,
+          url: newProduct.ResourceUrl,
+          type: newProduct.ResourceType,
           isPrimary: true,
         },
       ],
     };
 
+    console.log(product);
     // Retrieve the JWT token from localStorage
     const authToken = localStorage.getItem("authToken");
     console.log(authToken);
     // POST request to the API
-    fetch(`${BASE_URL}api/products`, {
+    fetch(`${API_BASE_URL}/api/products`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -566,60 +605,87 @@ const AdminPanel = () => {
                 className="w-full p-2 mb-4 border border-gray-700 rounded bg-gray-900 text-white text-sm"
                 required
               />
-
-              {/* Brand Dropdown */}
-              {/* <label className="block text-white text-sm mb-2">Brand</label> */}
-              <select
-                name="brand"
-                value={editProduct ? editProduct.brand : newProduct.brand}
-                onChange={(e) =>
-                  setNewProduct({
-                    ...newProduct,
-                    brand: e.target.value,
-                  })
-                }
-                className="w-full p-2 mb-4 border border-gray-700 rounded bg-gray-900 text-white text-sm"
-                required
-              >
-                <option value="" disabled selected>
-                  Select a Brand
-                </option>
-                <option value="Apple">Apple</option>
-                <option value="Asus">Asus</option>
-                <option value="Acer">Acer</option>
-                <option value="Dell">Dell</option>
-                <option value="HP">HP</option>
-                <option value="Lenovo">Lenovo</option>
-                <option value="Microsoft">Microsoft</option>
-                <option value="MSI">MSI</option>
-                <option value="Samsung">Samsung</option>
-              </select>
-
               {/* Device Type Dropdown */}
-              {/* <label className="block text-white text-sm mb-2">
-                Device Type
-              </label> */}
               <select
                 name="deviceType"
                 value={
                   editProduct ? editProduct.deviceType : newProduct.deviceType
                 }
-                onChange={(e) =>
+                onChange={(e) => {
+                  const selectedDeviceTypeId = e.target.value;
+                  const selectedDeviceTypeName =
+                    e.target.options[e.target.selectedIndex].text;
+                  console.log("Selected Device Type ID:", selectedDeviceTypeId);
+                  console.log(
+                    "Selected Device Type Name:",
+                    e.target.options[e.target.selectedIndex].text
+                  );
+
                   setNewProduct({
                     ...newProduct,
-                    deviceType: e.target.value,
-                  })
-                }
+                    deviceType: selectedDeviceTypeId,
+                    deviceTypeName: selectedDeviceTypeName, 
+                    // Reset brand when device type changes
+                    brand: "",
+                  });
+                  fetchBrandsByDeviceType(selectedDeviceTypeId);
+                }}
+                onClick={() => {
+                  // Only fetch if device types are not already loaded
+                  if (deviceTypes.length === 0) {
+                    fetchCategories();
+                  }
+                }}
                 className="w-full p-2 mb-4 border border-gray-700 rounded bg-gray-900 text-white text-sm"
                 required
               >
                 <option value="" disabled selected>
                   Select a Device Type
                 </option>
-                <option value="Desktop">Desktop</option>
-                <option value="Laptop">Laptop</option>
+                {deviceTypes.map((deviceType) => (
+                  <option key={deviceType.id} value={deviceType.id}>
+                    {deviceType.name}
+                  </option>
+                ))}
               </select>
 
+              {/* Brand Dropdown */}
+              <select
+                name="brand"
+                value={editProduct ? editProduct.brand : newProduct.brand}
+                onChange={(e) => {
+                  const selectedBrandId = e.target.value;
+                  const selectedBrandName =
+                    e.target.options[e.target.selectedIndex].text;
+
+                  console.log("Selected Brand ID:", selectedBrandId);
+                  console.log("Selected Brand Name:", selectedBrandName);
+                  console.log(
+                    "Selected Brand Name:",
+                    e.target.options[e.target.selectedIndex].text
+                  );
+
+                  setNewProduct({
+                    ...newProduct,
+                    brand: selectedBrandId,
+                    brandName: selectedBrandName, 
+                  });
+                }}
+                className="w-full p-2 mb-4 border border-gray-700 rounded bg-gray-900 text-white text-sm"
+                // Disable until device type is selected
+                disabled={!newProduct.deviceType} 
+                required
+              >
+                <option value="" disabled selected>
+                  Select a Brand
+                </option>
+                {categories.map((brand) => (
+                  <option key={brand.id} value={brand.id}>
+                    {brand.name}
+                  </option>
+                ))}
+              </select>
+              
               <input
                 type="number"
                 name="price"
@@ -634,20 +700,7 @@ const AdminPanel = () => {
                 className="w-full p-2 mb-2 border border-gray-700 rounded bg-gray-900 text-white text-sm"
                 required
               />
-              {/* <input
-                type="text"
-                name="brand"
-                placeholder="Brand"
-                value={editProduct ? editProduct.brand : newProduct.brand}
-                onChange={(e) =>
-                  setNewProduct({
-                    ...newProduct,
-                    brand: e.target.value,
-                  })
-                }
-                className="w-full p-2 mb-2 border border-gray-700 rounded bg-gray-900 text-white text-sm"
-                required
-              /> */}
+              
               <input
                 type="url"
                 name="thumbnail"
@@ -692,197 +745,106 @@ const AdminPanel = () => {
                 className="w-full p-2 mb-2 border border-gray-700 rounded bg-gray-900 text-white text-sm"
                 required
               />
-
-              {/* <input
-                type="number"
-                name="rating"
-                placeholder="Rating"
-                value={editProduct ? editProduct.rating : newProduct.rating}
-                onChange={(e) =>
-                  setNewProduct({
-                    ...newProduct,
-                    rating: e.target.value,
-                  })
-                }
-                className="w-full p-2 mb-2 border border-gray-700 rounded bg-gray-900 text-white text-sm"
-                required
-              /> */}
+              
             </div>
 
             {/* Right Column */}
             <div>
-              {/* New Fields */}
+              <label className="block text-white text-sm mb-2">
+                Product Variants
+              </label>
+              <input
+                type="text"
+                name="colour"
+                placeholder="Varient Colour"
+                value={editProduct ? editProduct.colour : newProduct.colour}
+                onChange={(e) =>
+                  setNewProduct({
+                    ...newProduct,
+                    colour: e.target.value,
+                  })
+                }
+                className="w-full p-2 mb-2 border border-gray-700 rounded bg-gray-900 text-white text-sm"
+              />
 
-              {/* Variants */}
-              <div className="mb-6">
-                <label className="block text-white text-sm mb-2">
-                  Product Variants
-                </label>
-                <input
-                  type="text"
-                  name="variantsColor"
-                  placeholder="Variant Color"
-                  value={
-                    editProduct
-                      ? editProduct.variants?.[0]?.color
-                      : newProduct.variants?.[0]?.color
-                  }
-                  onChange={(e) =>
-                    setNewProduct({
-                      ...newProduct,
-                      variants: (newProduct.variants || []).map(
-                        (variant, index) =>
-                          index === 0
-                            ? { ...variant, color: e.target.value } // Update only the color field
-                            : variant // Keep the other variants unchanged
-                      ),
-                    })
-                  }
-                  className="w-full p-2 mb-2 border border-gray-700 rounded bg-gray-900 text-white text-sm"
-                />
+              <input
+                type="text"
+                name="size"
+                placeholder="Varient size"
+                value={editProduct ? editProduct.size : newProduct.size}
+                onChange={(e) =>
+                  setNewProduct({
+                    ...newProduct,
+                    size: e.target.value,
+                  })
+                }
+                className="w-full p-2 mb-2 border border-gray-700 rounded bg-gray-900 text-white text-sm"
+              />
+              <input
+                type="text"
+                name="quantity"
+                placeholder="Varient Quantity"
+                value={editProduct ? editProduct.quantity : newProduct.quantity}
+                onChange={(e) =>
+                  setNewProduct({
+                    ...newProduct,
+                    quantity: e.target.value,
+                  })
+                }
+                className="w-full p-2 mb-2 border border-gray-700 rounded bg-gray-900 text-white text-sm"
+              />
 
-                <input
-                  type="text"
-                  name="variantsSize"
-                  placeholder="Variant Size"
-                  value={
-                    editProduct
-                      ? editProduct.variants?.[0]?.size
-                      : newProduct.variants?.[0]?.size
-                  }
-                  onChange={(e) =>
-                    setNewProduct({
-                      ...newProduct,
-                      variants: (newProduct.variants || []).map(
-                        (variant, index) =>
-                          index === 0
-                            ? { ...variant, size: e.target.value } // Update only the size field
-                            : variant // Keep the other variants unchanged
-                      ),
-                    })
-                  }
-                  className="w-full p-2 mb-2 border border-gray-700 rounded bg-gray-900 text-white text-sm"
-                />
-
-                <input
-                  type="number"
-                  name="variantsStockQuantity"
-                  placeholder="Variant Stock Quantity"
-                  value={
-                    editProduct
-                      ? editProduct.variants?.[0]?.stockQuantity
-                      : newProduct.variants?.[0]?.stockQuantity
-                  }
-                  onChange={(e) =>
-                    setNewProduct({
-                      ...newProduct,
-                      variants: (newProduct.variants || []).map(
-                        (variant, index) =>
-                          index === 0
-                            ? { ...variant, stockQuantity: e.target.value } // Update only the stockQuantity field
-                            : variant // Keep the other variants unchanged
-                      ),
-                    })
-                  }
-                  className="w-full p-2 mb-2 border border-gray-700 rounded bg-gray-900 text-white text-sm"
-                />
-              </div>
               {/* Product Resources */}
-              <div className="mb-4">
-                <label className="block text-white text-sm mb-2">
-                  Product Resources
-                </label>
-                <input
-                  type="text"
-                  name="productResourceName"
-                  placeholder="Resource Name"
-                  value={
-                    editProduct
-                      ? editProduct.productResources?.[0]?.name
-                      : newProduct.productResources?.[0]?.name
-                  }
-                  onChange={(e) =>
-                    setNewProduct({
-                      ...newProduct,
-                      productResources: [
-                        {
-                          ...newProduct.productResources?.[0],
-                          name: e.target.value,
-                        },
-                      ],
-                    })
-                  }
-                  className="w-full p-2 mb-2 border border-gray-700 rounded bg-gray-900 text-white text-sm"
-                />
-                <input
-                  type="url"
-                  name="productResourceUrl"
-                  placeholder="Product Resource URL"
-                  value={
-                    editProduct
-                      ? editProduct.productResources?.[0]?.url
-                      : newProduct.productResources?.[0]?.url
-                  }
-                  onChange={(e) =>
-                    setNewProduct({
-                      ...newProduct,
-                      productResources: [
-                        {
-                          ...newProduct.productResources?.[0],
-                          url: e.target.value,
-                        },
-                      ],
-                    })
-                  }
-                  className="w-full p-2 mb-2 border border-gray-700 rounded bg-gray-900 text-white text-sm"
-                />
-                <input
-                  type="text"
-                  name="productResourceType"
-                  placeholder="Resource Type (PDF, Image, etc.)"
-                  value={
-                    editProduct
-                      ? editProduct.productResources?.[0]?.type
-                      : newProduct.productResources?.[0]?.type
-                  }
-                  onChange={(e) =>
-                    setNewProduct({
-                      ...newProduct,
-                      productResources: [
-                        {
-                          ...newProduct.productResources?.[0],
-                          type: e.target.value,
-                        },
-                      ],
-                    })
-                  }
-                  className="w-full p-2 mb-2 border border-gray-700 rounded bg-gray-900 text-white text-sm"
-                />
-                {/* <label className="block text-white mb-2">
-                  <input
-                    type="checkbox"
-                    name="productResourceIsPrimary"
-                    checked={
-                      editProduct
-                        ? editProduct.productResources?.[0]?.isPrimary
-                        : newProduct.productResources?.[0]?.isPrimary
-                    }
-                    onChange={(e) =>
-                      setNewProduct({
-                        ...newProduct,
-                        productResources: [
-                          {
-                            ...newProduct.productResources?.[0],
-                            isPrimary: e.target.checked,
-                          },
-                        ],
-                      })
-                    }
-                    className="mr-2"
-                  />
-                  Primary Resource
-                </label> */}
-              </div>
+              <label className="block text-white text-sm mb-2">
+                Product Resources
+              </label>
+              <input
+                type="text"
+                name="ResourceName"
+                placeholder="Resource Name"
+                value={
+                  editProduct ? editProduct.ResourceName : newProduct.ResourceName
+                }
+                onChange={(e) =>
+                  setNewProduct({
+                    ...newProduct,
+                    ResourceName: e.target.value,
+                  })
+                }
+                className="w-full p-2 mb-2 border border-gray-700 rounded bg-gray-900 text-white text-sm"
+              />
+
+              <input
+                type="text"
+                name="ResourceUrl"
+                placeholder="Resource Url"
+                value={
+                  editProduct ? editProduct.ResourceUrl : newProduct.ResourceUrl
+                }
+                onChange={(e) =>
+                  setNewProduct({
+                    ...newProduct,
+                    ResourceUrl: e.target.value,
+                  })
+                }
+                className="w-full p-2 mb-2 border border-gray-700 rounded bg-gray-900 text-white text-sm"
+              />
+              <input
+                type="text"
+                name="ResourceType"
+                placeholder="Resource Type"
+                value={
+                  editProduct ? editProduct.ResourceType : newProduct.ResourceType
+                }
+                onChange={(e) =>
+                  setNewProduct({
+                    ...newProduct,
+                    ResourceType: e.target.value,
+                  })
+                }
+                className="w-full p-2 mb-2 border border-gray-700 rounded bg-gray-900 text-white text-sm"
+              />
+              
               <label className="text-white">
                 <input
                   type="checkbox"
@@ -1215,29 +1177,6 @@ const AdminPanel = () => {
   };
 
   const renderDashboard = () => {
-    // const chartData = {
-    //   labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-    //   datasets: [
-    //     {
-    //       label: "Transactions",
-    //       data: dashboardData.transactionsPerMonth || [30, 50, 80, 60, 100, 120, 140, 160, 180, 200, 220, 250],
-    //       borderColor: "#4CAF50",
-    //       backgroundColor: "rgba(76, 175, 80, 0.2)",
-    //       tension: 0.4,
-    //     },
-    //   ],
-    // };
-
-    // const dashboardData = {
-    //   users: 1000,
-    //   sales: 5000,
-    //   totalCustomers: 300,
-    //   totalOrders: 150,
-    //   totalTransactions: 200,
-    //   transactionsPerMonth: [
-    //     80, 60, 80, 120, 115, 150, 130, 150, 120, 200, 180, 210,
-    //   ], // Example data
-    // };
     if (!dashboardData) {
       return (
         <div className="flex justify-center items-center h-64">
@@ -1249,7 +1188,11 @@ const AdminPanel = () => {
       <div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
           {renderCard("Users", dashboardData.users, Users)}
-          {renderCard("Sales", `$${dashboardData.sales}`, DollarSign)}
+          {renderCard(
+            "Sales",
+            `$${dashboardData.sales.toFixed(2)}`,
+            DollarSign
+          )}
           {renderCard(
             "Total Customers",
             dashboardData.totalCustomers,
@@ -1316,9 +1259,9 @@ const AdminPanel = () => {
     // Function to handle exporting to PDF
     const exportToPDF = () => {
       const button = document.getElementById("export-btn");
-      button.style.display = "none"; 
+      button.style.display = "none";
 
-      const graphContent = document.getElementById("transaction-graph"); 
+      const graphContent = document.getElementById("transaction-graph");
 
       html2canvas(graphContent).then((canvas) => {
         const imgData = canvas.toDataURL("image/png");
@@ -1332,44 +1275,45 @@ const AdminPanel = () => {
         const reportsData = {
           totalSales: dashboardData.sales,
           totalOrders: dashboardData.totalOrders,
-          avgOrderValue: (dashboardData.sales / dashboardData.totalOrders).toFixed(2) || 0, // Calculate average order value
-          salesGrowth: 15, 
-          ordersCompleted: dashboardData.totalOrders, 
-          ordersPending: 3, 
-          topSellingProduct: "Wireless Mouse", 
-          customersThisMonth: dashboardData.totalCustomers, 
+          avgOrderValue:
+            (dashboardData.sales / dashboardData.totalOrders).toFixed(2) || 0, // Calculate average order value
+          salesGrowth: 15,
+          ordersCompleted: dashboardData.totalOrders,
+          ordersPending: 3,
+          topSellingProduct: "Wireless Mouse",
+          customersThisMonth: dashboardData.totalCustomers,
           userCount: dashboardData.users,
-          repeatCustomerRate: 10, 
+          repeatCustomerRate: 10,
           customerDemographics: "Age 25-45, Tech-Savvy",
-          ctr: 3.5, 
-          conversionRate: 2.8, 
+          ctr: 3.5,
+          conversionRate: 2.8,
           socialMediaReach: "50,000+ Followers",
         };
 
         const currentDate = new Date().toLocaleString();
         pdf.setFont("helvetica", "bold");
         pdf.setFontSize(18);
-        pdf.setTextColor(60, 60, 60); 
-        pdf.text("Gigamart Sales Report", 10, 20); 
+        pdf.setTextColor(60, 60, 60);
+        pdf.text("Gigamart Sales Report", 10, 20);
         pdf.setFontSize(12);
         pdf.setFont("helvetica", "normal");
-        pdf.setTextColor(100, 100, 100); 
-        pdf.text(`Generated on: ${currentDate}`, pageWidth - 80, 20); 
+        pdf.setTextColor(100, 100, 100);
+        pdf.text(`Generated on: ${currentDate}`, pageWidth - 80, 20);
 
         // Transactions Over Time Graph
         pdf.setFontSize(14);
         pdf.setFont("helvetica", "bold");
         pdf.setTextColor(40, 40, 40);
         y += 8;
-        pdf.addImage(imgData, "PNG", 10, y, pageWidth - 20, 80); 
-        y += 90; 
+        pdf.addImage(imgData, "PNG", 10, y, pageWidth - 20, 80);
+        y += 90;
 
-        // Function to add a structured table 
+        // Function to add a structured table
         const addTable = (title, data, startY) => {
           pdf.setFont("helvetica", "bold");
           pdf.setFontSize(14);
           pdf.setTextColor(40, 40, 40);
-          pdf.text(title, 20, startY); 
+          pdf.text(title, 20, startY);
           startY += 8;
           pdf.setFontSize(12);
           pdf.setFont("helvetica", "normal");
@@ -1380,7 +1324,7 @@ const AdminPanel = () => {
           data.forEach(([label, value]) => {
             pdf.text(`${label}:`, 25, startY);
             pdf.setFont("helvetica", "bold");
-            pdf.setTextColor(50, 50, 50); 
+            pdf.setTextColor(50, 50, 50);
             pdf.text(`${value}`, 80, startY);
             pdf.setFont("helvetica", "normal");
             startY += 7;
@@ -1393,7 +1337,7 @@ const AdminPanel = () => {
         y = addTable(
           "Sales Overview",
           [
-            ["Total Sales", `$${reportsData.totalSales}`],
+            ["Total Sales", `$${reportsData.totalSales.toFixed(2)}`],
             ["Number of Orders", reportsData.totalOrders],
             ["Average Order Value", `$${reportsData.avgOrderValue}`],
             // ["Sales Growth", `${reportsData.salesGrowth}%`],
@@ -1500,10 +1444,22 @@ const AdminPanel = () => {
           <h3 className="text-lg font-semibold text-gray-700 mb-4">
             Sales Overview
           </h3>
-          <p>Total Sales: $ {dashboardData.sales}</p>
+          <p>Total Sales: $ {dashboardData.sales.toFixed(2)}</p>
           <p>Number of Orders: {dashboardData.totalOrders}</p>
-          <p>Average Order Value: $ {(dashboardData.sales/dashboardData.totalOrders).toFixed(2)}</p>
-          <p>Sales Growth: {((dashboardData.monthlySales[11]-dashboardData.monthlySales[10]) /dashboardData.monthlySales[10]*100).toFixed(2)}%</p>
+          <p>
+            Average Order Value: ${" "}
+            {(dashboardData.sales / dashboardData.totalOrders).toFixed(2)}
+          </p>
+          <p>
+            Sales Growth:{" "}
+            {(
+              ((dashboardData.monthlySales[11] -
+                dashboardData.monthlySales[10]) /
+                dashboardData.monthlySales[10]) *
+              100
+            ).toFixed(2)}
+            %
+          </p>
         </div>
 
         {/* Order Summary
@@ -1531,6 +1487,7 @@ const AdminPanel = () => {
           <button
             id="export-btn"
             onClick={exportToPDF}
+            // onClick={fetchCategories}
             className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-400"
           >
             Export to PDF
@@ -1599,7 +1556,7 @@ const AdminPanel = () => {
 
             <li>
               <a
-                href="http://localhost:3000"
+                href={HOME_URL}
                 className="block p-3 rounded-md text-sm hover:bg-gray-700 mb-10"
               >
                 Back to Gigamart
@@ -1629,14 +1586,14 @@ const AdminPanel = () => {
               />
               <button
                 onClick={handleSearch}
-                className="px-4 py-2 text-white bg-gray-600 rounded hover:bg-gray-500 text-sm" 
+                className="px-4 py-2 text-white bg-gray-600 rounded hover:bg-gray-500 text-sm"
               >
                 Search
               </button>
             </div>
             <button
               onClick={() => setShowModal(true)}
-              className="px-4 py-2 text-white bg-gray-600 rounded hover:bg-gray-400 ml-auto text-sm" 
+              className="px-4 py-2 text-white bg-gray-600 rounded hover:bg-gray-400 ml-auto text-sm"
             >
               Add Product
             </button>
