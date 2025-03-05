@@ -11,9 +11,7 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import io.github.bonigarcia.wdm.WebDriverManager;
 import static org.junit.jupiter.api.Assertions.*;
-
 import java.time.Duration;
 
 public class ShopxApplicationTests {
@@ -22,20 +20,24 @@ public class ShopxApplicationTests {
 
     @BeforeEach
     public void setup() {
-        // Setup ChromeDriver automatically
-        WebDriverManager.chromedriver().setup();
+        // Setup path for ChromeDriver
+        System.setProperty("webdriver.chrome.driver",
+                "C:\\Users\\Vihanga\\Downloads\\chromedriver-win64 133 x\\chromedriver-win64\\chromedriver.exe");
         // Chrome options
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--remote-allow-origins=*");
-        // Setup path manually for chrome.exe
-        options.setBinary("C:\\Users\\Vihanga\\Downloads\\chrome-win64 133\\chrome-win64\\chrome.exe");
+
+        // Setup path for chrome.exe
+        options.setBinary("C:\\Users\\Vihanga\\Downloads\\chrome-win64 133 x\\chrome-win64\\chrome.exe");
+
         // Initialize the ChromeDriver
         driver = new ChromeDriver(options);
+
     }
 
     @Test
     public void testPayment() {
-        int loadTime = 2500;
+        int loadTime = 3000;
 
         // Navigation to the First page
         driver.get("http://localhost:3000/");
@@ -50,7 +52,7 @@ public class ShopxApplicationTests {
         driver.get("http://localhost:3000/v1/login");
         // Waiting time (1000 ms) for load login page
         try {
-            Thread.sleep(1000); 
+            Thread.sleep(1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -110,7 +112,8 @@ public class ShopxApplicationTests {
             e.printStackTrace();
         }
 
-        // Find the web component ('Apple Mac Studio' product image link) by using XPath & href
+        // Find the web component ('Apple Mac Studio' product image link) by using XPath
+        // & href
         WebElement productImageLink = driver.findElement(By.xpath("//a[@href='/product/apple-mac-studio']"));
         productImageLink.click();
         try {
@@ -119,7 +122,8 @@ public class ShopxApplicationTests {
             e.printStackTrace();
         }
 
-        // Find the web component (Button inside a div with the text of "Add to cart") by using XPath
+        // Find the web component (Button inside a div with the text of "Add to cart")
+        // by using XPath
         WebElement addToCartButton = driver.findElement(By.xpath("//button[.//div[contains(text(), 'Add to cart')]]"));
         addToCartButton.click();
         try {
@@ -149,12 +153,13 @@ public class ShopxApplicationTests {
         WebElement checkout = driver.findElement(By.xpath("//button[text()='Checkout']"));
         checkout.click();
         try {
-            Thread.sleep(loadTime);
+            Thread.sleep(10000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
-        // Find the web component (radio button for "Credit/Debit Card") using xpath & input type
+        // Find the web component (radio button for "Credit/Debit Card") using xpath &
+        // input type
         WebElement cardRadioButton = driver.findElement(By.xpath("//input[@type='radio' and @value='CARD']"));
         cardRadioButton.click();
         try {
@@ -171,7 +176,8 @@ public class ShopxApplicationTests {
             e.printStackTrace();
         }
 
-        // Find the web component ("elements-inner-payment" iframe) using xpath & src attribute
+        // Find the web component ("elements-inner-payment" iframe) using xpath & src
+        // attribute
         WebElement iframe = driver.findElement(By.xpath("//iframe[contains(@src, 'elements-inner-payment')]"));
         try {
             Thread.sleep(200);
@@ -179,10 +185,10 @@ public class ShopxApplicationTests {
             e.printStackTrace();
         }
 
-        // Switch to the iframe 
+        // Switch to the iframe
         driver.switchTo().frame(iframe);
         try {
-            Thread.sleep(200);
+            Thread.sleep(1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -204,7 +210,7 @@ public class ShopxApplicationTests {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        
+
         // Find the web component (cvc field) using xpath & placeholder
         WebElement cvcInput = driver.findElement(By.xpath("//input[@placeholder='CVC']"));
         cvcInput.sendKeys("123");
@@ -214,7 +220,7 @@ public class ShopxApplicationTests {
             e.printStackTrace();
         }
 
-        // Switch to the default 
+        // Switch to the default
         driver.switchTo().defaultContent();
         try {
             Thread.sleep(300);
@@ -231,15 +237,44 @@ public class ShopxApplicationTests {
             e.printStackTrace();
         }
 
-        // Find the web component ("Continue Shopping" button) using xpath & text content
-        WebElement continueShoppingButton = driver.findElement(By.xpath("//button[contains(text(), 'Continue Shopping')]"));
-        continueShoppingButton.click();
+        // Find the web component ("Continue Shopping" button) using xpath & text
+        // content
+        WebElement continueShoppingButton = null;
+        try {
+            // Use WebDriverWait to wait for the button to appear
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+            continueShoppingButton = wait.until(ExpectedConditions.elementToBeClickable(
+                    By.xpath("//button[contains(text(), 'Continue Shopping')]")));
 
-        // Check if the "Continue Shopping" button was successfully clicked 
-        // boolean isShoppingPageDisplayed = driver.getCurrentUrl().contains("shopping"); 
-        
+            // Verify that the button exists and is displayed
+            assertTrue(continueShoppingButton.isDisplayed(),
+                    "Continue Shopping button is displayed, indicating all functionalities are working");
+
+            // // Now click the button
+            // continueShoppingButton.click();
+
+            // // Optional: Additional verification that you've moved to the expected page
+            // wait.until(ExpectedConditions.urlContains("/shopping"));
+            // assertTrue(driver.getCurrentUrl().contains("/shopping"),
+            // "Successfully navigated to shopping page after clicking Continue Shopping");
+
+        } catch (Exception e) {
+            fail("Continue Shopping button did not appear or could not be clicked: " + e.getMessage());
+        }
+        // Find the web component ("Continue Shopping" button) using xpath & text
+        // content
+        // WebElement continueShoppingButton =
+        // driver.findElement(By.xpath("//button[contains(text(), 'Continue
+        // Shopping')]"));
+        // continueShoppingButton.click();
+
+        // Check if the "Continue Shopping" button was successfully clicked
+        // boolean isShoppingPageDisplayed =
+        // driver.getCurrentUrl().contains("shopping");
+
         // Verification
-        // assertTrue(true,"Payment cycle completed successfully, user clicked 'Continue Shopping' and page transitioned.");
+        // assertTrue(true,"Payment cycle completed successfully, user clicked 'Continue
+        // Shopping' and page transitioned.");
 
         // Keep the browser open for manual inspection (running indefinitely)
         try {

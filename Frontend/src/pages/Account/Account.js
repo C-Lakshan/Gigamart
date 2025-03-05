@@ -4,30 +4,48 @@ import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { setLoading } from "../../store/features/common";
 import { fetchUserDetails } from "../../api/userInfo";
-import { loadUserInfo, selectIsUserAdmin, selectUserInfo } from "../../store/features/user";
+import {
+  loadUserInfo,
+  selectIsUserAdmin,
+  selectUserInfo,
+} from "../../store/features/user";
 
 const Account = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const userInfo = useSelector(selectUserInfo);
-  const isUserAdmin = useSelector(selectIsUserAdmin);
 
   useEffect(() => {
     dispatch(setLoading(true));
     fetchUserDetails()
       .then((res) => {
+        console.log("Fetched user details:", res);
         dispatch(loadUserInfo(res));
       })
-      .catch((err) => {})
+      .catch((err) => {
+        console.error("Error fetching user details:", err);
+      })
       .finally(() => {
         dispatch(setLoading(false));
       });
   }, []);
 
- 
+  // const isUserAdmin = userInfo?.authorityList?.some(auth => auth.roleCode === "ADMIN");
+  const isUserAdmin = 1;
+  console.log(isUserAdmin);
+  
   return (
     <div className="p-8">
-        {/*isUserAdmin && */<div className="text-right"><Link to={"/admin"} className="text-lg text-white bg-black hover:bg-gray-800 px-4 py-3 rounded-md transition duration-300 ease-in-out">Manage Admin</Link></div>}
+      {isUserAdmin && (
+        <div className="text-right">
+          <Link
+            to={"/admin"}
+            className="text-lg text-white bg-black hover:bg-gray-800 px-4 py-3 rounded-md transition duration-300 ease-in-out"
+          >
+            Manage Admin
+          </Link>
+        </div>
+      )}
       {userInfo?.email && (
         <>
           <p className="text-xl font-bold">Hello {userInfo?.firstName}</p>
@@ -37,10 +55,14 @@ const Account = () => {
               <li>
                 <NavLink
                   to={"/account-details/profile"}
-                  className={({isActive})=> [
-                    isActive? "bg-black hover:bg-gray-400":"bg-gray-400 hover:bg-black",
-                    "inline-flex items-center px-4 py-3 text-white rounded-lg active w-full"
-                  ].join(" ")}
+                  className={({ isActive }) =>
+                    [
+                      isActive
+                        ? "bg-black hover:bg-gray-400"
+                        : "bg-gray-400 hover:bg-black",
+                      "inline-flex items-center px-4 py-3 text-white rounded-lg active w-full",
+                    ].join(" ")
+                  }
                 >
                   <svg
                     className="w-4 h-4 me-2 text-white"
@@ -57,10 +79,14 @@ const Account = () => {
               <li>
                 <NavLink
                   to={"/account-details/orders"}
-                  className={({isActive})=> [
-                    isActive? "bg-black hover:bg-gray-400":"bg-gray-400 hover:bg-black",
-                    "inline-flex items-center px-4 py-3 text-white rounded-lg active w-full"
-                  ].join(" ")}
+                  className={({ isActive }) =>
+                    [
+                      isActive
+                        ? "bg-black hover:bg-gray-400"
+                        : "bg-gray-400 hover:bg-black",
+                      "inline-flex items-center px-4 py-3 text-white rounded-lg active w-full",
+                    ].join(" ")
+                  }
                 >
                   <svg
                     className="w-4 h-4 me-2 text-white"
@@ -69,9 +95,7 @@ const Account = () => {
                     fill="currentColor"
                     viewBox="0 0 20 20"
                   >
-                    <path
-                      d="M13.5833 7.39473L13.5138 6.45768C13.4501 5.59928 12.7083 4.93421 11.8146 4.93421H9.99368M3.5 16.4167H2.45365C1.465 16.4167 0.683979 15.609 0.754417 14.6594L1.36283 6.45769C1.42651 5.59928 2.16831 4.93421 3.06207 4.93421H4.88298M4.88298 4.93421V3.29385C4.88298 1.93494 6.02705 0.833328 7.43833 0.833328C8.84961 0.833328 9.99368 1.93494 9.99368 3.29385V4.93421M4.88298 4.93421H9.99368M13.5833 12.75C13.5833 13.7625 12.7625 14.5833 11.75 14.5833C10.7375 14.5833 9.91667 13.7625 9.91667 12.75M8.08333 18.25H15.4167C16.4292 18.25 17.25 17.4292 17.25 16.4167V11.8333C17.25 10.8208 16.4292 9.99999 15.4167 9.99999H8.08333C7.07081 9.99999 6.25 10.8208 6.25 11.8333V16.4167C6.25 17.4292 7.07081 18.25 8.08333 18.25Z"
-                    />
+                    <path d="M13.5833 7.39473L13.5138 6.45768C13.4501 5.59928 12.7083 4.93421 11.8146 4.93421H9.99368M3.5 16.4167H2.45365C1.465 16.4167 0.683979 15.609 0.754417 14.6594L1.36283 6.45769C1.42651 5.59928 2.16831 4.93421 3.06207 4.93421H4.88298M4.88298 4.93421V3.29385C4.88298 1.93494 6.02705 0.833328 7.43833 0.833328C8.84961 0.833328 9.99368 1.93494 9.99368 3.29385V4.93421M4.88298 4.93421H9.99368M13.5833 12.75C13.5833 13.7625 12.7625 14.5833 11.75 14.5833C10.7375 14.5833 9.91667 13.7625 9.91667 12.75M8.08333 18.25H15.4167C16.4292 18.25 17.25 17.4292 17.25 16.4167V11.8333C17.25 10.8208 16.4292 9.99999 15.4167 9.99999H8.08333C7.07081 9.99999 6.25 10.8208 6.25 11.8333V16.4167C6.25 17.4292 7.07081 18.25 8.08333 18.25Z" />
                   </svg>
                   Orders
                 </NavLink>
@@ -79,10 +103,14 @@ const Account = () => {
               <li>
                 <NavLink
                   to={"/account-details/settings"}
-                  className={({isActive})=> [
-                    isActive? "bg-black hover:bg-gray-400":"bg-gray-400 hover:bg-black",
-                    "inline-flex items-center px-4 py-3 text-white rounded-lg active w-full"
-                  ].join(" ")}
+                  className={({ isActive }) =>
+                    [
+                      isActive
+                        ? "bg-black hover:bg-gray-400"
+                        : "bg-gray-400 hover:bg-black",
+                      "inline-flex items-center px-4 py-3 text-white rounded-lg active w-full",
+                    ].join(" ")
+                  }
                 >
                   <svg
                     className="w-4 h-4 me-2 text-white"
@@ -98,8 +126,7 @@ const Account = () => {
               </li>
             </ul>
             <div className="px-4 w-full rounded-lg">
-                <Outlet />
-
+              <Outlet />
             </div>
           </div>
         </>

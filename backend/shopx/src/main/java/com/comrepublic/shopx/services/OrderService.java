@@ -45,6 +45,9 @@ public class OrderService {
     @Autowired
     private JavaMailSender mailSender; // JavaMailSender
 
+    @Value("${frontend.url}")
+    private String frontendUrl;
+
     @Value("${spring.mail.username}")
     private String sender;
 
@@ -206,7 +209,8 @@ public class OrderService {
                 "                Phone: " + order.getAddress().getPhoneNumber() +
                 "            </p>" +
                 "        </div>" +
-                "        <a class='btn' href='http://localhost:3000/'>Continue Shopping</a>" +
+                // "        <a class='btn' href='http://localhost:3000/'>Continue Shopping</a>" +
+                "        <a class='btn' href='" + frontendUrl + "/'>Continue Shopping</a>" +  
                 "        <div class='footer'>" +
                 "            <p>Best regards,</p>" +
                 "            <p>GigaMart Team</p>" +

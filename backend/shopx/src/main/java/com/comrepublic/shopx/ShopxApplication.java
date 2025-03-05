@@ -6,8 +6,9 @@ import org.modelmapper.ModelMapper;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 import com.stripe.Stripe;
 
@@ -19,6 +20,9 @@ public class ShopxApplication {
 	
 	@Value("${stripe.secret}")
 	private String stripeSecret;
+
+	@Value("${frontend.url}")  
+    private String frontendUrl;
 
 	public static void main(String[] args) {
 		SpringApplication.run(ShopxApplication.class, args);
@@ -35,15 +39,35 @@ public class ShopxApplication {
 	}
 
 	@Bean
-	public CorsFilter corsFilter() {
+	public CorsConfigurationSource corsConfigurationSource() {
+		CorsConfiguration configuration = new CorsConfiguration();
+		// configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000")); // Frontend URL
+		configuration.setAllowedOrigins(Arrays.asList(frontendUrl));
+		configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+		configuration.setAllowedHeaders(Arrays.asList(
+			"authorization", 
+			"content-type", 
+			"x-auth-token", 
+			"Authorization",
+			"x-requested-with",
+			"Access-Control-Allow-Origin",
+			"Access-Control-Allow-Credentials"
+		));
+		configuration.setExposedHeaders(Arrays.asList(
+			"x-auth-token",
+			"authorization",
+			"X-Total-Count"
+		));
+		configuration.setAllowCredentials(true);
+		
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-		CorsConfiguration config = new CorsConfiguration();
-		config.setAllowedOriginPatterns(Collections.singletonList("*")); // Insecure, but for demo purposes it's ok
-		config.setAllowedHeaders(Arrays.asList("Origin", "Content-Type", "Accept", "responseType", "Authorization", "x-authorization", "content-range","range"));
-		config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "OPTIONS", "DELETE", "PATCH"));
-		config.setExposedHeaders(Arrays.asList("X-Total-Count", "X-Total-Count", "content-range", "Content-Type", "Accept", "X-Requested-With", "remember-me"));
-		source.registerCorsConfiguration("/**", config);
-		return new CorsFilter(source);
+		source.registerCorsConfiguration("/**", configuration);
+		return source;
+	}
+
+	@Bean
+	public CorsFilter corsFilter() {
+		return new CorsFilter(corsConfigurationSource());
 	}
 
 }
