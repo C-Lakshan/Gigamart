@@ -66,6 +66,40 @@ public class RegistrationService {
         }
     }
 
+    // Create an admin user
+    public RegistrationResponse createAdminUser(RegistrationRequest request) {
+        User existing = userDetailRepository.findByEmail(request.getEmail());
+
+        if(null != existing){
+            return RegistrationResponse.builder()
+                    .code(400)
+                    .message("Email already exist!")
+                    .build();
+        }
+
+        try {
+            User user = new User();
+            user.setFirstName(request.getFirstName());
+            user.setLastName(request.getLastName());
+            user.setEmail(request.getEmail());
+            user.setEnabled(true); // Email verification true by default
+            user.setPassword(passwordEncoder.encode(request.getPassword()));
+            user.setProvider("manual");
+
+            user.setAuthorities(authorityService.getAdminAuthority());
+            userDetailRepository.save(user);
+
+            return RegistrationResponse.builder()
+                    .code(200)
+                    .message("Admin user created!")
+                    .build();
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            throw new ServerErrorException(e.getMessage(),e.getCause());
+        }
+    }
+
     public void verifyUser(String userName) {
         User user= userDetailRepository.findByEmail(userName);
         user.setEnabled(true);
