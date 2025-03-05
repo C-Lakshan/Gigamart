@@ -16,12 +16,94 @@ const Quotation = () => {
     additionalInfo: "",
   });
 
+  const [errors, setErrors] = useState({
+    email: "",
+    software: "",
+    brandPreference: "",
+    additionalInfo: "",
+  });
+
+  const validateEmail = (email) => {
+    // Ensure mail format
+    const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    return regex.test(email);
+  };
+
+  const validateSoftware = (software) => {
+    return software.trim().length > 0;
+  };
+
+  const validateBrandPreference = (brand) => {
+    // Ensure no special characters except spaces, commas, hyphens
+    const regex = /^[a-zA-Z0-9\s,\-]*$/;
+    return regex.test(brand);
+  };
+
+  const validateAdditionalInfo = (info) => {
+    // Limit length to 300 characters
+    return info.length <= 300;
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
       ...prevData,
       [name]: value,
     }));
+
+    // Clear error
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: "",
+    }));
+  };
+
+  const handleBlur = (e) => {
+    const { name, value } = e.target;
+
+    // Validate different fields
+    switch (name) {
+      case "email":
+        if (value.trim() !== "" && !validateEmail(value)) {
+          setErrors((prevErrors) => ({
+            ...prevErrors,
+            email: "Please enter a valid email address",
+          }));
+        }
+        break;
+
+      case "software":
+        if (!validateSoftware(value)) {
+          setErrors((prevErrors) => ({
+            ...prevErrors,
+            software: "Please specify what software you plan to use",
+          }));
+        }
+        break;
+
+      case "brandPreference":
+        if (value.trim() !== "" && !validateBrandPreference(value)) {
+          setErrors((prevErrors) => ({
+            ...prevErrors,
+            brandPreference:
+              "Please use only letters, numbers, spaces, commas, and hyphens",
+          }));
+        }
+        break;
+
+      case "additionalInfo":
+        if (!validateAdditionalInfo(value)) {
+          setErrors((prevErrors) => ({
+            ...prevErrors,
+            additionalInfo:
+              "Please limit additional information to 300 characters",
+          }));
+        }
+        break;
+
+      default:
+        break;
+    }
   };
 
   const handleMultiSelectChange = (e) => {
@@ -43,19 +125,53 @@ const Quotation = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    let formIsValid = true;
+    const newErrors = { ...errors };
+
+    if (!validateEmail(formData.email)) {
+      newErrors.email = "Please enter a valid email address";
+      formIsValid = false;
+    }
+
+    if (!validateSoftware(formData.software)) {
+      newErrors.software = "Please specify what software you plan to use";
+      formIsValid = false;
+    }
+
+    if (
+      formData.brandPreference.trim() !== "" &&
+      !validateBrandPreference(formData.brandPreference)
+    ) {
+      newErrors.brandPreference =
+        "Please use only letters, numbers, spaces, commas, and hyphens";
+      formIsValid = false;
+    }
+
+    if (!validateAdditionalInfo(formData.additionalInfo)) {
+      newErrors.additionalInfo =
+        "Please limit additional information to 300 characters";
+      formIsValid = false;
+    }
+
+    setErrors(newErrors);
+
+    if (!formIsValid) {
+      return;
+    }
+
     try {
       // Create template parameters object
       const templateParams = {
         from_email: formData.email,
         purpose: formData.purpose,
-        device_type: formData.deviceType, // Changed from deviceType
-        age_group: formData.ageGroup, // Changed from ageGroup
-        budget_range: formData.budgetRange, // Changed from budgetRange
+        device_type: formData.deviceType,
+        age_group: formData.ageGroup,
+        budget_range: formData.budgetRange,
         features: formData.features.join(", "),
         software: formData.software,
-        brand_preference: formData.brandPreference, // Changed from brandPreference
+        brand_preference: formData.brandPreference,
         accessories: formData.accessories.join(", "),
-        additional_info: formData.additionalInfo, // Changed from additionalInfo
+        additional_info: formData.additionalInfo,
       };
 
       // Send email
@@ -94,7 +210,6 @@ const Quotation = () => {
     <div className="relative max-w-4xl mx-auto px-6 py-8">
       <DriftWidget />
 
-      {/* Added rounded corners and shadow to the form container */}
       <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-8">
         <h1 className="text-3xl font-semibold text-center mb-8">
           Quotation Service
@@ -112,9 +227,17 @@ const Quotation = () => {
               name="email"
               value={formData.email}
               onChange={handleChange}
-              className="border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
+              onBlur={handleBlur}
+              className={`border ${
+                errors.email ? "border-red-500" : "border-gray-300"
+              } rounded-lg p-3 focus:outline-none focus:ring-2 ${
+                errors.email ? "focus:ring-red-400" : "focus:ring-blue-400"
+              } focus:border-transparent`}
               required
             />
+            {errors.email && (
+              <p className="text-red-500 text-sm mt-1">{errors.email}</p>
+            )}
           </div>
 
           {/* Purpose Field */}
@@ -134,7 +257,9 @@ const Quotation = () => {
               <option value="personal">Personal use</option>
               <option value="professional">Professional work</option>
               <option value="gaming">Gaming</option>
-              <option value="graphicDesign">Graphic Design/Video Editing</option>
+              <option value="graphicDesign">
+                Graphic Design/Video Editing
+              </option>
               <option value="softwareDevelopment">Software Development</option>
               <option value="other">Other</option>
             </select>
@@ -236,9 +361,17 @@ const Quotation = () => {
               name="software"
               value={formData.software}
               onChange={handleChange}
-              className="border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
+              onBlur={handleBlur}
+              className={`border ${
+                errors.software ? "border-red-500" : "border-gray-300"
+              } rounded-lg p-3 focus:outline-none focus:ring-2 ${
+                errors.software ? "focus:ring-red-400" : "focus:ring-blue-400"
+              } focus:border-transparent`}
               required
             />
+            {errors.software && (
+              <p className="text-red-500 text-sm mt-1">{errors.software}</p>
+            )}
           </div>
 
           {/* Brand Preference */}
@@ -252,8 +385,20 @@ const Quotation = () => {
               name="brandPreference"
               value={formData.brandPreference}
               onChange={handleChange}
-              className="border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
+              onBlur={handleBlur}
+              className={`border ${
+                errors.brandPreference ? "border-red-500" : "border-gray-300"
+              } rounded-lg p-3 focus:outline-none focus:ring-2 ${
+                errors.brandPreference
+                  ? "focus:ring-red-400"
+                  : "focus:ring-blue-400"
+              } focus:border-transparent`}
             />
+            {errors.brandPreference && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.brandPreference}
+              </p>
+            )}
           </div>
 
           {/* Accessories (Multi-select) */}
@@ -288,8 +433,23 @@ const Quotation = () => {
               name="additionalInfo"
               value={formData.additionalInfo}
               onChange={handleChange}
-              className="border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent min-h-[120px]"
+              onBlur={handleBlur}
+              className={`border ${
+                errors.additionalInfo ? "border-red-500" : "border-gray-300"
+              } rounded-lg p-3 focus:outline-none focus:ring-2 ${
+                errors.additionalInfo
+                  ? "focus:ring-red-400"
+                  : "focus:ring-blue-400"
+              } focus:border-transparent min-h-[120px]`}
             />
+            {errors.additionalInfo && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.additionalInfo}
+              </p>
+            )}
+            <p className="text-gray-500 text-sm">
+              {200 - formData.additionalInfo.length} characters remaining
+            </p>
           </div>
 
           {/* Submit Button */}
