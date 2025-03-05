@@ -17,6 +17,7 @@ import _ from 'lodash';
 import { getAllProducts } from '../../api/fetchProducts';
 import { addItemToCartAction } from '../../store/actions/cartAction';
 import { addItemToWishListAction } from '../../store/actions/wishlistAction';
+import Footer from '../../components/Footer/Footer'
 
 
   
@@ -187,6 +188,7 @@ const ProductDetails = () => {
                 {!similarProduct?.length && <p>No Products Found!</p>}
                 </div>
     </div>
+    <Footer content={content?.footer}/>
     </>
   )
 }
