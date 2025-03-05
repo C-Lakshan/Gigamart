@@ -36,27 +36,32 @@ const CheckoutForm = ({userId,addressId}) => {
 
     
     if(elements){
-    placeOrderAPI(orderRequest).then(async res=>{
-        setOrderResponse(res);
-        stripe.confirmPayment({
-            elements,
-            clientSecret: res?.credentials?.client_secret,
-            
-            confirmParams:{
-                payment_method:'pm_card_visa',
-                return_url:'http://localhost:3000/confirmPayment'
-            }
-        }).then(res=>{
-            console.log("Response ",res);
-        })
-
-        
-        
-    }).catch(err=>{
-
-    }).finally(()=>{
-        dispatch(setLoading(false));
-    })
+      placeOrderAPI(orderRequest)
+      .then(async res => {
+          setOrderResponse(res);
+          try {
+              const paymentResult = await stripe.confirmPayment({
+                  elements,
+                  clientSecret: res?.credentials?.client_secret,
+                  confirmParams: {
+                      payment_method: 'pm_card_visa',
+                      return_url: 'http://localhost:3000/confirmPayment'
+                  }
+              });
+              console.log("Payment Response", paymentResult);
+          } catch (paymentError) {
+              console.error("Payment Confirmation Error:", paymentError);
+              setError(paymentError.message);
+          }
+      })
+      .catch(err => {
+          console.error("Order Creation Error:", err);
+          setError(err.message || "Failed to create order");
+          dispatch(setLoading(false));
+      })
+      .finally(() => {
+          dispatch(setLoading(false));
+      });
 
     }
 
