@@ -7,6 +7,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setLoading } from '../../store/features/common';
 import DriftWidget from '../../components/DriftWidget';
 import Categories from '../../components/Filters/Categories';
+import Footer from '../../components/Footer/Footer'
+import content from '../../data/content.json'
 
 const ProductListPage = ({ categoryType }) => {
   const categoryData = useSelector((state) => state?.categoryState?.categories);
@@ -98,7 +100,9 @@ const ProductListPage = ({ categoryType }) => {
       </div>
       {/* DriftWidget */}
       <DriftWidget />
+      <Footer content={content?.footer}/>
     </div>
+    
   );
 };
 
