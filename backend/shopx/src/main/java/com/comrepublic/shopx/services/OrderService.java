@@ -7,7 +7,9 @@ import com.comrepublic.shopx.dto.OrderDetails;
 import com.comrepublic.shopx.dto.OrderItemDetail;
 import com.comrepublic.shopx.dto.OrderRequest;
 import com.comrepublic.shopx.entities.*;
+import com.comrepublic.shopx.repositories.OrderItemRepository;
 import com.comrepublic.shopx.repositories.OrderRepository;
+import com.comrepublic.shopx.repositories.PaymentRepository;
 import com.comrepublic.shopx.repositories.ProductVariantRepository;
 
 import jakarta.mail.internet.MimeMessage;
@@ -32,6 +34,12 @@ public class OrderService {
 
     @Autowired
     private OrderRepository orderRepository;
+
+    @Autowired
+    private OrderItemRepository orderItemRepository;
+
+    @Autowired
+    private PaymentRepository paymentRepository;
 
     @Autowired
     private ProductVariantRepository productVariantRepository;
@@ -209,8 +217,8 @@ public class OrderService {
                 "                Phone: " + order.getAddress().getPhoneNumber() +
                 "            </p>" +
                 "        </div>" +
-                // "        <a class='btn' href='http://localhost:3000/'>Continue Shopping</a>" +
-                "        <a class='btn' href='" + frontendUrl + "/'>Continue Shopping</a>" +  
+                // " <a class='btn' href='http://localhost:3000/'>Continue Shopping</a>" +
+                "        <a class='btn' href='" + frontendUrl + "/'>Continue Shopping</a>" +
                 "        <div class='footer'>" +
                 "            <p>Best regards,</p>" +
                 "            <p>GigaMart Team</p>" +
@@ -297,7 +305,6 @@ public class OrderService {
         Order order = orderRepository.findById(id).get();
         if (null != order && order.getUser().getId().equals(user.getId())) {
             order.setOrderStatus(OrderStatus.CANCELLED);
-            // logic to refund amount
             orderRepository.save(order);
         } else {
             new RuntimeException("Invalid request");
@@ -318,6 +325,30 @@ public class OrderService {
                     .expectedDeliveryDate(order.getExpectedDeliveryDate())
                     .build();
         }).toList();
+    }
+
+    public boolean deleteOrderById(UUID id) {
+        Optional<Order> orderOptional = orderRepository.findById(id);
+
+        if (orderOptional.isPresent()) {
+            Order order = orderOptional.get();
+
+            List<OrderItem> orderItems = order.getOrderItemList();
+            if (orderItems != null && !orderItems.isEmpty()) {
+                orderItemRepository.deleteAll(orderItems); 
+            }
+
+            Payment payment = paymentRepository.findByOrderId(id);
+            if (payment != null) {
+                paymentRepository.delete(payment); 
+            }
+
+            orderRepository.delete(order);
+
+            return true; 
+        }
+
+        return false; 
     }
 
 }

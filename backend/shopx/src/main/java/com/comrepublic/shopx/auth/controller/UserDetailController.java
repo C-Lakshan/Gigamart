@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-// import com.comrepublic.shopx.auth.dto.PasswordChangeRequest;
+import com.comrepublic.shopx.auth.dto.ChangePasswordRequest;
 import com.comrepublic.shopx.auth.dto.UserDetailsDto;
 import com.comrepublic.shopx.auth.entities.User;
 import com.comrepublic.shopx.auth.services.UserService;
@@ -79,13 +79,18 @@ public class UserDetailController {
         return ResponseEntity.ok(user);
     }
 
-    @PutMapping("/change-password/{userId}")
-    public ResponseEntity<String> changePassword(@PathVariable UUID userId,
-            @RequestBody String newPassword,
-            Principal principal) {
-        // Sample text for testing
-        return new ResponseEntity<>("This is a sample text for testing the change password functionality.",
-                HttpStatus.OK);
+    @PutMapping("/change-password")
+    public ResponseEntity<String> changePassword(@RequestBody ChangePasswordRequest request, Principal principal) {
+        try {
+            boolean success = userService.changePassword(request);
+            if (success) {
+                return ResponseEntity.ok("Password updated successfully!");
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Password update failed!");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
     }
 
 }

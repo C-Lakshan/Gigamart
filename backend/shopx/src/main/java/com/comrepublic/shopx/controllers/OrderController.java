@@ -60,4 +60,20 @@ public class OrderController {
         List<OrderDetails> orders = orderService.getAllOrders();
         return ResponseEntity.ok(orders);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteOrderById(@PathVariable UUID id) {
+        try {
+            boolean result = orderService.deleteOrderById(id);
+            if (result) {
+                return ResponseEntity.ok("Order deleted successfully.");
+            } else {
+                return ResponseEntity.badRequest().body("Order not found.");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("An error occurred while deleting the order.");
+        }
+    }
+
 }

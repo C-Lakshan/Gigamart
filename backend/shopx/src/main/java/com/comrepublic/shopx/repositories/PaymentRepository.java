@@ -14,6 +14,9 @@ import com.comrepublic.shopx.entities.Payment;
 @Repository
 public interface PaymentRepository extends JpaRepository<Payment, UUID> {
     @Query("SELECT p FROM Payment p WHERE p.paymentDate BETWEEN :startDate AND :endDate")
-    List<Payment> findPaymentsBetweenDates(@Param("startDate") java.util.Date startDate, 
-                                          @Param("endDate") java.util.Date endDate);
+    List<Payment> findPaymentsBetweenDates(@Param("startDate") java.util.Date startDate,
+            @Param("endDate") java.util.Date endDate);
+
+    Payment findByOrderId(UUID orderId);
+    void deleteByOrderId(UUID orderId);
 }
