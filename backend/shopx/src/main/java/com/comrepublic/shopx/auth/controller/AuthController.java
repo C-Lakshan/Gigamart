@@ -41,26 +41,25 @@ public class AuthController {
     @Autowired
     JWTTokenHelper jwtTokenHelper;
 
-
     @PostMapping("/login")
-    public ResponseEntity<UserToken> login(@RequestBody LoginRequest loginRequest){
-        try{
-            Authentication authentication= UsernamePasswordAuthenticationToken.unauthenticated(
+    public ResponseEntity<UserToken> login(@RequestBody LoginRequest loginRequest) {
+        try {
+            Authentication authentication = UsernamePasswordAuthenticationToken.unauthenticated(
                     loginRequest.getUserName(),
                     loginRequest.getPassword());
 
             Authentication authenticationResponse = this.authenticationManager.authenticate(authentication);
 
-            if(authenticationResponse.isAuthenticated()){
-                User user= (User) authenticationResponse.getPrincipal();
-                if(!user.isEnabled()) {
+            if (authenticationResponse.isAuthenticated()) {
+                User user = (User) authenticationResponse.getPrincipal();
+                if (!user.isEnabled()) {
                     return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
                 }
 
                 String token = jwtTokenHelper.generateToken(user.getEmail());
-                UserToken userToken= UserToken.builder().token(token).build();
+                UserToken userToken = UserToken.builder().token(token).build();
                 System.out.println("JWT Token has been created successfully: " + token);
-                return new ResponseEntity<>(userToken,HttpStatus.OK);
+                return new ResponseEntity<>(userToken, HttpStatus.OK);
             }
 
         } catch (BadCredentialsException e) {
@@ -71,23 +70,33 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<RegistrationResponse> register(@RequestBody RegistrationRequest request){
+    public ResponseEntity<RegistrationResponse> register(@RequestBody RegistrationRequest request) {
         RegistrationResponse registrationResponse = registrationService.createUser(request);
 
         return new ResponseEntity<>(registrationResponse,
-                registrationResponse.getCode() == 200 ? HttpStatus.OK: HttpStatus.BAD_REQUEST);
+                registrationResponse.getCode() == 200 ? HttpStatus.OK : HttpStatus.BAD_REQUEST);
     }
 
     @PostMapping("/verify")
-    public ResponseEntity<?> verifyCode(@RequestBody Map<String,String> map){
+    public ResponseEntity<?> verifyCode(@RequestBody Map<String, String> map) {
         String userName = map.get("userName");
         String code = map.get("code");
 
-        User user= (User) userDetailsService.loadUserByUsername(userName);
-        if(null != user && user.getVerificationCode().equals(code)){
+        User user = (User) userDetailsService.loadUserByUsername(userName);
+        if (null != user && user.getVerificationCode().equals(code)) {
             registrationService.verifyUser(userName);
             return new ResponseEntity<>(HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+
+    @PostMapping("/register-admin")
+    public ResponseEntity<RegistrationResponse> registerAdmin(@RequestBody RegistrationRequest request) {
+        // You might want to add additional security checks here,
+        // such as requiring an admin token or checking for existing admin users
+        RegistrationResponse registrationResponse = registrationService.createAdminUser(request);
+
+        return new ResponseEntity<>(registrationResponse,
+                registrationResponse.getCode() == 200 ? HttpStatus.OK : HttpStatus.BAD_REQUEST);
     }
 }
