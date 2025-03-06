@@ -177,7 +177,7 @@ const Quotation = () => {
       // Send email
       const response = await emailjs.send(
         "service_2tcwii5",
-        "template_swzcb9l",
+        "template_6pdq1v8",
         templateParams
       );
 
