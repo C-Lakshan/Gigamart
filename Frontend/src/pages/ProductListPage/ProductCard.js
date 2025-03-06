@@ -13,20 +13,23 @@ const ProductCard = ({ id, title, description, price, discount, rating, brand, t
   };
 
   return (
-    <div className='flex flex-col hover:scale-105 relative'>
-      <Link to={`/product/${slug}`}>
-        <img className='h-[320px] w-[280px] border rounded-lg cursor-pointer object-cover block' src={thumbnail} alt='Image' />
-      </Link>
-      <div className='flex justify-between items-center'>
-        <div className='flex flex-col pt-2'>
-          <p className='text-[16px] p-1'>{title}</p>
-          {description && <p className='text-[12px] px-1 text-gray-600'>{brand}</p>}
+    <div className='flex flex-col hover:scale-105 relative border rounded-lg p-2 min-h-[390px]'>
+      <Link to={`/product/${slug}`} className='w-full'>
+        <div className='h-[280px] w-full'>
+        <img className='h-full w-full object-cover rounded-lg' src={thumbnail} alt='Image' />
+
         </div>
-        <div>
-          <p>${price}</p>
+      </Link>
+      <div className='flex flex-col justify-between flex-grow pt-2'>
+        <div className='w-full'>
+          <p className='text-[16px] p-1 truncate'>{title}</p>
+          {description && <p className='text-[12px] px-1 text-gray-600 truncate'>{brand}</p>}
+        </div>
+        <div className='pt-0'>
+          <p className='text-lg font-semibold'>${price}</p>
         </div>
       </div>
-      <button onClick={onAddToWishlist} className='absolute top-0 right-0 pt-4 pr-4 cursor-pointer'>
+      <button onClick={onAddToWishlist} className='absolute top-2 right-2 p-2 cursor-pointer'>
         <SvgFavourite />
       </button>
     </div>
