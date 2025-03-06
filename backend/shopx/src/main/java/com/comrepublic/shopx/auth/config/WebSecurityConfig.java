@@ -32,7 +32,7 @@ public class WebSecurityConfig {
             "/api/user/profile",
 
             // Product & Category Browsing
-            // "/api/products",
+            "/api/products",
             // "/api/products/{id}",
             // "/api/products/searchProductsBySlugPart",
             // "/api/category",
@@ -82,7 +82,7 @@ public class WebSecurityConfig {
                         // "/api/products/{id}").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/products/updateQuantity/{productId}")
                         .hasAuthority("ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/api/products").hasAuthority("ADMIN")
+                        // .requestMatchers(HttpMethod.POST, "/api/products").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/category/{id}").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/category/{id}").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/category").hasAuthority("ADMIN")

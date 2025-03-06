@@ -3,6 +3,7 @@ package com.comrepublic.shopx.auth.controller;
 import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -24,6 +25,9 @@ public class OAuth2Controller {
     @Autowired
     OAuth2Service oAuth2Service;
 
+    @Value("${frontend.url}")
+    private String frontendUrl;
+
     @Autowired
     private JWTTokenHelper jwtTokenHelper;
 
@@ -38,7 +42,8 @@ public class OAuth2Controller {
 
         String token = jwtTokenHelper.generateToken(user.getUsername());
 
-        response.sendRedirect("http://localhost:3000/oauth2/callback?token="+token);
+        // response.sendRedirect("http://localhost:3000/oauth2/callback?token="+token);
+        response.sendRedirect(frontendUrl + "/oauth2/callback?token=" + token);
 
     }
 }
