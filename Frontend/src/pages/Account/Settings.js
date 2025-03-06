@@ -13,10 +13,10 @@ const Settings = () => {
     }, [navigate]);
 
     return (
-        <div className="flex flex-col items-center">
+        <div className="flex flex-col">
             <button 
                 onClick={() => setShowLogoutDialog(true)} 
-                className='w-[150px] items-center h-[48px] bg-black border rounded-lg mt-2 text-white hover:bg-gray-800'>
+                className='w-[150px] items-center h-[48px] bg-black border rounded-lg mt-0 text-white hover:bg-gray-800'>
                 Logout
             </button>
             
