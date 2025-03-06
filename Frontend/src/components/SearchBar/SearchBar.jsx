@@ -59,7 +59,7 @@ const SearchBar = () => {
   };
 
   return (
-    <div className="relative w-96" ref={dropdownRef}>
+    <div className="relative w-90" ref={dropdownRef}>
       <div className="flex items-center border rounded-lg overflow-hidden bg-white">
         <div className="flex items-center px-4 border-r">
           <Search className="h-5 w-5 text-gray-400" />
