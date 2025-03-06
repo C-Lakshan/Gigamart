@@ -280,7 +280,7 @@ const AdminPanel = () => {
       const filteredDataOrders = response?.data.map((order) => ({
         id: order.id,
         totalAmount: order.totalAmount,
-        orderStatus: order.orderStatus,
+        orderStatus: order.orderDate,
         name: order.address?.name,
         addressId: order.address?.id,
       }));
@@ -376,7 +376,8 @@ const AdminPanel = () => {
   const handleSearch = async () => {
     try {
       const response = await fetch(
-        `${API_BASE_URL}api/products?slug=${searchSlug}`
+        // `${API_BASE_URL}/api/products?slug=${searchSlug}`
+        `${API_BASE_URL}/api/products/searchProductsBySlugPart?slugPart=${searchSlug}`
       );
       if (!response.ok) {
         throw new Error("Network response was not ok");
@@ -411,9 +412,9 @@ const AdminPanel = () => {
     try {
       let url = "";
       if (type === "products") {
-        url = `${API_BASE_URL}api/products/${id}`;
+        url = `${API_BASE_URL}/api/products/${id}`;
       } else if (type === "categories") {
-        url = `${API_BASE_URL}api/categories/${id}`;
+        url = `${API_BASE_URL}/api/categories/${id}`;
       } else if (type === "orders") {
         url = `${API_BASE_URL}/api/orders/${id}`;
       } else if (type === "transactions") {
@@ -896,13 +897,12 @@ const AdminPanel = () => {
         >
           <h2 className="text-xl font-semibold mb-4">Edit Product</h2>
           <form onSubmit={handleUpdateProduct}>
-            <input
-              type="text"
-              name="name"
-              placeholder="Product Name"
-              value={editProduct ? editProduct.name : ""}
+            <textarea
+              name="description"
+              placeholder="Product Description"
+              value={editProduct ? editProduct.description : ""}
               onChange={(e) =>
-                setEditProduct({ ...editProduct, name: e.target.value })
+                setEditProduct({ ...editProduct, description: e.target.value })
               }
               className="w-full p-2 mb-2 border border-gray-700 rounded bg-gray-900 text-white text-sm"
               required
@@ -920,22 +920,22 @@ const AdminPanel = () => {
             />
             <input
               type="text"
-              name="category"
-              placeholder="Category"
-              value={editProduct ? editProduct.category : ""}
+              name="thumbnail"
+              placeholder="Thumbnail URL"
+              value={editProduct ? editProduct.thumbnail : ""}
               onChange={(e) =>
-                setEditProduct({ ...editProduct, category: e.target.value })
+                setEditProduct({ ...editProduct, thumbnail: e.target.value })
               }
               className="w-full p-2 mb-2 border border-gray-700 rounded bg-gray-900 text-white text-sm"
               required
             />
             <input
               type="number"
-              name="stock"
-              placeholder="Stock"
-              value={editProduct ? editProduct.stock : ""}
+              name="variantQuantity"
+              placeholder="Variant Quantity"
+              value={editProduct ? editProduct.variantQuantity : ""}
               onChange={(e) =>
-                setEditProduct({ ...editProduct, stock: e.target.value })
+                setEditProduct({ ...editProduct, variantQuantity: e.target.value })
               }
               className="w-full p-2 mb-2 border border-gray-700 rounded bg-gray-900 text-white text-sm"
               required
@@ -970,30 +970,30 @@ const AdminPanel = () => {
     ],
     categories: ["ID", "Name", "Description", "Actions"],
     orders: [
-      { header: "ID", key: "id" },
-      { header: "Total Amount", key: "totalAmount" },
-      { header: "Order Status", key: "orderStatus" },
+      { header: "Order ID", key: "id" },
+      { header: "Amount", key: "totalAmount" },
+      { header: "Order Created Date", key: "orderStatus" },
       { header: "User ID", key: "name" },
       { header: "Address ID", key: "addressId" },
-      { header: "Actions", key: "actions" },
+      // { header: "Actions", key: "actions" },
     ],
     transactions: [
-      { header: "ID", key: "id" },
+      { header: "Transactions ID", key: "id" },
       { header: "Order ID", key: "orderId" },
       { header: "Payment Date", key: "paymentDate" },
       { header: "Amount", key: "amount" },
       // { header: "Payment Method", key: "paymentMethod" },
       { header: "Payment Status", key: "paymentStatus" },
-      { header: "Actions", key: "actions" },
+      // { header: "Actions", key: "actions" },
     ],
     users: [
-      { header: "ID", key: "id" },
+      { header: "User ID", key: "id" },
       { header: "Name", key: "name" },
       { header: "E-mail", key: "email" },
       { header: "Phone No", key: "phoneNo" },
       { header: "State", key: "address" },
       { header: "Authority", key: "role" },
-      { header: "Actions", key: "actions" },
+      // { header: "Actions", key: "actions" },
     ],
   };
 

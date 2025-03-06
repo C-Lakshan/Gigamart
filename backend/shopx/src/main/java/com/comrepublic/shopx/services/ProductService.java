@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 
 import com.comrepublic.shopx.dto.ProductDto;
+import com.comrepublic.shopx.dto.ProductPartialUpdateDto;
 import com.comrepublic.shopx.entities.Product;
 import com.comrepublic.shopx.entities.ProductVariant;
 
@@ -25,4 +26,7 @@ public interface ProductService {
     boolean deleteProductById(UUID id);
 
     List<ProductVariant> updateVariantsQuantity(UUID productId, Integer quantity);
+
+    Product updateProductPartial(UUID productId, ProductPartialUpdateDto updateDto);
+
 }

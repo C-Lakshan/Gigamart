@@ -5,8 +5,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
+import com.comrepublic.shopx.mapper.ProductMapper;
 
 import com.comrepublic.shopx.dto.ProductDto;
+import com.comrepublic.shopx.dto.ProductPartialUpdateDto;
 import com.comrepublic.shopx.entities.Product;
 import com.comrepublic.shopx.entities.ProductVariant;
 import com.comrepublic.shopx.services.ProductService;
@@ -25,8 +27,12 @@ public class ProductController {
     private ProductService productService;
 
     @Autowired
+    private ProductMapper productMapper;
+
+    @Autowired
     public ProductController(ProductService productService) {
         this.productService = productService;
+        this.productMapper = productMapper;
     }
 
     @GetMapping
@@ -45,7 +51,6 @@ public class ProductController {
         return new ResponseEntity<>(productList, HttpStatus.OK);
     }
 
-    // New API for searching by partial slug
     @GetMapping("/searchProductsBySlugPart")
     public ResponseEntity<List<ProductDto>> searchProductsBySlugPart(
             @RequestParam String slugPart, HttpServletResponse response) {
@@ -92,4 +97,12 @@ public class ProductController {
         return new ResponseEntity<>(updatedVariants, HttpStatus.OK);
     }
 
+    @PutMapping("updatePartial/{id}")
+    public ResponseEntity<ProductDto> updateProductPartial(
+            @PathVariable UUID id,
+            @RequestBody ProductPartialUpdateDto updateDto) {
+
+        Product updatedProduct = productService.updateProductPartial(id, updateDto);
+        return new ResponseEntity<>(productMapper.mapToProductDto(updatedProduct), HttpStatus.OK);
+    }
 }

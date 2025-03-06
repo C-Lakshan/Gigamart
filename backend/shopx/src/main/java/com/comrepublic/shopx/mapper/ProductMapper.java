@@ -153,4 +153,25 @@ public class ProductMapper {
                 .type(resources.getType())
                 .build();
     }
+
+    public ProductDto mapToProductDto(Product product) {
+        if (product == null) {
+            return null;
+        }
+        
+        return ProductDto.builder()
+            .id(product.getId())
+            .name(product.getName())
+            .description(product.getDescription())
+            .price(product.getPrice())
+            .brand(product.getBrand())
+            .newArrival(product.getNewArrival())
+            .rating(product.getRating())
+            .categoryId(product.getCategory() != null ? product.getCategory().getId() : null)
+            .categoryName(product.getCategory() != null ? product.getCategory().getName() : null)
+            .categoryTypeId(product.getCategoryType() != null ? product.getCategoryType().getId() : null)
+            .categoryTypeName(product.getCategoryType() != null ? product.getCategoryType().getName() : null)
+            .slug(product.getSlug())
+            .build();
+    }
 }

@@ -9,7 +9,10 @@ import com.comrepublic.shopx.exceptions.ResourceNotFoundEx;
 import com.comrepublic.shopx.mapper.ProductMapper;
 import com.comrepublic.shopx.specification.ProductSpecification;
 
+import jakarta.transaction.Transactional;
+
 import com.comrepublic.shopx.dto.ProductDto;
+import com.comrepublic.shopx.dto.ProductPartialUpdateDto;
 import com.comrepublic.shopx.entities.Product;
 import com.comrepublic.shopx.entities.ProductVariant;
 import com.comrepublic.shopx.entities.Resources;
@@ -142,13 +145,69 @@ public class ProductServiceImpl implements ProductService {
 
         List<ProductVariant> variants = productVariantRepository.findByProductId(productId);
 
-        // Update the quantity for each variant
         for (ProductVariant variant : variants) {
-            variant.setStockQuantity(quantity); // Set the quantity for each variant
-            productVariantRepository.save(variant); // Save each updated variant
+            variant.setStockQuantity(quantity); 
+            productVariantRepository.save(variant); 
         }
 
         return variants;
+    }
+
+    @Override
+    @Transactional
+    public Product updateProductPartial(UUID productId, ProductPartialUpdateDto updateDto) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new ResourceNotFoundEx("Product Not Found!"));
+        
+        if (updateDto.getDescription() != null) {
+            product.setDescription(updateDto.getDescription());
+        }
+        
+        if (updateDto.getPrice() != null) {
+            product.setPrice(updateDto.getPrice());
+        }
+        
+        if (updateDto.getThumbnail() != null) {
+            List<Resources> resources = product.getResources();
+            boolean thumbnailUpdated = false;
+            
+            if (resources != null && !resources.isEmpty()) {
+                for (Resources resource : resources) {
+                    if (resource.getIsPrimary() || "thumbnail".equalsIgnoreCase(resource.getType())) {
+                        resource.setUrl(updateDto.getThumbnail());
+                        thumbnailUpdated = true;
+                        break;
+                    }
+                }
+            }
+            
+            if (thumbnailUpdated == false) {
+                Resources newThumbnail = Resources.builder()
+                        .name("thumbnail")
+                        .url(updateDto.getThumbnail())
+                        .isPrimary(true)
+                        .type("thumbnail")
+                        .product(product)
+                        .build();
+                
+                if (resources == null) {
+                    resources = new java.util.ArrayList<>();
+                    product.setResources(resources);
+                }
+                resources.add(newThumbnail);
+            }
+        }
+        
+        if (updateDto.getVariantQuantity() != null) {
+            List<ProductVariant> variants = product.getProductVariants();
+            if (variants != null && !variants.isEmpty()) {
+                for (ProductVariant variant : variants) {
+                    variant.setStockQuantity(updateDto.getVariantQuantity());
+                }
+            }
+        }
+        
+        return productRepository.save(product);
     }
 
 }
