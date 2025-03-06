@@ -126,13 +126,13 @@ const ProductDetails = () => {
         </div>
 
       </div>
-      <div className='w-[60%] px-10'>
+      <div className='w-[60%] px-10'>USD
       {/* Product Description */}
       <Breadcrumb links={breadCrumbLinks} />
       <p className='text-3xl pt-4'>{product?.name}</p>
       <Rating rating={product?.rating}/>
       {/* Price Tag */}
-      <p className='text-xl bold py-2'>LKR {product?.price}</p>
+      <p className='text-xl bold py-2'>$ {product?.price}</p>
 
       <div>
         <p className='text-lg bold '>Colors Available</p>
