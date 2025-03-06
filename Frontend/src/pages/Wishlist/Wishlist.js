@@ -20,7 +20,6 @@ const WishList = () => {
       quantity: 1,
       variant: item.variant || {},
       subTotal: item.price * 1, // Ensure subtotal calculation
-
     }));
     // Remove from Wishlist after adding to Cart
     dispatch(removeItemFromWishListAction(item.productId));
@@ -59,12 +58,16 @@ const WishList = () => {
                     >
                       View Details
                     </Link>
-                    <button 
-                      className='bg-black text-white px-4 py-2 rounded hover:bg-gray-800 transition' 
-                      onClick={() => onAddToCart(item)}
-                    >
-                      Add to Cart
-                    </button>
+                    {item?.variant?.stockQuantity > 0 ? (
+                      <button 
+                        className='bg-black text-white px-4 py-2 rounded hover:bg-gray-800 transition' 
+                        onClick={() => onAddToCart(item)}
+                      >
+                        Add to Cart
+                      </button>
+                    ) : (
+                      <span className='text-red-500 font-bold'>Out Stock</span>
+                    )}
                     <button 
                       className='flex justify-center items-center bg-red-500 text-white p-2 rounded hover:bg-red-700 transition' 
                       onClick={() => dispatch(removeItemFromWishListAction(item.productId))}
