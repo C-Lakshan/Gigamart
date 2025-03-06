@@ -39,7 +39,7 @@ export const router = createBrowserRouter([
           element:<ProductListPage categoryType={'Desktop'}/>,
         },
         {
-          path:"",
+          path:"/Accessories",
           element:<ProductListPage categoryType={'Accessories'}/>,
         },
         {
