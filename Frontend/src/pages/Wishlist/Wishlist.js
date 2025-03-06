@@ -50,11 +50,11 @@ const WishList = () => {
                     </div>
                   </td>
                   <td className='text-center text-sm text-gray-600'>${item.price}</td>
-                  <td className='flex flex-col justify-center items-center gap-2 h-full'>
+                  <td className='flex flex-col justify-center items-center gap-2 h-full pt-2'>
                     {/* Add the button to navigate to product details */}
                     <Link 
                       to={`/product/${item.slug}`}
-                      className='bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700 transition'
+                      className='bg-gray-500 text-white px-4 py-2 rounded hover:bg-blue-700 transition'
                     >
                       View Details
                     </Link>
