@@ -101,8 +101,7 @@ public class ProductController {
     public ResponseEntity<ProductDto> updateProductPartial(
             @PathVariable UUID id,
             @RequestBody ProductPartialUpdateDto updateDto) {
-
         Product updatedProduct = productService.updateProductPartial(id, updateDto);
-        return new ResponseEntity<>(productMapper.mapToProductDto(updatedProduct), HttpStatus.OK);
+        return new ResponseEntity<>(productMapper.mapProductToDto(updatedProduct), HttpStatus.OK);
     }
 }

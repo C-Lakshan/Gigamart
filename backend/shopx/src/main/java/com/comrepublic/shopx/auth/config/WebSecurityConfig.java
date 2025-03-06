@@ -32,12 +32,13 @@ public class WebSecurityConfig {
             "/api/user/profile",
 
             // Product & Category Browsing
-            "/api/products",
+            // "/api/products",
             // "/api/products/{id}",
             // "/api/products/searchProductsBySlugPart",
             // "/api/category",
             // "/api/category/{id}",
-            "/api/products/{id}",
+            // "/api/products/{id}",
+
             // Swagger API documentation
             "/v2/api-docs",
             "/v3/api-docs",
@@ -78,40 +79,32 @@ public class WebSecurityConfig {
                         // Admin-only endpoints
                         .requestMatchers(HttpMethod.GET, "/api/user/all").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/products/{id}").hasAuthority("ADMIN")
-                        // .requestMatchers(HttpMethod.DELETE,
-                        // "/api/products/{id}").hasAuthority("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/api/products/updateQuantity/{productId}")
-                        .hasAuthority("ADMIN")
-                        // .requestMatchers(HttpMethod.POST, "/api/products").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/products/updatePartial/{id}").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE,"/api/products/{id}").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/products/updateQuantity/{productId}").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/products").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/category/{id}").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/category/{id}").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/category").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/order/{id}").hasAuthority("ADMIN")
-
-                        // .requestMatchers(HttpMethod.POST,
-                        // "/api/order/update-payment").hasAuthority("ADMIN")
-                        // .requestMatchers(HttpMethod.POST,
-                        // "/api/order/cancel/{id}").hasAuthority("ADMIN")
+                        // .requestMatchers(HttpMethod.POST,"/api/order/update-payment").hasAuthority("ADMIN")
+                        // .requestMatchers(HttpMethod.POST,"/api/order/cancel/{id}").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/order").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/payment").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/payment/transactionsBetweenDays").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/payment/dashboard-stats").hasAuthority("ADMIN")
 
                         // User-accessible endpoints (Both Admin & Users)
-                        .requestMatchers(HttpMethod.PUT, "/api/user/userProfile/{userId}")
-                        .hasAnyAuthority("USER", "ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/api/user/change-password/{userId}")
-                        .hasAnyAuthority("USER", "ADMIN")
-                        // .requestMatchers(HttpMethod.GET, "/api/user/profile").hasAnyAuthority("USER",
-                        // "ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/user/userProfile/{userId}").hasAnyAuthority("USER", "ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/user/change-password/{userId}").hasAnyAuthority("USER", "ADMIN")
+                        // .requestMatchers(HttpMethod.GET, "/api/user/profile").hasAnyAuthority("USER","ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/order/update-payment").hasAnyAuthority("USER", "ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/order/cancel/{id}").hasAnyAuthority("USER", "ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/order/user").hasAnyAuthority("USER", "ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/order").hasAnyAuthority("USER", "ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/address").hasAnyAuthority("USER", "ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/address/{id}").hasAnyAuthority("USER", "ADMIN")
-                        // .requestMatchers(HttpMethod.GET, "/api/payment").hasAnyAuthority("USER",
-                        // "ADMIN")
+                        // .requestMatchers(HttpMethod.GET, "/api/payment").hasAnyAuthority("USER","ADMIN")
 
                         // Any other request must be authenticated
                         .anyRequest().authenticated())

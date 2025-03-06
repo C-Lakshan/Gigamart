@@ -104,29 +104,25 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public boolean deleteProductById(UUID id) {
-        // Find the product by ID
         Product product = productRepository.findById(id).orElse(null);
 
         if (product != null) {
-            // Delete associated ProductVariants
             List<ProductVariant> productVariants = product.getProductVariants();
             if (productVariants != null) {
-                productVariantRepository.deleteAll(productVariants); // Delete all related product variants
+                productVariantRepository.deleteAll(productVariants); 
             }
 
-            // Delete associated Resources
             List<Resources> resources = product.getResources();
             if (resources != null) {
-                resourcesRepository.deleteAll(resources); // Delete all related resources
+                resourcesRepository.deleteAll(resources); 
             }
 
-            // Now, delete the product itself
             productRepository.delete(product);
 
-            return true; // Return true if the product was successfully deleted
+            return true; 
         }
 
-        return false; // Return false if the product was not found
+        return false; 
     }
 
     @Override

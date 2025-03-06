@@ -50,13 +50,10 @@ public class ProductMapper {
             product.setResources(mapToProductResources(productDto.getProductResources(),product));
         }
 
-
-
         return product;
     }
 
     private List<Resources> mapToProductResources(List<ProductResourceDto> productResources, Product product) {
-
         return productResources.stream().map(productResourceDto -> {
             Resources resources= new Resources();
             if(null != productResourceDto.getId()){
@@ -94,12 +91,18 @@ public class ProductMapper {
                 .map(this::mapProductToDto)
                 .collect(Collectors.toList());
     }
+
     public ProductDto mapProductToDto(Product product) {
+        if (product == null) {
+            return null;
+        }
+
         String thumbnail = null;
         if (product.getResources() != null && !product.getResources().isEmpty()) {
             thumbnail = getProductThumbnail(product.getResources());
         }
-        return ProductDto.builder()
+
+        ProductDto productDto = ProductDto.builder()
                 .id(product.getId())
                 .brand(product.getBrand())
                 .name(product.getName())
@@ -114,6 +117,16 @@ public class ProductMapper {
                 .categoryTypeId(product.getCategoryType() != null ? product.getCategoryType().getId() : null)
                 .categoryTypeName(product.getCategoryType() != null ? product.getCategoryType().getName() : null)
                 .build();
+
+        if (product.getProductVariants() != null && !product.getProductVariants().isEmpty()) {
+            productDto.setVariants(mapProductVariantListToDto(product.getProductVariants()));
+        }
+
+        if (product.getResources() != null && !product.getResources().isEmpty()) {
+            productDto.setProductResources(mapProductResourcesListDto(product.getResources()));
+        }
+
+        return productDto;
     }
 
     private String getProductThumbnail(List<Resources> resources) {
@@ -128,10 +141,19 @@ public class ProductMapper {
     }
 
     public List<ProductVariantDto> mapProductVariantListToDto(List<ProductVariant> productVariants) {
-       return productVariants.stream().map(this::mapProductVariantDto).toList();
+        if (productVariants == null) {
+            return Collections.emptyList();
+        }
+        return productVariants.stream()
+                .filter(Objects::nonNull)
+                .map(this::mapProductVariantDto)
+                .collect(Collectors.toList());
     }
 
     private ProductVariantDto mapProductVariantDto(ProductVariant productVariant) {
+        if (productVariant == null) {
+            return null;
+        }
         return ProductVariantDto.builder()
                 .color(productVariant.getColor())
                 .id(productVariant.getId())
@@ -141,10 +163,19 @@ public class ProductMapper {
     }
 
     public List<ProductResourceDto> mapProductResourcesListDto(List<Resources> resources) {
-        return resources.stream().map(this::mapResourceToDto).toList();
+        if (resources == null) {
+            return Collections.emptyList();
+        }
+        return resources.stream()
+                .filter(Objects::nonNull)
+                .map(this::mapResourceToDto)
+                .collect(Collectors.toList());
     }
 
     private ProductResourceDto mapResourceToDto(Resources resources) {
+        if (resources == null) {
+            return null;
+        }
         return ProductResourceDto.builder()
                 .id(resources.getId())
                 .url(resources.getUrl())
@@ -154,24 +185,4 @@ public class ProductMapper {
                 .build();
     }
 
-    public ProductDto mapToProductDto(Product product) {
-        if (product == null) {
-            return null;
-        }
-        
-        return ProductDto.builder()
-            .id(product.getId())
-            .name(product.getName())
-            .description(product.getDescription())
-            .price(product.getPrice())
-            .brand(product.getBrand())
-            .newArrival(product.getNewArrival())
-            .rating(product.getRating())
-            .categoryId(product.getCategory() != null ? product.getCategory().getId() : null)
-            .categoryName(product.getCategory() != null ? product.getCategory().getName() : null)
-            .categoryTypeId(product.getCategoryType() != null ? product.getCategoryType().getId() : null)
-            .categoryTypeName(product.getCategoryType() != null ? product.getCategoryType().getName() : null)
-            .slug(product.getSlug())
-            .build();
-    }
 }

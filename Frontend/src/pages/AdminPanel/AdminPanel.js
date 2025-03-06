@@ -35,20 +35,6 @@ const AdminPanel = () => {
   const [orders, setOrders] = useState([]);
   const [transactions, setTransactions] = useState([]);
   const [users, setUsers] = useState([]);
-  // const [dashboardData, setDashboardData] = useState({
-  //   users: 100,
-  //   sales: 5000,
-  //   totalCustomers: 50,
-  //   totalOrders: 120,
-  //   totalTransactions: 200,
-  //   transactionsPerMonth: [
-  //     80, 60, 80, 120, 115, 150, 130, 150, 120, 200, 180, 210,
-  //   ], // Sample transaction data for the graph
-  // });
-
-  // Initialize as null to handle loading state
-  // const [dashboardData, setDashboardData] = useState(null);
-
   const [dashboardData, setDashboardData] = useState({
     users: 0,
     sales: 0,
@@ -62,10 +48,10 @@ const AdminPanel = () => {
     campaigns: 3,
     leads: 250,
   });
+
   const [reportsData, setReportsData] = useState({ salesReport: "Q1 Report" });
   const [showModal, setShowModal] = useState(false);
   const [searchSlug, setSearchSlug] = useState("");
-
   const [newProduct, setNewProduct] = useState({
     // name: "",
     // price: "",
@@ -210,6 +196,7 @@ const AdminPanel = () => {
         price: product.price,
         rating: product.rating,
         description: product.description,
+        quantity: product.variants?.[0]?.stockQuantity || 0, 
       }));
 
       setProducts(filteredData);
@@ -410,44 +397,40 @@ const AdminPanel = () => {
 
     const { id, type } = itemToDelete;
     try {
-      let url = "";
-      if (type === "products") {
-        url = `${API_BASE_URL}/api/products/${id}`;
-      } else if (type === "categories") {
-        url = `${API_BASE_URL}/api/categories/${id}`;
-      } else if (type === "orders") {
-        url = `${API_BASE_URL}/api/orders/${id}`;
-      } else if (type === "transactions") {
-        url = `${API_BASE_URL}/api/transactions/${id}`;
-      }
-
-      const response = await fetch(url, { method: "DELETE" });
-
-      if (response.ok) {
+        let url = "";
         if (type === "products") {
-          setProducts(products.filter((product) => product.id !== id));
+            url = `${API_BASE_URL}/api/products/${id}`;
         } else if (type === "categories") {
-          setCategories(categories.filter((category) => category.id !== id));
+            url = `${API_BASE_URL}/api/categories/${id}`;
         } else if (type === "orders") {
-          setOrders(orders.filter((order) => order.id !== id));
+            url = `${API_BASE_URL}/api/orders/${id}`;
         } else if (type === "transactions") {
-          setTransactions(
-            transactions.filter((transaction) => transaction.id !== id)
-          );
+            url = `${API_BASE_URL}/api/transactions/${id}`;
         }
-        // alert(`Item with ID ${id} deleted from ${type}`);
-      } else {
-        // alert("Error deleting the item. Please try again.");
-        setIsErrorModalOpen(true);
-      }
+
+        const response = await axios.delete(url, { headers: getHeaders() });
+
+        if (response.status === 200 || response.status === 204) {
+            if (type === "products") {
+                setProducts((prev) => prev.filter((product) => product.id !== id));
+            } else if (type === "categories") {
+                setCategories((prev) => prev.filter((category) => category.id !== id));
+            } else if (type === "orders") {
+                setOrders((prev) => prev.filter((order) => order.id !== id));
+            } else if (type === "transactions") {
+                setTransactions((prev) => prev.filter((transaction) => transaction.id !== id));
+            }
+        } else {
+            setIsErrorModalOpen(true);
+        }
     } catch (error) {
-      console.error("Error:", error);
-      // alert("An error occurred while deleting the item.");
-      setIsErrorModalOpen(true);
+        console.error("Error:", error);
+        setIsErrorModalOpen(true);
     }
 
     setShowConfirmModal(false);
-  };
+};
+
 
   // const handleUpdate = (id, type) => {
   //   alert(`Update clicked for ID ${id} in ${type}`);
@@ -487,22 +470,18 @@ const AdminPanel = () => {
     };
 
     console.log(product);
-    // Retrieve the JWT token from localStorage
     const authToken = localStorage.getItem("authToken");
     console.log(authToken);
-    // POST request to the API
     fetch(`${API_BASE_URL}/api/products`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        // Include the Authorization header with the Bearer token
         Authorization: `Bearer ${authToken}`,
       },
       body: JSON.stringify(product),
     })
       .then((response) => {
         if (response.ok) {
-          // Parse the response as JSON
           return response.json();
         }
         throw new Error("Failed to add product");
@@ -551,25 +530,49 @@ const AdminPanel = () => {
 
   const handleUpdateProduct = (e) => {
     e.preventDefault();
-    // Update the products state with the edited product
-    setProducts(
-      products.map((product) =>
-        product.id === editProduct.id ? { ...editProduct } : product
-      )
-    );
-    setShowEditModal(false);
-    alert("Product updated successfully");
-    setNewProduct(initialProductState);
-    setShowModal(false);
+    
+    const productUpdate = {
+      description: editProduct.description,
+      price: editProduct.price,
+      thumbnail: editProduct.thumbnail,
+      variantQuantity: parseInt(editProduct.variantQuantity)
+    };
+    
+    console.log("Updating product:", productUpdate);
+    
+    const authToken = localStorage.getItem("authToken");
+    
+    fetch(`${API_BASE_URL}/api/products/updatePartial/${editProduct.id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${authToken}`,
+      },
+      body: JSON.stringify(productUpdate),
+    })
+      .then((response) => {
+        if (response.ok) {
+          return response.json();
+        }
+        throw new Error("Failed to update product");
+      })
+      .then((updatedProduct) => {
+        console.log("Product updated:", updatedProduct);
+        
+        setProducts(
+          products.map((product) =>
+            product.id === updatedProduct.id ? updatedProduct : product
+          )
+        );
+        
+        setShowEditModal(false);
+        alert("Product updated successfully");
+      })
+      .catch((error) => {
+        console.error("Error updating product:", error);
+        alert("Error updating product");
+      });
   };
-
-  // // Set the product being edited
-  // const handleEdit = (product) => {
-  //   // Set the product being edited
-  //   setEditProduct(product);
-  //   // Populate the form with the product details
-  //   setNewProduct({ ...product });
-  // };
 
   const renderModal = () => {
     return (
@@ -964,7 +967,7 @@ const AdminPanel = () => {
       "Slug",
       "Brand",
       "Price",
-      "Rating",
+      "Quantity",
       "Description",
       "Actions",
     ],
